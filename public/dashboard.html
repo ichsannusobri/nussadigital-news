@@ -690,6 +690,7 @@
         }
 
         async function triggerDeploy() {
+            if (!currentWebhookUrl) await loadWebhook();
             if (!currentWebhookUrl) return;
             try {
                 fetch(currentWebhookUrl, { method: 'POST', mode: 'no-cors' });
