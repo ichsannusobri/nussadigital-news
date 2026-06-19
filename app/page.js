@@ -227,21 +227,24 @@ export default async function HomePage() {
                   </div>
               </main>
               <aside className="content-sidebar">
-                  <div className="sidebar-section">
-                      <h3 className="section-header">Opinion</h3>
-                      <div id="opinion-container">
-                        {opinionArticles.length === 0 ? <p>No opinion pieces available.</p> : opinionArticles.map(a => (
-                          <div className="opinion-item" key={`op-${a.id}`}>
-                            <div className="opinion-avatar">{getInitials(a.author)}</div>
-                            <div className="opinion-body">
-                              <Link href={`/article/${a.id}`}><h4 className="opinion-title">{a.title}</h4></Link>
-                              <span className="opinion-author">{a.author}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                  </div>
-                  <div className="ad-container ad-sidebar">
+          {opinionArticles.length > 0 && (
+            <div className="sidebar-section">
+              <h3 className="section-header">Opinion</h3>
+              <div id="opinion-container">
+                {opinionArticles.map(a => (
+                  <article className="opinion-item" key={`op-${a.id}`}>
+                    <div className="opinion-avatar">{getInitials(a.author)}</div>
+                    <div className="opinion-body">
+                      <Link href={`/article/${a.id}`} className="opinion-title">{a.title}</Link>
+                      <span className="opinion-author">{a.author}</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="ad-container ad-sidebar">
                       <span style={{fontSize: '10px', color: '#888', display: 'block', marginBottom: '5px'}}>Advertisement</span>
                       <ins className="adsbygoogle"
                            style={{display:'block', textAlign:'center'}}
@@ -283,48 +286,49 @@ export default async function HomePage() {
       </div>
 
       {/* 10. SPORT SECTION + MOST POPULAR */}
+      {sportArticles.length > 0 && (
       <section className="sport-section">
-          <div className="sport-grid">
-              <div className="sport-main">
-                  <h2 className="section-header">Sport</h2>
-                  <div id="sport-section-container">
-                      {sportHero ? (
-                        <>
-                          <div className="sport-hero">
-                            <Link href={`/article/${sportHero.id}`}>
-                              <img src={sportHero.image} alt={sportHero.title} loading="lazy" width={800} height={500} />
-                              <div className="sport-overlay">
-                                <span className="sport-category">SPORT</span>
-                                <h3 className="sport-title">{sportHero.title}</h3>
-                              </div>
-                            </Link>
-                          </div>
-                          {sportRest.map(a => (
-                            <article className="sport-article" key={`sport-${a.id}`}>
-                              <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
-                              <div>
-                                <Link href={`/article/${a.id}`}><h4>{a.title}</h4></Link>
-                                <span className="card-meta">{a.author} &bull; {formatDate(a.date)}</span>
-                              </div>
-                            </article>
-                          ))}
-                        </>
-                      ) : <p>No sport articles available.</p>}
+        <div className="sport-grid">
+          <div className="sport-main">
+            <h2 className="section-header">Sport</h2>
+            <div id="sport-section-container">
+              {sportHero && (
+                <div className="sport-hero">
+                  <Link href={`/article/${sportHero.id}`}>
+                    <img src={sportHero.image} alt={sportHero.title} loading="lazy" width={800} height={500} />
+                    <div className="sport-overlay">
+                      <span className="sport-category">{sportHero.category.toUpperCase()}</span>
+                      <h3 className="sport-title">{sportHero.title}</h3>
+                    </div>
+                  </Link>
+                </div>
+              )}
+              {sportRest.map(a => (
+                <article className="sport-article" key={`sp-${a.id}`}>
+                  <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
+                  <div>
+                    <Link href={`/article/${a.id}`}><h4>{a.title}</h4></Link>
+                    <span className="card-meta">{a.author} &bull; {formatDate(a.date)}</span>
                   </div>
-              </div>
-              <div className="most-popular">
-                  <h2 className="section-header">Most Popular</h2>
-                  <div id="most-popular-container">
-                      {mostPopular.map((a, i) => (
-                        <div className="popular-item" key={`pop-${a.id}`}>
-                          <span className="popular-number">{i + 1}</span>
-                          <Link href={`/article/${a.id}`} className="popular-title">{truncateText(a.title, 80)}</Link>
-                        </div>
-                      ))}
-                  </div>
-              </div>
+                </article>
+              ))}
+            </div>
           </div>
+          
+          <div className="most-popular">
+            <h2 className="section-header">Most Popular</h2>
+            <div id="most-popular-container">
+              {mostPopular.map((a, i) => (
+                <div className="popular-item" key={`pop-${a.id}`}>
+                  <span className="popular-number">{i + 1}</span>
+                  <Link href={`/article/${a.id}`} className="popular-title">{truncateText(a.title, 80)}</Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
+      )}
 
       {/* 11. EXPLAINER SECTION */}
       <section className="explainer-section">

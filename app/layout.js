@@ -72,12 +72,6 @@ export default function RootLayout({ children }) {
               <div className="footer-col">
                 <Link href="/" className="logo" style={{fontSize: '2rem', marginBottom: '1rem', display: 'block'}}>ND<span style={{fontWeight: 400}}>News</span></Link>
                 <p>Your trusted source for breaking news, in-depth analysis, and exclusive coverage across the Asia-Pacific region.</p>
-                <div className="social-links">
-                  <a href="https://x.com/nussadigital" aria-label="X (Twitter)">𝕏</a>
-                  <a href="https://facebook.com/nussadigital" aria-label="Facebook">f</a>
-                  <a href="https://youtube.com/nussadigital" aria-label="YouTube">▶</a>
-                  <a href="https://instagram.com/nussadigital" aria-label="Instagram">📸</a>
-                </div>
               </div>
 
               <div className="footer-col">
@@ -98,8 +92,8 @@ export default function RootLayout({ children }) {
               <div className="footer-col">
                 <h3>Network</h3>
                 <Link href="/category/opinion">Opinions & Analysis</Link>
-                <a href="#">Newsletters</a>
-                <a href="#">Podcasts</a>
+                <Link href="/category/economy">Economy Insights</Link>
+                <Link href="/category/sport">Sport Highlights</Link>
               </div>
             </div>
           </div>
