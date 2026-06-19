@@ -148,7 +148,9 @@ export default async function ArticlePage({ params }) {
                     <div className="article-author-avatar">{getInitials(article.author)}</div>
                     <div>
                       <span className="article-author-name">{article.author}</span>
+                      <span style={{ margin: '0 8px', color: '#9ca3af' }}>&bull;</span>
                       <span className="article-date">{formatDate(article.date)}</span>
+                      <span style={{ margin: '0 8px', color: '#9ca3af' }}>&bull;</span>
                       <span className="article-read-time">{article.readTime || '5 min read'}</span>
                     </div>
                   </div>
