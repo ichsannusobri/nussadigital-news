@@ -487,15 +487,18 @@
                 <button class="sidebar-btn" onclick="showTab('analytics')" id="tab-analytics">📊 Analytics</button>
                 <button class="sidebar-btn" onclick="showTab('deploy')" id="tab-deploy">🚀 Deploy (Webhook)</button>
             </nav>
-        </aside>
+        </aside>
 
         <main class="dashboard-main">
 
             <!-- ARTICLES TAB -->
             <div class="tab-content active" id="panel-articles">
                 <div class="panel-header">
-                    <h2>All Articles</h2>
-                    <button class="btn-primary" onclick="showTab('editor'); resetForm()">+ New Article</button>
+                    <h2>Manage Articles</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-secondary" onclick="triggerDeploy() && alert('Perintah push dikirim ke Cloudflare. Tunggu 1-2 menit!')" style="background-color: #10b981; color: white; border-color: #10b981;">🚀 Push Live Now</button>
+                        <button class="btn-primary" onclick="showTab('editor'); resetForm()">+ New Article</button>
+                    </div>
                 </div>
                 <div class="articles-table" id="articles-table">
                     <!-- JS fills: table rows with title, category, date, actions (edit/delete) -->
@@ -691,13 +694,18 @@
 
         async function triggerDeploy() {
             if (!currentWebhookUrl) await loadWebhook();
-            if (!currentWebhookUrl) return;
+            if (!currentWebhookUrl) {
+                console.log("No webhook URL configured.");
+                return false;
+            }
             try {
+                // Send the POST request in the background
                 fetch(currentWebhookUrl, { method: 'POST', mode: 'no-cors' });
                 console.log("Triggered Cloudflare deploy hook.");
-                alert("Berhasil disimpan! Memerintahkan Cloudflare untuk mem-build ulang situs. Mohon tunggu sekitar 1-2 menit hingga tayang di halaman utama.");
+                return true;
             } catch (e) {
                 console.error("Failed to trigger deploy:", e);
+                return false;
             }
         }
 
@@ -722,7 +730,7 @@
             document.getElementById('editor-title').textContent = 'Create New Article';
         }
 
-        function handleSave(e) {
+        async function handleSave(e) {
             e.preventDefault();
             const id = document.getElementById('article-id').value;
             const article = {
@@ -742,10 +750,20 @@
                 readTime: Math.max(2, Math.ceil(document.getElementById('form-content').value.split(' ').length / 200)) + ' min read',
                 authorAvatar: null
             };
-            saveArticle(article);
-            triggerDeploy();
+            
+            // Save to Firebase first
+            await saveArticle(article);
+            
+            // Trigger Cloudflare Webhook safely
+            const deployed = await triggerDeploy();
+            
             showTab('articles');
-            alert(id ? 'Article updated!' : 'Article created!');
+            
+            if (deployed) {
+                alert((id ? 'Article updated!' : 'Article created!') + '\n\nMemerintahkan Cloudflare untuk mem-build ulang situs. Tunggu 1-2 menit hingga tayang.');
+            } else {
+                alert((id ? 'Article updated!' : 'Article created!') + '\n\nPERINGATAN: Webhook URL belum diatur! Artikel tersimpan tapi tidak akan tayang di portal sampai Anda men-deploy secara manual.');
+            }
         }
 
         function editArticle(id) {
