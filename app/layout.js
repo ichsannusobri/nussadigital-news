@@ -1,5 +1,6 @@
 import './globals.css';
 import Link from 'next/link';
+import ThemeToggle from '../components/ThemeToggle';
 
 export const metadata = {
   metadataBase: new URL('https://nussadigital.co.id'),
@@ -43,7 +44,26 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var localTheme = window.localStorage.getItem('theme');
+                  var sysTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (localTheme === 'dark' || (!localTheme && sysTheme)) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                  } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body>
         {/* SEO H1 Tag */}
         <h1 className="sr-only">NDNews - Latest APAC Economy, Finance & Sports News</h1>
@@ -66,6 +86,7 @@ export default function RootLayout({ children }) {
               <Link href="/category/opinion">Opinion</Link>
             </nav>
             <div className="header-right">
+              <ThemeToggle />
               <button className="search-btn" aria-label="Search">🔍</button>
             </div>
           </div>

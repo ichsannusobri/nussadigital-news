@@ -25,6 +25,20 @@
   --max-width: 1320px;
 }
 
+[data-theme='dark'] {
+  --clr-primary: #D97706;
+  --clr-primary-dark: #B45309;
+  --clr-primary-light: #F59E0B;
+  --clr-bg: #121212;
+  --clr-bg-secondary: #1E1E1E;
+  --clr-bg-tertiary: #2D2D2D;
+  --clr-text: #E5E5E5;
+  --clr-text-secondary: #A3A3A3;
+  --clr-border: #333333;
+  --clr-footer-bg: #0A0A0A;
+  --clr-footer-text: #9CA3AF;
+}
+
 /* ---------- Reset & Base ---------- */
 *,
 *::before,
@@ -271,7 +285,8 @@ ul, ol {
   border: none;
   outline: none;
   font-family: var(--ff-body);
-  background: #fff;
+  background: var(--clr-bg);
+  color: var(--clr-text);
 }
 
 .search-form button {
@@ -423,12 +438,12 @@ ul, ol {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background-color: #fff;
+  background-color: var(--clr-bg);
   border: 2px solid #cc0000;
 }
 
 .alj-timeline-item .alj-time {
-  color: #666;
+  color: var(--clr-text-secondary);
   margin-right: 8px;
 }
 
@@ -529,7 +544,7 @@ ul, ol {
   padding-left: 0.75rem;
   border-left: 3px solid #f90;
   margin-bottom: 0.5rem;
-  color: #666;
+  color: var(--clr-text-secondary);
 }
 
 .alj-sidebar-item {
