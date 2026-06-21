@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { collection, getDocs, query, orderBy, doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { DEFAULT_ARTICLES, TRENDING_TOPICS } from '../lib/data';
+import TimeAgo from '../components/TimeAgo';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -114,7 +115,7 @@ export default async function HomePage() {
                 {articles.slice(1, 5).map((a, i) => (
                   <li className="alj-timeline-item" key={`tl-${a.id}`}>
                     <span className="alj-bullet"></span>
-                    <span className="alj-time">{['4m ago', '14m ago', '19m ago', '34m ago'][i]}:</span>
+                    <TimeAgo date={a.date} />
                     <Link href={`/article/${a.id}`}>{a.title}</Link>
                   </li>
                 ))}
