@@ -11,6 +11,13 @@ export const metadata = {
   alternates: {
     canonical: '/',
   },
+  robots: {
+    index: true,
+    follow: true,
+    'max-image-preview': 'large',
+    'max-snippet': -1,
+    'max-video-preview': -1,
+  },
   openGraph: {
     title: 'NDNews - APAC Economy, Finance & Sports News',
     description: 'NDNews delivers the latest breaking news, in-depth analysis and coverage of economy, finance and sports across the Asia-Pacific region.',
