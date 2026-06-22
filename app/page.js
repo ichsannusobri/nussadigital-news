@@ -3,6 +3,7 @@ import { collection, getDocs, query, orderBy, doc, getDoc } from 'firebase/fires
 import { db } from '../lib/firebase';
 import { DEFAULT_ARTICLES, TRENDING_TOPICS } from '../lib/data';
 import TimeAgo from '../components/TimeAgo';
+import FeaturedPaginated from '../components/FeaturedPaginated';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -366,20 +367,7 @@ export default async function HomePage() {
       <section className="featured-section">
           <div className="section-wrapper">
               <h2 className="section-header">Featured</h2>
-              <div className="featured-grid" id="featured-container">
-                  {bottomFeatured.map(a => (
-                    <div className="featured-card" key={`feat-${a.id}`}>
-                      <Link href={`/article/${a.id}`}>
-                        <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
-                        <div className="card-body">
-                          <span className="card-category">{a.category.toUpperCase()}</span>
-                          <h3 className="card-title">{a.title}</h3>
-                          <span className="card-meta">{a.author} &bull; {formatDate(a.date)}</span>
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
-              </div>
+              <FeaturedPaginated articles={bottomFeatured} />
           </div>
       </section>
     </main>
