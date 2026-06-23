@@ -631,9 +631,16 @@
                         <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 16px;">
                             Jika Webhook gagal memicu Cloudflare (misalnya karena pengaturan cabang tidak cocok), klik tombol di bawah ini. Anda akan diarahkan ke GitHub untuk membuat file <code>trigger.txt</code>. <b>Cukup klik tombol hijau "Commit changes" di GitHub</b>, dan Cloudflare akan otomatis terpicu!
                         </p>
-                        <a href="https://github.com/ichsannusobri/nussadigital-news/new/main?filename=trigger.txt&message=Trigger+Build+from+Dashboard" target="_blank" style="display: inline-block; padding: 12px 20px; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">
+                        <button onclick="triggerManualDeploy()" style="display: inline-block; padding: 12px 20px; background: #ef4444; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
                             ⚙️ Pemicu Manual (Via GitHub)
-                        </a>
+                        </button>
+                        <script>
+                            function triggerManualDeploy() {
+                                const uniqueFilename = 'trigger-' + Date.now() + '.txt';
+                                const url = 'https://github.com/ichsannusobri/nussadigital-news/new/main?filename=' + uniqueFilename + '&message=Trigger+Build+from+Dashboard';
+                                window.open(url, '_blank');
+                            }
+                        </script>
                     </div>
 
                     <div class="stat-card" style="text-align: left; margin-top: 16px;">
