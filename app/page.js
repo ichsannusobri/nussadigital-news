@@ -62,7 +62,10 @@ export default async function HomePage() {
     featured[2] || articles[2],
     featured[3] || articles[3]
   ].filter(Boolean);
-  const sidebarArticles = articles.slice(4, 9);
+  
+  const pinnedArticles = articles.filter(a => a.isPinned);
+  const unpinnedSidebar = articles.filter(a => !a.isPinned).slice(4, 9);
+  const sidebarArticles = [...pinnedArticles, ...unpinnedSidebar];
   
   // Latest News (skip first 2 logically, but let's just use recent ones)
   const latestArticles = articles.slice(2, 12);

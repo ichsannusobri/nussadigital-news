@@ -567,6 +567,9 @@
                         <div class="form-group checkbox-group">
                             <label><input type="checkbox" id="form-live"> Live Updates</label>
                         </div>
+                        <div class="form-group checkbox-group">
+                            <label><input type="checkbox" id="form-pinned" title="Artikel akan selalu tampil di Sidebar MUST READ"> 📌 Pilihan Editor</label>
+                        </div>
                     </div>
 
                     <div class="form-actions">
@@ -636,8 +639,8 @@
                         </button>
                         <script>
                             function triggerManualDeploy() {
-                                const uniqueFilename = 'trigger-' + Date.now() + '.txt';
-                                const url = 'https://github.com/ichsannusobri/nussadigital-news/new/main?filename=' + uniqueFilename + '&message=Trigger+Build+from+Dashboard';
+                                // Solusi Permanen: Selalu edit file yang sama agar tidak menumpuk file sampah
+                                const url = 'https://github.com/ichsannusobri/nussadigital-news/edit/main/deploy.txt';
                                 window.open(url, '_blank');
                             }
                         </script>
@@ -762,6 +765,7 @@
                 tags: document.getElementById('form-tags').value.split(',').map(t => t.trim()).filter(Boolean),
                 isBreaking: document.getElementById('form-breaking').checked,
                 isFeatured: document.getElementById('form-featured').checked,
+                isPinned: document.getElementById('form-pinned').checked,
                 isLive: document.getElementById('form-live').checked,
                 date: id ? (getArticleById(id)?.date || new Date().toISOString()) : new Date().toISOString(),
                 views: id ? (getArticleById(id)?.views || 0) : 0,
@@ -797,6 +801,7 @@
             document.getElementById('form-tags').value = (article.tags || []).join(', ');
             document.getElementById('form-breaking').checked = article.isBreaking || false;
             document.getElementById('form-featured').checked = article.isFeatured || false;
+            document.getElementById('form-pinned').checked = article.isPinned || false;
             document.getElementById('form-live').checked = article.isLive || false;
             document.getElementById('editor-title').textContent = 'Edit Article';
             showTab('editor');
@@ -809,7 +814,6 @@
                 renderArticlesTable();
             }
         }
-
         function renderArticlesTable() {
             const articles = loadArticles();
             const container = document.getElementById('articles-table');
