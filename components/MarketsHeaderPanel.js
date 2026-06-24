@@ -8,8 +8,9 @@ export default function MarketsHeaderPanel({ latestNews = [] }) {
   const gaugeRef = useRef();
 
   useEffect(() => {
-    // Mini Overview Widget
-    if (overviewRef.current && overviewRef.current.children.length === 1) {
+    // 1. Mini Overview Widget
+    if (overviewRef.current) {
+      overviewRef.current.innerHTML = '<div class="tradingview-widget-container__widget"></div>';
       const script = document.createElement("script");
       script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
       script.type = "text/javascript";
@@ -21,7 +22,7 @@ export default function MarketsHeaderPanel({ latestNews = [] }) {
           "height": "100%",
           "locale": "en",
           "dateRange": "12M",
-          "colorTheme": "dark",
+          "colorTheme": "light",
           "isTransparent": true,
           "autosize": true,
           "largeChartUrl": ""
@@ -29,8 +30,9 @@ export default function MarketsHeaderPanel({ latestNews = [] }) {
       overviewRef.current.appendChild(script);
     }
 
-    // Technical Analysis Gauge Widget
-    if (gaugeRef.current && gaugeRef.current.children.length === 1) {
+    // 2. Technical Analysis Gauge Widget
+    if (gaugeRef.current) {
+      gaugeRef.current.innerHTML = '<div class="tradingview-widget-container__widget"></div>';
       const script2 = document.createElement("script");
       script2.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
       script2.type = "text/javascript";
@@ -45,7 +47,7 @@ export default function MarketsHeaderPanel({ latestNews = [] }) {
           "showIntervalTabs": true,
           "displayMode": "single",
           "locale": "en",
-          "colorTheme": "dark"
+          "colorTheme": "light"
         }`;
       gaugeRef.current.appendChild(script2);
     }
@@ -57,17 +59,13 @@ export default function MarketsHeaderPanel({ latestNews = [] }) {
       {/* 1. Markets Overview */}
       <div className="markets-header-col">
         <h3 className="markets-header-title">Markets <span style={{fontSize: '14px'}}>→</span></h3>
-        <div className="tradingview-widget-container" ref={overviewRef} style={{ height: '220px' }}>
-          <div className="tradingview-widget-container__widget"></div>
-        </div>
+        <div className="tradingview-widget-container" ref={overviewRef} style={{ height: '220px', width: '100%' }}></div>
       </div>
 
       {/* 2. Fear & Greed (Gauge) */}
       <div className="markets-header-col markets-header-center">
         <h3 className="markets-header-title">Market Sentiment <span style={{fontSize: '14px'}}>→</span></h3>
-        <div className="tradingview-widget-container" ref={gaugeRef} style={{ height: '220px' }}>
-          <div className="tradingview-widget-container__widget"></div>
-        </div>
+        <div className="tradingview-widget-container" ref={gaugeRef} style={{ height: '220px', width: '100%' }}></div>
       </div>
 
       {/* 3. Latest Market News */}

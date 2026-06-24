@@ -6,14 +6,15 @@ export default function MarketMovers() {
   const container = useRef();
 
   useEffect(() => {
-    if (container.current && container.current.children.length === 1) {
+    if (container.current) {
+      container.current.innerHTML = '<div class="tradingview-widget-container__widget"></div>';
       const script = document.createElement("script");
       script.src = "https://s3.tradingview.com/external-embedding/embed-widget-hotlists.js";
       script.type = "text/javascript";
       script.async = true;
       script.innerHTML = `
         {
-          "colorTheme": "dark",
+          "colorTheme": "light",
           "dateRange": "12M",
           "exchange": "US",
           "showChart": true,
@@ -32,9 +33,7 @@ export default function MarketMovers() {
   return (
     <div className="market-movers-widget">
       <h3 className="markets-latest-header" style={{ marginBottom: '20px' }}>Market Movers <span>→</span></h3>
-      <div className="tradingview-widget-container" ref={container}>
-        <div className="tradingview-widget-container__widget"></div>
-      </div>
+      <div className="tradingview-widget-container" ref={container}></div>
     </div>
   );
 }
