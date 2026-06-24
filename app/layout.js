@@ -86,6 +86,7 @@ export default function RootLayout({ children }) {
             </div>
             <nav className="main-nav">
               <Link href="/">Home</Link>
+              <Link href="/markets" style={{ color: 'var(--brand-primary)', fontWeight: 'bold' }}>📈 MARKETS</Link>
               <Link href="/category/apac">APAC</Link>
               <Link href="/category/economy">Economy</Link>
               <Link href="/category/finance">Finance</Link>
