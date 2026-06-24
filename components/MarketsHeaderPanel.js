@@ -1,85 +1,99 @@
-'use client';
-
-import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
-export default function MarketsHeaderPanel({ latestNews = [] }) {
-  const overviewRef = useRef();
-  const gaugeRef = useRef();
-
-  useEffect(() => {
-    // 1. Market Overview Widget (DOW, S&P 500, NASDAQ)
-    if (overviewRef.current && overviewRef.current.children.length === 1) {
-      const script = document.createElement("script");
-      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
-      script.type = "text/javascript";
-      script.async = true;
-      script.innerHTML = `
+const overviewHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>body { margin: 0; overflow: hidden; background: transparent; }</style>
+</head>
+<body>
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+    {
+      "colorTheme": "light",
+      "dateRange": "12M",
+      "showChart": false,
+      "locale": "en",
+      "largeChartUrl": "",
+      "isTransparent": true,
+      "showSymbolLogo": true,
+      "showFloatingTooltip": false,
+      "width": "100%",
+      "height": "100%",
+      "tabs": [
         {
-          "colorTheme": "light",
-          "dateRange": "12M",
-          "showChart": false,
-          "locale": "en",
-          "largeChartUrl": "",
-          "isTransparent": true,
-          "showSymbolLogo": true,
-          "showFloatingTooltip": false,
-          "width": "100%",
-          "height": "100%",
-          "tabs": [
-            {
-              "title": "Markets",
-              "symbols": [
-                { "s": "FOREXCOM:SPXUSD", "d": "S&P 500" },
-                { "s": "FOREXCOM:NSXUSD", "d": "NASDAQ" },
-                { "s": "FOREXCOM:DJI", "d": "DOW" }
-              ]
-            }
+          "title": "Markets",
+          "symbols": [
+            { "s": "FOREXCOM:SPXUSD", "d": "S&P 500" },
+            { "s": "FOREXCOM:NSXUSD", "d": "NASDAQ" },
+            { "s": "FOREXCOM:DJI", "d": "DOW 30" }
           ]
-        }`;
-      overviewRef.current.appendChild(script);
+        }
+      ]
     }
-  }, []);
+    </script>
+  </div>
+</body>
+</html>
+`;
 
-  useEffect(() => {
-    // 2. Technical Analysis Gauge Widget (Fear & Greed clone)
-    if (gaugeRef.current && gaugeRef.current.children.length === 1) {
-      const script2 = document.createElement("script");
-      script2.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
-      script2.type = "text/javascript";
-      script2.async = true;
-      script2.innerHTML = `
-        {
-          "interval": "1m",
-          "width": "100%",
-          "isTransparent": true,
-          "height": "100%",
-          "symbol": "NASDAQ:AAPL",
-          "showIntervalTabs": true,
-          "displayMode": "single",
-          "locale": "en",
-          "colorTheme": "light"
-        }`;
-      gaugeRef.current.appendChild(script2);
+const sentimentHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>body { margin: 0; overflow: hidden; background: transparent; }</style>
+</head>
+<body>
+  <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+    {
+      "interval": "1m",
+      "width": "100%",
+      "isTransparent": true,
+      "height": "100%",
+      "symbol": "NASDAQ:AAPL",
+      "showIntervalTabs": true,
+      "displayMode": "single",
+      "locale": "en",
+      "colorTheme": "light"
     }
-  }, []);
+    </script>
+  </div>
+</body>
+</html>
+`;
 
+export default function MarketsHeaderPanel({ latestNews = [] }) {
   return (
     <div className="markets-header-panel">
       
       {/* 1. Markets Overview */}
       <div className="markets-header-col">
         <h3 className="markets-header-title">Markets <span style={{fontSize: '14px'}}>→</span></h3>
-        <div className="tradingview-widget-container" ref={overviewRef} style={{ height: '220px', width: '100%' }}>
-          <div className="tradingview-widget-container__widget"></div>
+        <div style={{ height: '220px', width: '100%' }}>
+          <iframe 
+            srcDoc={overviewHtml} 
+            width="100%" 
+            height="100%" 
+            style={{ border: 'none' }}
+            title="Markets Overview"
+          />
         </div>
       </div>
 
       {/* 2. Fear & Greed (Gauge) */}
       <div className="markets-header-col markets-header-center">
         <h3 className="markets-header-title">Market Sentiment <span style={{fontSize: '14px'}}>→</span></h3>
-        <div className="tradingview-widget-container" ref={gaugeRef} style={{ height: '220px', width: '100%' }}>
-          <div className="tradingview-widget-container__widget"></div>
+        <div style={{ height: '220px', width: '100%' }}>
+          <iframe 
+            srcDoc={sentimentHtml} 
+            width="100%" 
+            height="100%" 
+            style={{ border: 'none' }}
+            title="Market Sentiment"
+          />
         </div>
       </div>
 
