@@ -37,80 +37,70 @@ export default async function MarketsPage() {
   );
 
   return (
-    <div className="markets-page" style={{ paddingTop: '20px' }}>
+    <div className="markets-page">
       
       {/* 1. Live Ticker Section */}
       <TradingViewTicker />
       
-      <div className="alj-container">
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '10px', color: 'var(--text-color)' }}>
+      <div className="markets-container">
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '20px', color: 'var(--clr-text)' }}>
           Markets & Finance
         </h1>
-        <p style={{ color: 'var(--text-muted)', marginBottom: '30px', fontSize: '1.1rem' }}>
-          Global market updates, investment strategies, and APAC economic insights.
-        </p>
 
-        {/* 2. Content Grid */}
-        <div className="alj-home-grid">
-          
-          {/* Main Column */}
-          <div className="alj-main-col">
-            <div className="alj-latest-grid">
-              {financeArticles.length > 0 ? financeArticles.map((article) => (
-                <Link href={`/article/${article.id}`} className="alj-card" key={article.id}>
-                  <div className="alj-card-img-wrapper" style={{ height: '200px' }}>
-                    <img src={article.image} alt={article.title} className="alj-card-img" />
-                    <span className="alj-card-category">{article.category}</span>
-                  </div>
-                  <div className="alj-card-content">
-                    <h3 className="alj-card-title">{article.title}</h3>
-                    <p className="alj-card-excerpt">{truncateText(article.excerpt, 120)}</p>
-                    <div className="alj-card-meta">
-                      <div className="alj-card-author">
-                        <div className="alj-card-avatar">{getInitials(article.author)}</div>
-                        <span>{article.author}</span>
-                      </div>
-                      <TimeAgo date={article.date} />
+        {/* Hero Section (70-30 Split) */}
+        {financeArticles.length > 0 ? (
+          <div className="markets-hero-grid">
+            
+            {/* Left: Main Featured Article */}
+            <div className="markets-hero-main">
+              <Link href={`/article/${financeArticles[0].id}`}>
+                <img src={financeArticles[0].image} alt={financeArticles[0].title} className="markets-main-img" />
+                <h2 className="markets-main-title">{financeArticles[0].title}</h2>
+                <p className="markets-main-excerpt">{truncateText(financeArticles[0].excerpt, 150)}</p>
+                <div className="markets-list-meta" style={{ marginTop: '10px' }}>
+                  {financeArticles[0].author} • <TimeAgo date={financeArticles[0].date} />
+                </div>
+              </Link>
+            </div>
+
+            {/* Right: Latest Market News List */}
+            <div className="markets-hero-right">
+              <h3 className="markets-latest-header">Latest Market News</h3>
+              <div className="markets-latest-list">
+                {financeArticles.slice(1, 6).map((article) => (
+                  <Link href={`/article/${article.id}`} className="markets-list-item" key={article.id}>
+                    <div>
+                      <h4>{article.title}</h4>
+                      <div className="markets-list-meta"><TimeAgo date={article.date} /></div>
                     </div>
-                  </div>
-                </Link>
-              )) : (
-                <div style={{ padding: '40px 0', color: 'var(--text-muted)' }}>
-                  No finance or economy articles found yet.
-                </div>
-              )}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Right Sidebar */}
-          <div className="alj-sidebar-col">
-            <div className="alj-sidebar-section">
-              <h4 className="alj-sidebar-header">HOT TOPICS</h4>
-              <Link href="/category/investment" className="alj-sidebar-item">
-                <span className="alj-sidebar-number">1</span>
-                <div className="alj-sidebar-text">
-                  <h5>Investment Strategies 2026</h5>
-                  <span className="alj-sidebar-meta">High Yield Returns</span>
-                </div>
-              </Link>
-              <Link href="/category/loans" className="alj-sidebar-item">
-                <span className="alj-sidebar-number">2</span>
-                <div className="alj-sidebar-text">
-                  <h5>SME Business Loans</h5>
-                  <span className="alj-sidebar-meta">APAC Credit Market</span>
-                </div>
-              </Link>
-              <Link href="/category/crypto" className="alj-sidebar-item">
-                <span className="alj-sidebar-number">3</span>
-                <div className="alj-sidebar-text">
-                  <h5>Crypto & Blockchain</h5>
-                  <span className="alj-sidebar-meta">Digital Assets</span>
-                </div>
-              </Link>
+          </div>
+        ) : (
+          <div style={{ padding: '40px 0', color: 'var(--clr-text-muted)' }}>
+            No finance or economy articles found yet.
+          </div>
+        )}
+
+        {/* Secondary Section: "What to watch" */}
+        {financeArticles.length > 6 && (
+          <div style={{ marginTop: '40px' }}>
+            <h3 className="markets-latest-header">What to watch</h3>
+            <div className="markets-secondary-grid">
+              {financeArticles.slice(6, 10).map((article) => (
+                <Link href={`/article/${article.id}`} className="markets-card-small" key={article.id}>
+                  <img src={article.image} alt={article.title} className="markets-card-img" />
+                  <h4>{article.title}</h4>
+                  <div className="markets-list-meta"><TimeAgo date={article.date} /></div>
+                </Link>
+              ))}
             </div>
           </div>
-          
-        </div>
+        )}
+
       </div>
     </div>
   );
