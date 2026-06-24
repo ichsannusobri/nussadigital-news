@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import TimeAgo from '../../components/TimeAgo';
-import TradingViewTicker from '../../components/TradingViewTicker';
+import MarketsHeaderPanel from '../../components/MarketsHeaderPanel';
+import MarketMovers from '../../components/MarketMovers';
 
 function getInitials(name) {
   if (!name) return '??';
@@ -39,13 +40,10 @@ export default async function MarketsPage() {
   return (
     <div className="markets-page">
       
-      {/* 1. Live Ticker Section */}
-      <TradingViewTicker />
+      {/* 1. CNN-Style Header Panel */}
+      <MarketsHeaderPanel latestNews={financeArticles} />
       
       <div className="markets-container">
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '20px', color: 'var(--clr-text)' }}>
-          Markets & Finance
-        </h1>
 
         {/* Hero Section (70-30 Split) */}
         {financeArticles.length > 0 ? (
@@ -63,19 +61,9 @@ export default async function MarketsPage() {
               </Link>
             </div>
 
-            {/* Right: Latest Market News List */}
+            {/* Right: Market Movers Widget */}
             <div className="markets-hero-right">
-              <h3 className="markets-latest-header">Latest Market News</h3>
-              <div className="markets-latest-list">
-                {financeArticles.slice(1, 6).map((article) => (
-                  <Link href={`/article/${article.id}`} className="markets-list-item" key={article.id}>
-                    <div>
-                      <h4>{article.title}</h4>
-                      <div className="markets-list-meta"><TimeAgo date={article.date} /></div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+              <MarketMovers />
             </div>
 
           </div>
