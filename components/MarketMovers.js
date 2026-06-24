@@ -4,54 +4,35 @@ import { useState, useEffect } from 'react';
 
 export default function MarketMovers() {
   const [movers, setMovers] = useState([
-    { symbol: 'BTC/USD', name: 'Bitcoin', price: '...', percent: '...', isUp: true },
-    { symbol: 'ETH/USD', name: 'Ethereum', price: '...', percent: '...', isUp: true },
-    { symbol: 'SOL/USD', name: 'Solana', price: '...', percent: '...', isUp: true },
-    { symbol: 'BNB/USD', name: 'BNB', price: '...', percent: '...', isUp: true },
-    { symbol: 'XRP/USD', name: 'XRP', price: '...', percent: '...', isUp: true }
+    { symbol: 'BTC/USD', name: 'Bitcoin', price: 64230.50, percent: 1.25, isUp: true },
+    { symbol: 'ETH/USD', name: 'Ethereum', price: 3490.10, percent: 0.85, isUp: true },
+    { symbol: 'SOL/USD', name: 'Solana', price: 135.20, percent: 2.10, isUp: true },
+    { symbol: 'BNB/USD', name: 'BNB', price: 585.60, percent: 0.50, isUp: false },
+    { symbol: 'XRP/USD', name: 'XRP', price: 0.4850, percent: 0.20, isUp: true }
   ]);
 
   useEffect(() => {
-    const fetchCrypto = async () => {
-      try {
-        const url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple&vs_currencies=usd&include_24hr_change=true';
-        const res = await fetch(url);
-        const data = await res.json();
+    // Simulasi Fluktuasi Live (Opsi B)
+    const interval = setInterval(() => {
+      setMovers(prev => prev.map(m => {
+        // Fluktuasi acak yang sangat halus
+        const fluctuation = (Math.random() - 0.5) * 0.002; 
+        const newPrice = m.price * (1 + fluctuation);
         
-        const mapData = [
-          { id: 'bitcoin', symbol: 'BTC/USD', name: 'Bitcoin' },
-          { id: 'ethereum', symbol: 'ETH/USD', name: 'Ethereum' },
-          { id: 'solana', symbol: 'SOL/USD', name: 'Solana' },
-          { id: 'binancecoin', symbol: 'BNB/USD', name: 'BNB' },
-          { id: 'ripple', symbol: 'XRP/USD', name: 'XRP' }
-        ];
+        // Sedikit ubah persentase
+        const percentShift = (Math.random() - 0.5) * 0.1;
+        let newPercent = m.percent + percentShift;
+        if (newPercent < 0) newPercent = Math.abs(newPercent);
 
-        const formatData = mapData.map(coin => {
-          const coinData = data[coin.id];
-          if (!coinData) return { ...coin, price: '...', percent: '...', isUp: true };
-          
-          const currentPrice = coinData.usd;
-          const percentChange = coinData.usd_24h_change;
+        return {
+          ...m,
+          price: newPrice,
+          percent: newPercent,
+          isUp: fluctuation >= 0 ? true : (Math.random() > 0.5 ? m.isUp : false)
+        };
+      }));
+    }, 2500); // Kedip setiap 2.5 detik
 
-          return {
-            symbol: coin.symbol,
-            name: coin.name,
-            price: currentPrice >= 1 ? currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : currentPrice.toFixed(4),
-            percent: Math.abs(percentChange).toFixed(2),
-            isUp: percentChange >= 0
-          };
-        });
-
-        // Sort by biggest % movers
-        formatData.sort((a, b) => parseFloat(b.percent) - parseFloat(a.percent));
-        setMovers(formatData);
-      } catch (err) {
-        console.error("Failed to fetch crypto movers", err);
-      }
-    };
-
-    fetchCrypto();
-    const interval = setInterval(fetchCrypto, 30000); // Live update every 30s
     return () => clearInterval(interval);
   }, []);
 
@@ -72,7 +53,9 @@ export default function MarketMovers() {
               <div style={{ fontSize: '12px', color: '#666' }}>{mover.name}</div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '14px' }}>${mover.price}</div>
+              <div style={{ fontWeight: 'bold', fontSize: '14px', transition: 'color 0.3s ease' }}>
+                ${mover.price >= 1 ? mover.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : mover.price.toFixed(4)}
+              </div>
               <div style={{ 
                 color: '#fff', 
                 backgroundColor: mover.isUp ? '#008000' : '#cc0000', 
@@ -81,9 +64,10 @@ export default function MarketMovers() {
                 padding: '2px 6px',
                 borderRadius: '3px',
                 marginTop: '4px',
-                display: 'inline-block'
+                display: 'inline-block',
+                transition: 'background-color 0.3s ease'
               }}>
-                {mover.isUp ? '+' : '-'}{mover.percent}%
+                {mover.isUp ? '+' : '-'}{mover.percent.toFixed(2)}%
               </div>
             </div>
           </div>
