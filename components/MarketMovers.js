@@ -6,7 +6,8 @@ function MarketMovers() {
   const container = useRef();
 
   useEffect(() => {
-    if (container.current && container.current.children.length === 0) {
+    if (container.current) {
+      container.current.innerHTML = ''; // Bersihkan kontainer
       const script = document.createElement("script");
       script.src = "https://s3.tradingview.com/external-embedding/embed-widget-hotlists.js";
       script.type = "text/javascript";
@@ -22,7 +23,7 @@ function MarketMovers() {
         "showSymbolLogo": false,
         "showPrice": false,
         "width": "100%",
-        "height": "400"
+        "height": "100%"
       });
       container.current.appendChild(script);
     }
@@ -32,7 +33,7 @@ function MarketMovers() {
     <div className="market-movers-widget">
       <h3 className="markets-latest-header" style={{ marginBottom: '20px' }}>Market Movers <span>→</span></h3>
       <div className="tradingview-widget-container" style={{ height: '400px', width: '100%' }}>
-        <div className="tradingview-widget-container__widget" ref={container}></div>
+        <div className="tradingview-widget-container__widget" style={{ height: '100%', width: '100%' }} ref={container}></div>
       </div>
     </div>
   );

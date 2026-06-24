@@ -8,30 +8,43 @@ function MarketsHeaderPanel({ latestNews = [] }) {
   const gaugeRef = useRef();
 
   useEffect(() => {
-    // 1. Mini Overview Widget
-    if (overviewRef.current && overviewRef.current.children.length === 0) {
+    // 1. Market Overview Widget (DOW, S&P 500, NASDAQ)
+    if (overviewRef.current) {
+      overviewRef.current.innerHTML = ''; // Bersihkan kontainer
       const script = document.createElement("script");
-      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js";
       script.type = "text/javascript";
       script.async = true;
       script.innerHTML = JSON.stringify({
-        "symbol": "FOREXCOM:SPXUSD",
+        "colorTheme": "light",
+        "dateRange": "12M",
+        "showChart": false,
+        "locale": "en",
+        "largeChartUrl": "",
+        "isTransparent": true,
+        "showSymbolLogo": true,
+        "showFloatingTooltip": false,
         "width": "100%",
         "height": "100%",
-        "locale": "en",
-        "dateRange": "12M",
-        "colorTheme": "light",
-        "isTransparent": true,
-        "autosize": true,
-        "largeChartUrl": ""
+        "tabs": [
+          {
+            "title": "Markets",
+            "symbols": [
+              { "s": "FOREXCOM:SPXUSD", "d": "S&P 500" },
+              { "s": "FOREXCOM:NSXUSD", "d": "NASDAQ" },
+              { "s": "FOREXCOM:DJI", "d": "DOW" }
+            ]
+          }
+        ]
       });
       overviewRef.current.appendChild(script);
     }
   }, []);
 
   useEffect(() => {
-    // 2. Technical Analysis Gauge Widget
-    if (gaugeRef.current && gaugeRef.current.children.length === 0) {
+    // 2. Technical Analysis Gauge Widget (Fear & Greed clone)
+    if (gaugeRef.current) {
+      gaugeRef.current.innerHTML = ''; // Bersihkan kontainer
       const script2 = document.createElement("script");
       script2.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
       script2.type = "text/javascript";
@@ -58,7 +71,7 @@ function MarketsHeaderPanel({ latestNews = [] }) {
       <div className="markets-header-col">
         <h3 className="markets-header-title">Markets <span style={{fontSize: '14px'}}>→</span></h3>
         <div className="tradingview-widget-container" style={{ height: '220px', width: '100%' }}>
-          <div className="tradingview-widget-container__widget" ref={overviewRef}></div>
+          <div className="tradingview-widget-container__widget" style={{ height: '100%', width: '100%' }} ref={overviewRef}></div>
         </div>
       </div>
 
@@ -66,7 +79,7 @@ function MarketsHeaderPanel({ latestNews = [] }) {
       <div className="markets-header-col markets-header-center">
         <h3 className="markets-header-title">Market Sentiment <span style={{fontSize: '14px'}}>→</span></h3>
         <div className="tradingview-widget-container" style={{ height: '220px', width: '100%' }}>
-          <div className="tradingview-widget-container__widget" ref={gaugeRef}></div>
+          <div className="tradingview-widget-container__widget" style={{ height: '100%', width: '100%' }} ref={gaugeRef}></div>
         </div>
       </div>
 
