@@ -11,7 +11,7 @@ export default async function sitemap() {
     articles.push({ id: doc.id, ...doc.data() });
   });
 
-  const articleUrls = articles.map(article => ({
+  const articleUrls = articles.filter(a => a.id).map(article => ({
     url: `${baseUrl}/article/${article.id}`,
     lastModified: article.createdAt ? new Date(article.createdAt) : new Date(),
     changeFrequency: 'weekly',

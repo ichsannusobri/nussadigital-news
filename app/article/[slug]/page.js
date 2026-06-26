@@ -54,26 +54,34 @@ export async function generateMetadata({ params }) {
     return { title: 'Article Not Found - NDNews' };
   }
 
+  const rawTitle = `${article.title} - NDNews`;
+  const seoTitle = rawTitle.length > 60 ? rawTitle.substring(0, 57) + '...' : rawTitle;
+  const seoDesc = article.excerpt && article.excerpt.length > 155 ? article.excerpt.substring(0, 152) + '...' : article.excerpt;
+  const canonicalUrl = `https://nussadigital.co.id/article/${params.slug}`;
+
   return {
-    title: `${article.title} — NDNews`,
-    description: article.excerpt,
+    title: seoTitle,
+    description: seoDesc,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
-      title: `${article.title} - NDNews`,
-      description: article.excerpt,
-      url: `https://nussadigital.co.id/article/${params.slug}`,
+      title: seoTitle,
+      description: seoDesc,
+      url: canonicalUrl,
       images: [
         {
           url: article.image,
           width: 800,
           height: 500,
-          alt: article.title,
+          alt: seoTitle,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: article.title,
-      description: article.excerpt,
+      title: seoTitle,
+      description: seoDesc,
       images: [article.image],
     },
   };

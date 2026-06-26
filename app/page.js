@@ -24,6 +24,14 @@ function getInitials(name) {
   return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
 
+export const metadata = {
+  title: 'NDNews - Breaking News, APAC Economy, Finance & Sports',
+  description: 'Your trusted source for the latest news in business, economy, and sports across the Asia-Pacific region.',
+  alternates: {
+    canonical: 'https://nussadigital.co.id',
+  },
+};
+
 export default async function HomePage() {
   const q = query(collection(db, "articles"), orderBy("date", "desc"));
   const querySnapshot = await getDocs(q);

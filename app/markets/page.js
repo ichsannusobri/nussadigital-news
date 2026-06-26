@@ -21,6 +21,9 @@ function truncateText(text, max) {
 export const metadata = {
   title: 'Markets & Finance - NDNews',
   description: 'Live global market data, personal finance insights, and investment strategies across the Asia-Pacific region.',
+  alternates: {
+    canonical: 'https://nussadigital.co.id/markets',
+  },
 };
 
 export default async function MarketsPage() {

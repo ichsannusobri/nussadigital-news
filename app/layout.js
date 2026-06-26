@@ -72,8 +72,8 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        {/* SEO H1 Tag */}
-        <h1 className="sr-only">NDNews - Latest APAC Economy, Finance & Sports News</h1>
+        {/* SR-only Site Title */}
+        <span className="sr-only">NDNews - Latest APAC Economy, Finance & Sports News</span>
 
         <header className="main-header">
           <div className="header-container">
