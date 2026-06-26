@@ -24,6 +24,11 @@ export const metadata = {
   alternates: {
     canonical: 'https://nussadigital.co.id/markets',
   },
+  openGraph: {
+    title: 'Markets & Finance - NDNews',
+    description: 'Live global market data, personal finance insights, and investment strategies across the Asia-Pacific region.',
+    url: 'https://nussadigital.co.id/markets',
+  }
 };
 
 export default async function MarketsPage() {
@@ -42,6 +47,7 @@ export default async function MarketsPage() {
 
   return (
     <div className="markets-page">
+      <h1 className="sr-only">Markets & Finance News</h1>
       
       {/* 1. CNN-Style Header Panel */}
       <MarketsHeaderPanel latestNews={financeArticles} />

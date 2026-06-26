@@ -99,7 +99,9 @@ export default async function HomePage() {
   const bottomFeatured = featured.length > 0 ? featured : articles.slice(0, 4);
 
   return (
-    <main>
+    <main className="home-page">
+      <h1 className="sr-only">NDNews - Latest APAC Economy, Finance & Sports News</h1>
+
       {/* 2. TRENDING BAR */}
       <div className="trending-bar">
         <div className="trending-container">

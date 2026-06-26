@@ -66,6 +66,8 @@ export async function generateMetadata({ params }) {
       canonical: canonicalUrl,
     },
     openGraph: {
+      type: 'article',
+      siteName: 'NDNews',
       title: seoTitle,
       description: seoDesc,
       url: canonicalUrl,
