@@ -187,7 +187,7 @@ export default async function ArticlePage({ params }) {
 
                   <div className="article-tags">
                     {(article.tags || []).map(tag => (
-                      <Link href={`/category.html?search=${encodeURIComponent(tag)}`} className="article-tag" key={tag}>#{tag}</Link>
+                      <span className="article-tag" key={tag}>#{tag}</span>
                     ))}
                   </div>
 
