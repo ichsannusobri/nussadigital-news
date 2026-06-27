@@ -34,13 +34,19 @@ export async function generateStaticParams() {
 // Unique Metadata per Category
 export function generateMetadata({ params }) {
   const catName = params.slug.charAt(0).toUpperCase() + params.slug.slice(1);
+  const canonicalUrl = `https://nussadigital.co.id/category/${params.slug}`;
   return {
     title: `${catName} News - Latest Updates & Analysis - NDNews`,
     description: `Browse the latest breaking news, in-depth analysis, and expert insights on ${catName} across the Asia-Pacific region.`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
+      type: 'website',
+      siteName: 'NDNews',
       title: `${catName} News - NDNews`,
       description: `Read the latest ${catName} news from the Asia-Pacific.`,
-      url: `https://nussadigital.co.id/category/${params.slug}`
+      url: canonicalUrl
     }
   };
 }

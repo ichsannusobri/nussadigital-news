@@ -1,6 +1,9 @@
 export const metadata = {
   title: 'Contact Us - NDNews',
-  description: 'Get in touch with the NDNews editorial team for inquiries, press releases, or feedback.',
+  description: 'Get in touch with the NDNews editorial team, report issues, or inquire about advertising and partnerships.',
+  alternates: {
+    canonical: 'https://nussadigital.co.id/contact',
+  },
 };
 
 export default function ContactPage() {

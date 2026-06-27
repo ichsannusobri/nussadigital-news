@@ -1,6 +1,9 @@
 export const metadata = {
-  title: 'Terms of Use - NDNews',
-  description: 'Terms of Use and Conditions for accessing and using NDNews.',
+  title: 'Terms of Service - NDNews',
+  description: 'Terms of Service and user agreements for accessing and using the NDNews website.',
+  alternates: {
+    canonical: 'https://nussadigital.co.id/terms',
+  },
 };
 
 export default function TermsPage() {

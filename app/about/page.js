@@ -1,6 +1,9 @@
 export const metadata = {
   title: 'About Us - NDNews',
   description: 'Learn about NDNews, our editorial mission, and our coverage of Economy, Finance, and Sports in the Asia-Pacific region.',
+  alternates: {
+    canonical: 'https://nussadigital.co.id/about',
+  },
 };
 
 export default function AboutPage() {

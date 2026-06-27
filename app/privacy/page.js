@@ -1,6 +1,9 @@
 export const metadata = {
   title: 'Privacy Policy - NDNews',
-  description: 'Privacy Policy describing how NDNews collects, uses, and protects your data.',
+  description: 'Read the privacy policy of NDNews to understand how we collect, use, and protect your data.',
+  alternates: {
+    canonical: 'https://nussadigital.co.id/privacy',
+  },
 };
 
 export default function PrivacyPage() {
