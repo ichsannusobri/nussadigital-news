@@ -3,7 +3,7 @@ import { collection, getDocs, query, orderBy, doc, getDoc, limit } from 'firebas
 import { db } from '../lib/firebase';
 import { DEFAULT_ARTICLES, TRENDING_TOPICS } from '../lib/data';
 import TimeAgo from '../components/TimeAgo';
-import FeaturedPaginated from '../components/FeaturedPaginated';
+import ClientNewsFeed from '../components/ClientNewsFeed';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -272,29 +272,6 @@ export default async function HomePage() {
           </div>
       </section>
 
-      {/* 8. STORY CAROUSEL */}
-      <section className="story-carousel-section">
-          <div className="section-wrapper">
-              <h2 className="section-header">Stories</h2>
-              <div className="carousel-wrapper">
-                  <button className="carousel-btn carousel-prev">‹</button>
-                  <div className="carousel-track" id="story-carousel-container">
-                      {carouselArticles.map((a, i) => (
-                        <div className="story-card" key={`story-${a.id}`}>
-                          <Link href={`/article/${a.id}`}>
-                            <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
-                            <div className="story-overlay">
-                              <span className="story-title">{truncateText(a.title, 50)}</span>
-                            </div>
-                          </Link>
-                        </div>
-                      ))}
-                  </div>
-                  <button className="carousel-btn carousel-next">›</button>
-              </div>
-          </div>
-      </section>
-
       {/* 9. AD BANNER */}
       <div className="ad-container ad-leaderboard">
           <span>Advertisement</span>
@@ -310,7 +287,7 @@ export default async function HomePage() {
               {sportHero && (
                 <div className="sport-hero">
                   <Link href={`/article/${sportHero.id}`}>
-                    <img src={sportHero.image} alt={sportHero.title} loading="lazy" decoding="async" width={800} height={500} />
+                    <img src={sportHero.image} alt={sportHero.title} fetchpriority="high" loading="eager" decoding="sync" width={800} height={500} />
                     <div className="sport-overlay">
                       <span className="sport-category">{sportHero.category.toUpperCase()}</span>
                       <h3 className="sport-title">{sportHero.title}</h3>
@@ -376,11 +353,11 @@ export default async function HomePage() {
           </div>
       </section>
 
-      {/* 13. FEATURED SECTION */}
+      {/* 13. MORE NEWS SECTION */}
       <section className="featured-section">
           <div className="section-wrapper">
-              <h2 className="section-header">Featured</h2>
-              <FeaturedPaginated articles={bottomFeatured} />
+              <h2 className="section-header">More News</h2>
+              <ClientNewsFeed lastArticleDate={articles.length > 0 ? articles[articles.length - 1].date : new Date().toISOString()} />
           </div>
       </section>
     </main>
