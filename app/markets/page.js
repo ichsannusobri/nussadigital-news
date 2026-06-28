@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import TimeAgo from '../../components/TimeAgo';
 import MarketsHeaderPanel from '../../components/MarketsHeaderPanel';
@@ -32,7 +32,7 @@ export const metadata = {
 };
 
 export default async function MarketsPage() {
-  const q = query(collection(db, "articles"), orderBy("date", "desc"));
+  const q = query(collection(db, "articles"), orderBy("date", "desc"), limit(25));
   const querySnapshot = await getDocs(q);
   
   let allArticles = [];

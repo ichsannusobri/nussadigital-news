@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, doc, getDoc, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { DEFAULT_ARTICLES, TRENDING_TOPICS } from '../lib/data';
 import TimeAgo from '../components/TimeAgo';
@@ -33,7 +33,7 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const q = query(collection(db, "articles"), orderBy("date", "desc"));
+  const q = query(collection(db, "articles"), orderBy("date", "desc"), limit(25));
   const querySnapshot = await getDocs(q);
   let articles = [];
   querySnapshot.forEach((doc) => {
@@ -120,7 +120,7 @@ export default async function HomePage() {
           {mainArticle && (
             <div className="alj-main-col">
               <Link href={`/article/${mainArticle.id}`} className="alj-main-image-wrapper">
-                <img src={mainArticle.image} alt={mainArticle.title} loading="lazy" width={800} height={500} />
+                <img src={mainArticle.image} alt={mainArticle.title} loading="lazy" decoding="async" width={800} height={500} />
                 <div className="alj-main-title-box">
                   <h2>{mainArticle.title}</h2>
                 </div>
@@ -141,7 +141,7 @@ export default async function HomePage() {
             <div className="alj-mid-col">
               <div className="alj-mid-top">
                 <Link href={`/article/${midArticles[0].id}`}>
-                  <img src={midArticles[0].image} alt={midArticles[0].title} loading="lazy" width={800} height={500} />
+                  <img src={midArticles[0].image} alt={midArticles[0].title} loading="lazy" decoding="async" width={800} height={500} />
                   <h3>{midArticles[0].title}</h3>
                 </Link>
               </div>
@@ -149,7 +149,7 @@ export default async function HomePage() {
                 {midArticles.slice(1).map(a => (
                   <Link href={`/article/${a.id}`} className="alj-mid-card" key={`hm-${a.id}`}>
                     <h4>{a.title}</h4>
-                    <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
+                    <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
                   </Link>
                 ))}
               </div>
@@ -164,7 +164,7 @@ export default async function HomePage() {
                   <div style={{flex: 1}}>
                     <span className="item-title">{truncateText(a.title, 80)}</span>
                   </div>
-                  <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
+                  <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
                 </Link>
               ))}
             </div>
@@ -176,7 +176,7 @@ export default async function HomePage() {
                   <div style={{flex: 1}}>
                     <span className="item-title">{truncateText(a.title, 80)}</span>
                   </div>
-                  <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
+                  <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
                 </Link>
               ))}
             </div>
@@ -185,7 +185,7 @@ export default async function HomePage() {
               <h4 className="alj-sidebar-header">OPINION</h4>
               {opinionArticles.slice(0, 1).map(a => (
                 <Link href={`/article/${a.id}`} className="alj-opinion-card" key={`op-${a.id}`}>
-                  <img src={a.image} alt={a.author} loading="lazy" width={800} height={500} />
+                  <img src={a.image} alt={a.author} loading="lazy" decoding="async" width={800} height={500} />
                   <span className="item-title">{truncateText(a.title, 60)}</span>
                 </Link>
               ))}
@@ -226,7 +226,7 @@ export default async function HomePage() {
                     {latestArticles.map(a => (
                       <article className="news-card" key={`latest-${a.id}`}>
                         <Link href={`/article/${a.id}`}>
-                          <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
+                          <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
                         </Link>
                         <div className="card-body">
                           <span className="card-category">{a.category.toUpperCase()}</span>
@@ -282,7 +282,7 @@ export default async function HomePage() {
                       {carouselArticles.map((a, i) => (
                         <div className="story-card" key={`story-${a.id}`}>
                           <Link href={`/article/${a.id}`}>
-                            <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
+                            <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
                             <div className="story-overlay">
                               <span className="story-title">{truncateText(a.title, 50)}</span>
                             </div>
@@ -310,7 +310,7 @@ export default async function HomePage() {
               {sportHero && (
                 <div className="sport-hero">
                   <Link href={`/article/${sportHero.id}`}>
-                    <img src={sportHero.image} alt={sportHero.title} loading="lazy" width={800} height={500} />
+                    <img src={sportHero.image} alt={sportHero.title} loading="lazy" decoding="async" width={800} height={500} />
                     <div className="sport-overlay">
                       <span className="sport-category">{sportHero.category.toUpperCase()}</span>
                       <h3 className="sport-title">{sportHero.title}</h3>
@@ -320,7 +320,7 @@ export default async function HomePage() {
               )}
               {sportRest.map(a => (
                 <article className="sport-article" key={`sp-${a.id}`}>
-                  <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
+                  <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
                   <div>
                     <Link href={`/article/${a.id}`}><h4>{a.title}</h4></Link>
                     <span className="card-meta">{a.author} &bull; {formatDate(a.date)}</span>
@@ -357,7 +357,7 @@ export default async function HomePage() {
                         <h3 className="explainer-title">{a.title}</h3>
                         <p className="explainer-subtitle">{truncateText(a.excerpt, 120)}</p>
                       </div>
-                      <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
+                      <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
                     </div>
                   ))}
               </div>

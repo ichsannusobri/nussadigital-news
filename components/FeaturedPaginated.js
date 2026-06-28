@@ -35,7 +35,7 @@ export default function FeaturedPaginated({ articles }) {
         {currentArticles.map((a) => (
           <div className="featured-card" key={`feat-${a.id}`}>
             <Link href={`/article/${a.id}`}>
-              <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
+              <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
               <div className="card-body">
                 <span className="card-category">{(a.category || '').toUpperCase()}</span>
                 <h3 className="card-title">{a.title}</h3>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, where, limit } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 import { DEFAULT_ARTICLES } from '../../../lib/data';
 
@@ -10,7 +10,8 @@ function formatDate(dateStr) {
 }
 
 export async function generateStaticParams() {
-  const querySnapshot = await getDocs(collection(db, "articles"));
+  const q = query(collection(db, "articles"), limit(25));
+  const querySnapshot = await getDocs(q);
   let categories = new Set();
   
   if (querySnapshot.empty) {
@@ -52,7 +53,8 @@ export function generateMetadata({ params }) {
 }
 
 export default async function CategoryPage({ params }) {
-  const querySnapshot = await getDocs(collection(db, "articles"));
+  const q = query(collection(db, "articles"), limit(25));
+  const querySnapshot = await getDocs(q);
   
   let articles = [];
   querySnapshot.forEach((doc) => {
@@ -86,7 +88,7 @@ export default async function CategoryPage({ params }) {
             {articles.map(a => (
               <Link href={`/article/${a.id}`} key={`cat-${a.id}`} style={{textDecoration: 'none', color: 'inherit'}}>
                 <div style={{position: 'relative', height: '200px', marginBottom: '1rem'}}>
-                  <img src={a.image} alt={a.title} style={{width: '100%', height: '100%', objectFit: 'cover'}} loading="lazy" width={800} height={500} />
+                  <img src={a.image} alt={a.title} style={{width: '100%', height: '100%', objectFit: 'cover'}} loading="lazy" decoding="async" width={800} height={500} />
                   <span style={{position: 'absolute', top: '10px', left: '10px', background: '#D97706', color: 'white', padding: '0.25rem 0.5rem', fontSize: '0.8rem', fontWeight: 'bold'}}>{a.category.toUpperCase()}</span>
                 </div>
                 <div>

@@ -164,7 +164,7 @@ export default async function ArticlePage({ params }) {
                       <span className="article-read-time">{article.readTime || '5 min read'}</span>
                     </div>
                   </div>
-                  <img className="article-hero-img" src={article.image} alt={article.title} loading="lazy" width={800} height={500} />
+                  <img className="article-hero-img" src={article.image} alt={article.title} loading="lazy" decoding="async" width={800} height={500} />
                   
                   <div className="article-body">
                     {paragraphs.map((p, i) => (
@@ -221,7 +221,7 @@ export default async function ArticlePage({ params }) {
                       <div id="related-articles-container">
                         {relatedArticles.length === 0 ? <p>No related articles found.</p> : relatedArticles.map(a => (
                           <div className="related-item" key={`rel-${a.id}`}>
-                            <img src={a.image} alt={a.title} loading="lazy" width={800} height={500} />
+                            <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
                             <div>
                               <Link href={`/article/${a.id}`} className="related-title">{a.title}</Link>
                               <span className="card-meta">{formatDate(a.date)}</span>
