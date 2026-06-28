@@ -10,7 +10,7 @@ function formatDate(dateStr) {
 }
 
 export async function generateStaticParams() {
-  const q = query(collection(db, "articles"), limit(25));
+  const q = query(collection(db, "articles"));
   const querySnapshot = await getDocs(q);
   let categories = new Set();
   
@@ -53,7 +53,7 @@ export function generateMetadata({ params }) {
 }
 
 export default async function CategoryPage({ params }) {
-  const q = query(collection(db, "articles"), limit(25));
+  const q = query(collection(db, "articles"));
   const querySnapshot = await getDocs(q);
   
   let articles = [];

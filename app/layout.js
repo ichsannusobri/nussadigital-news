@@ -127,6 +127,7 @@ export default function RootLayout({ children }) {
               </div>
               <div className="footer-col">
                 <h3>Network</h3>
+                <Link href="/archive">News Archive</Link>
                 <Link href="/category/opinion">Opinions & Analysis</Link>
                 <Link href="/category/economy">Economy Insights</Link>
                 <Link href="/category/sport">Sport Highlights</Link>
