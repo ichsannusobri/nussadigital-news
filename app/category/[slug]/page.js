@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { collection, getDocs, query, orderBy, where, limit } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 import { DEFAULT_ARTICLES } from '../../../lib/data';
+import Pagination from '../../../components/Pagination';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -69,6 +70,9 @@ export default async function CategoryPage({ params }) {
     .filter(a => a.category && a.category.toLowerCase() === params.slug.toLowerCase())
     .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
+  const ITEMS_PER_PAGE = 12;
+  const totalPages = Math.ceil(articles.length / ITEMS_PER_PAGE);
+  const pageArticles = articles.slice(0, ITEMS_PER_PAGE);
   const catName = params.slug.charAt(0).toUpperCase() + params.slug.slice(1);
 
   return (
@@ -79,13 +83,14 @@ export default async function CategoryPage({ params }) {
       </div>
 
       <section className="category-results container" style={{padding: '40px 20px', maxWidth: '1400px', margin: '0 auto'}}>
-        {articles.length === 0 ? (
+        {pageArticles.length === 0 ? (
           <div style={{textAlign: 'center', padding: '60px'}}>
             <h3>No articles found in this category yet.</h3>
           </div>
         ) : (
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem'}}>
-            {articles.map(a => (
+          <div>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2rem'}}>
+              {pageArticles.map(a => (
               <Link href={`/article/${a.id}`} key={`cat-${a.id}`} style={{textDecoration: 'none', color: 'inherit'}}>
                 <div style={{position: 'relative', height: '200px', marginBottom: '1rem'}}>
                   <img src={a.image} alt={a.title} style={{width: '100%', height: '100%', objectFit: 'cover'}} loading="lazy" decoding="async" width={800} height={500} />
@@ -101,6 +106,8 @@ export default async function CategoryPage({ params }) {
                 </div>
               </Link>
             ))}
+            </div>
+            <Pagination currentPage={1} totalPages={totalPages} basePath={`/category/${params.slug}`} />
           </div>
         )}
       </section>

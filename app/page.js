@@ -3,7 +3,7 @@ import { collection, getDocs, query, orderBy, doc, getDoc, limit } from 'firebas
 import { db } from '../lib/firebase';
 import { DEFAULT_ARTICLES, TRENDING_TOPICS } from '../lib/data';
 import TimeAgo from '../components/TimeAgo';
-import ClientNewsFeed from '../components/ClientNewsFeed';
+import Pagination from '../components/Pagination';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -33,7 +33,7 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const q = query(collection(db, "articles"), orderBy("date", "desc"), limit(25));
+  const q = query(collection(db, "articles"), orderBy("date", "desc"));
   const querySnapshot = await getDocs(q);
   let articles = [];
   querySnapshot.forEach((doc) => {
@@ -59,9 +59,13 @@ export default async function HomePage() {
     dynamicTrending = TRENDING_TOPICS.map(t => ({ id: t, name: t, category: 'apac' }));
   }
 
+  const ITEMS_PER_PAGE = 12;
+  const totalPages = Math.ceil(articles.length / ITEMS_PER_PAGE);
+
   // Pre-calculate subsets
-  const breakingArticles = articles.filter(a => a.isBreaking);
-  const featured = articles.filter(a => a.isFeatured);
+  const homepageArticles = articles.slice(0, 25);
+  const breakingArticles = homepageArticles.filter(a => a.isBreaking);
+  const featured = homepageArticles.filter(a => a.isFeatured);
   
   // Hero
   const mainArticle = featured[0] || articles[0];
@@ -76,27 +80,21 @@ export default async function HomePage() {
   const sidebarArticles = [...pinnedArticles, ...unpinnedSidebar];
   
   // Latest News (skip first 2 logically, but let's just use recent ones)
-  const latestArticles = articles.slice(2, 12);
+  const latestArticles = homepageArticles.slice(2, 12);
   
   // Opinions
-  const opinionArticles = articles.filter(a => a.category.toLowerCase() === 'opinion');
-  
-  // Carousel
-  const carouselArticles = articles.slice(0, 12);
+  const opinionArticles = homepageArticles.filter(a => a.category?.toLowerCase() === 'opinion');
   
   // Sport
-  const sportArticles = articles.filter(a => a.category.toLowerCase() === 'sport');
+  const sportArticles = homepageArticles.filter(a => a.category?.toLowerCase() === 'sport').slice(0, 4);
   const sportHero = sportArticles[0];
-  const sportRest = sportArticles.slice(1, 4); // Take a few
+  const sportRest = sportArticles.slice(1, 4);
   
   // Most Popular
-  const mostPopular = [...articles].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 10);
+  const mostPopular = [...homepageArticles].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
   
   // Explainer
-  const explainers = articles.filter(a => a.category.toLowerCase() === 'explainer');
-  
-  // Featured Section (bottom)
-  const bottomFeatured = featured.length > 0 ? featured : articles.slice(0, 4);
+  const explainers = homepageArticles.filter(a => a.category?.toLowerCase() === 'explainer');
 
   return (
     <main className="home-page">
@@ -126,7 +124,7 @@ export default async function HomePage() {
                 </div>
               </Link>
               <ul className="alj-timeline">
-                {articles.slice(1, 5).map((a, i) => (
+                {homepageArticles.slice(1, 5).map((a, i) => (
                   <li className="alj-timeline-item" key={`tl-${a.id}`}>
                     <span className="alj-bullet"></span>
                     <TimeAgo date={a.date} />
@@ -356,8 +354,7 @@ export default async function HomePage() {
       {/* 13. MORE NEWS SECTION */}
       <section className="featured-section">
           <div className="section-wrapper">
-              <h2 className="section-header">More News</h2>
-              <ClientNewsFeed lastArticleDate={articles.length > 0 ? articles[articles.length - 1].date : new Date().toISOString()} />
+              <Pagination currentPage={1} totalPages={totalPages} basePath="/page" />
           </div>
       </section>
     </main>

@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx rimraf .next && next build",
+    "build": "next build",
+    "postbuild": "node scripts/auto-indexer.js",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "firebase": "^10.12.2",
+    "googleapis": "^173.0.0",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18"
