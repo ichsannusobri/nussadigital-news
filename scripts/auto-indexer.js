@@ -21,7 +21,7 @@ async function main() {
     credentials = JSON.parse(credentialsJson);
   } catch (e) {
     console.error("❌ Error parsing GOOGLE_APPLICATION_CREDENTIALS_JSON. Make sure it is valid JSON.");
-    process.exit(1);
+    return;
   }
 
   // 2. Initialize Google Auth Client
@@ -38,7 +38,7 @@ async function main() {
     console.log("✅ Successfully authenticated with Google Indexing API.");
   } catch (e) {
     console.error("❌ Error authenticating with Google:", e.message);
-    process.exit(1);
+    return;
   }
 
   // 3. Find URLs to index. 
@@ -46,7 +46,7 @@ async function main() {
   const sitemapPath = path.join(__dirname, '../out/sitemap.xml');
   if (!fs.existsSync(sitemapPath)) {
     console.error(`❌ Sitemap not found at ${sitemapPath}. Make sure 'next build' ran successfully.`);
-    process.exit(1);
+    return;
   }
 
   const sitemapContent = fs.readFileSync(sitemapPath, 'utf8');
