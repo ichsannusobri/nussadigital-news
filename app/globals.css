@@ -220,17 +220,62 @@ ul, ol {
   50% { opacity: 0.4; transform: scale(0.7); }
 }
 
-/* Search & Sign-up */
+.search-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2px 8px;
+  transition: all 0.3s ease;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+}
+
+.search-form.expanded {
+  width: 200px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  width: 0;
+  padding: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.search-form.expanded .search-input {
+  width: 100%;
+  padding: 0 8px;
+  opacity: 1;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .search-btn {
   color: #fff;
   font-size: 1.1rem;
   background: none;
   border: none;
-  padding: 4px 6px;
+  padding: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
   transition: opacity 180ms;
+  min-width: 20px;
 }
 
 .search-btn:hover {

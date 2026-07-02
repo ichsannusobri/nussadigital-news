@@ -2,6 +2,7 @@ import './globals.css';
 import Link from 'next/link';
 import Script from 'next/script';
 import ThemeToggle from '../components/ThemeToggle';
+import SearchBar from '../components/SearchBar';
 
 export const metadata = {
   metadataBase: new URL('https://nussadigital.co.id'),
@@ -95,7 +96,7 @@ export default function RootLayout({ children }) {
             </nav>
             <div className="header-right">
               <ThemeToggle />
-              <button className="search-btn" aria-label="Search">🔍</button>
+              <SearchBar />
             </div>
           </div>
         </header>
