@@ -1620,13 +1620,43 @@ ul, ol {
 }
 
 .article-body {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   line-height: 1.8;
-  color: var(--clr-text);
+  color: #333;
+  margin-bottom: 3rem;
 }
 
 .article-body p {
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-body.markdown-body ul, 
+.article-body.markdown-body ol {
+  margin-left: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-body.markdown-body li {
+  margin-bottom: 0.5rem;
+}
+
+.article-body.markdown-body strong, 
+.article-body.markdown-body b {
+  font-weight: 700;
+  color: #111;
+}
+
+.article-body.markdown-body a {
+  color: var(--brand-primary);
+  text-decoration: underline;
+}
+
+.article-body.markdown-body h2, 
+.article-body.markdown-body h3, 
+.article-body.markdown-body h4 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #111;
 }
 
 .article-body h2,

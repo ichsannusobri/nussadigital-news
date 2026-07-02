@@ -3,6 +3,7 @@ import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 import { DEFAULT_ARTICLES } from '../../../lib/data';
 import ViewCounter from '../../../components/ViewCounter';
+import { marked } from 'marked';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -131,9 +132,33 @@ export default async function ArticlePage({ params }) {
     }]
   };
 
+  // Parse markdown to HTML string
+  const rawHtml = marked.parse(article.content || '');
+  
   // Build article body paragraphs with ad injected in middle
-  const paragraphs = article.content.split('\n\n');
+  const paragraphs = rawHtml.split('</p>');
   const midPoint = Math.floor(paragraphs.length / 2);
+  
+  // Inject AdSense HTML
+  const adHtml = `
+    <div class="ad-container ad-leaderboard" style="margin: 30px 0;">
+      <span style="font-size: 10px; color: #888; display: block; margin-bottom: 5px; text-align: center;">Advertisement</span>
+      <ins class="adsbygoogle"
+           style="display:block; text-align:center;"
+           data-ad-client="ca-pub-2449102925093409"
+           data-ad-slot="1234567890"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+    </div>
+  `;
+
+  let finalHtml = '';
+  paragraphs.forEach((p, i) => {
+    finalHtml += p + (p.trim() ? '</p>' : '');
+    if (i === midPoint - 1 && p.trim()) {
+      finalHtml += adHtml;
+    }
+  });
 
   return (
     <main>
@@ -166,24 +191,7 @@ export default async function ArticlePage({ params }) {
                   </div>
                   <img className="article-hero-img" src={article.image} alt={article.title} loading="lazy" decoding="async" width={800} height={500} />
                   
-                  <div className="article-body">
-                    {paragraphs.map((p, i) => (
-                      <div key={i}>
-                        <p>{p}</p>
-                        {i === midPoint - 1 && (
-                          <div className="ad-container ad-leaderboard">
-                            <span style={{fontSize: '10px', color: '#888', display: 'block', marginBottom: '5px'}}>Advertisement</span>
-                            <ins className="adsbygoogle"
-                                 style={{display:'block', textAlign:'center'}}
-                                 data-ad-client="ca-pub-2449102925093409"
-                                 data-ad-slot="1234567890"
-                                 data-ad-format="auto"
-                                 data-full-width-responsive="true"></ins>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  <div className="article-body markdown-body" dangerouslySetInnerHTML={{ __html: finalHtml }} />
 
                   <div className="article-tags">
                     {(article.tags || []).map(tag => (

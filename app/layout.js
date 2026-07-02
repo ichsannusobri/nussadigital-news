@@ -87,7 +87,10 @@ export default function RootLayout({ children }) {
             </div>
             <nav className="main-nav">
               <Link href="/">Home</Link>
-              <Link href="/markets" style={{ color: 'var(--brand-primary)', fontWeight: 'bold' }}>📈 MARKETS</Link>
+              <Link href="/markets" style={{ color: 'var(--brand-primary)', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                MARKETS
+              </Link>
               <Link href="/category/apac">APAC</Link>
               <Link href="/category/economy">Economy</Link>
               <Link href="/category/finance">Finance</Link>
