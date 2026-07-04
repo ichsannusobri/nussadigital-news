@@ -1,0 +1,8 @@
+# www to non-www redirect
+https://www.nussadigital.co.id/* https://nussadigital.co.id/:splat 301
+
+# Legacy Company Profile redirects
+/about-us https://nussadigital.co.id/about 301
+/contact-us https://nussadigital.co.id/contact 301
+/services https://nussadigital.co.id/ 301
+/portfolio https://nussadigital.co.id/ 301

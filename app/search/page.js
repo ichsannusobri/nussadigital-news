@@ -8,6 +8,9 @@ export const metadata = {
     index: false,
     follow: true,
   },
+  alternates: {
+    canonical: 'https://nussadigital.co.id/search',
+  },
 };
 
 export default function SearchPage() {

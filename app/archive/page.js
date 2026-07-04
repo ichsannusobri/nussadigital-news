@@ -12,6 +12,9 @@ function formatDate(dateStr) {
 export const metadata = {
   title: 'News Archive - NDNews',
   description: 'Complete archive of all NDNews articles.',
+  alternates: {
+    canonical: 'https://nussadigital.co.id/archive',
+  },
 };
 
 export default async function ArchivePage() {

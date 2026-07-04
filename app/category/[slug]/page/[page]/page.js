@@ -48,12 +48,34 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const catName = params.slug.charAt(0).toUpperCase() + params.slug.slice(1);
+  const currentPage = parseInt(params.page);
+  
+  const q = query(collection(db, "articles"), orderBy("date", "desc"));
+  const querySnapshot = await getDocs(q);
+  
+  let articles = [];
+  querySnapshot.forEach((doc) => {
+    articles.push({ id: doc.id, ...doc.data() });
+  });
+
+  if (articles.length === 0) {
+    articles = DEFAULT_ARTICLES;
+  }
+
+  let categoryArticles = articles.filter(a => a.category && a.category.toLowerCase() === params.slug.toLowerCase());
+  const totalPages = Math.ceil(categoryArticles.length / ITEMS_PER_PAGE);
+  const isEmpty = currentPage > totalPages || categoryArticles.length === 0;
+
   return {
     title: `${catName} News - Page ${params.page} | NDNews`,
     description: `Latest news and updates on ${catName} - Page ${params.page}.`,
     alternates: {
       canonical: `https://nussadigital.co.id/category/${params.slug}/page/${params.page}`,
     },
+    robots: {
+      index: !isEmpty,
+      follow: true,
+    }
   };
 }
 

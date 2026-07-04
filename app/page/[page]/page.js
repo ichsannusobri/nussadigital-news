@@ -34,12 +34,22 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
+  const currentPage = parseInt(params.page);
+  const querySnapshot = await getDocs(collection(db, "articles"));
+  let totalArticles = querySnapshot.empty ? DEFAULT_ARTICLES.length : querySnapshot.size;
+  const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
+  const isEmpty = currentPage > totalPages;
+
   return {
     title: `Latest News - Page ${params.page} | NDNews`,
     description: `Browse the latest breaking news, economy, finance, and sports articles on NDNews - Page ${params.page}.`,
     alternates: {
       canonical: `https://nussadigital.co.id/page/${params.page}`,
     },
+    robots: {
+      index: !isEmpty,
+      follow: true,
+    }
   };
 }
 

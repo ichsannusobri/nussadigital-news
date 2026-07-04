@@ -34,14 +34,36 @@ export async function generateStaticParams() {
 }
 
 // Unique Metadata per Category
-export function generateMetadata({ params }) {
+export async function generateMetadata({ params }) {
+  const q = query(collection(db, "articles"));
+  const querySnapshot = await getDocs(q);
+  
+  let articles = [];
+  querySnapshot.forEach((doc) => {
+    articles.push({ id: doc.id, ...doc.data() });
+  });
+
+  if (articles.length === 0) {
+    articles = DEFAULT_ARTICLES;
+  }
+
+  const categoryArticles = articles.filter(
+    a => a.category && a.category.toLowerCase() === params.slug.toLowerCase()
+  );
+
   const catName = params.slug.charAt(0).toUpperCase() + params.slug.slice(1);
   const canonicalUrl = `https://nussadigital.co.id/category/${params.slug}`;
+  const isEmpty = categoryArticles.length === 0;
+
   return {
     title: `${catName} News - Latest Updates & Analysis - NDNews`,
     description: `Browse the latest breaking news, in-depth analysis, and expert insights on ${catName} across the Asia-Pacific region.`,
     alternates: {
       canonical: canonicalUrl,
+    },
+    robots: {
+      index: !isEmpty,
+      follow: true,
     },
     openGraph: {
       type: 'website',

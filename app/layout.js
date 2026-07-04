@@ -11,9 +11,6 @@ export const metadata = {
   icons: {
     icon: '/favicon.png',
   },
-  alternates: {
-    canonical: '/',
-  },
   robots: {
     index: true,
     follow: true,
