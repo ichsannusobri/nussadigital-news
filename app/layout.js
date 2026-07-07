@@ -1,8 +1,7 @@
 import './globals.css';
 import Link from 'next/link';
 import Script from 'next/script';
-import ThemeToggle from '../components/ThemeToggle';
-import SearchBar from '../components/SearchBar';
+import Header from '../components/Header';
 
 export const metadata = {
   metadataBase: new URL('https://nussadigital.co.id'),
@@ -73,33 +72,7 @@ export default function RootLayout({ children }) {
         {/* SR-only Site Title */}
         <span className="sr-only">NDNews - Latest APAC Economy, Finance & Sports News</span>
 
-        <header className="main-header">
-          <div className="header-container">
-            <div className="header-left">
-              <button className="mobile-menu-btn" aria-label="Toggle menu">☰</button>
-              <Link href="/" className="logo">
-                <img src="/favicon.png" alt="ND" className="header-logo-img" />
-                ND<span>News</span>
-              </Link>
-            </div>
-            <nav className="main-nav">
-              <Link href="/">Home</Link>
-              <Link href="/markets" style={{ color: 'var(--brand-primary)', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
-                MARKETS
-              </Link>
-              <Link href="/category/apac">APAC</Link>
-              <Link href="/category/economy">Economy</Link>
-              <Link href="/category/finance">Finance</Link>
-              <Link href="/category/sport">Sport</Link>
-              <Link href="/category/opinion">Opinion</Link>
-            </nav>
-            <div className="header-right">
-              <ThemeToggle />
-              <SearchBar />
-            </div>
-          </div>
-        </header>
+        <Header />
 
         {children}
 
