@@ -48,15 +48,45 @@ export default async function HomePage() {
   let dynamicTrending = [];
   try {
     const trendingDoc = await getDoc(doc(db, "settings", "trending"));
+    let mode = 'auto';
+    let manualTopics = [];
     if (trendingDoc.exists()) {
-      dynamicTrending = trendingDoc.data().topics || [];
+      mode = trendingDoc.data().mode || 'auto';
+      manualTopics = trendingDoc.data().topics || [];
+    }
+
+    if (mode === 'auto') {
+      const popularArticles = [...articles]
+        .sort((a, b) => (b.views || 0) - (a.views || 0))
+        .slice(0, 6);
+
+      dynamicTrending = popularArticles.map(art => {
+        let name = '';
+        if (art.tags && art.tags.length > 0) {
+          const tag = art.tags[0];
+          name = tag.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        } else {
+          name = art.category;
+        }
+        return {
+          id: art.id,
+          name: name,
+          url: `/article/${art.id}`
+        };
+      });
+    } else {
+      dynamicTrending = manualTopics.map(t => ({
+        id: t.id || Math.random().toString(),
+        name: t.name,
+        url: `/category/${t.category.toLowerCase()}`
+      }));
     }
   } catch (e) {
     console.error("Error fetching trending topics:", e);
   }
 
   if (dynamicTrending.length === 0) {
-    dynamicTrending = TRENDING_TOPICS.map(t => ({ id: t, name: t, category: 'apac' }));
+    dynamicTrending = TRENDING_TOPICS.map(t => ({ id: t, name: t, url: '/category/apac' }));
   }
 
   const ITEMS_PER_PAGE = 12;
@@ -106,7 +136,7 @@ export default async function HomePage() {
             <span className="trending-label">🔥 Trending</span>
             <div className="trending-links" id="trending-container">
                 {dynamicTrending.map(topic => (
-                  <Link key={topic.id} href={`/category/${topic.category.toLowerCase()}`} className="trending-link">{topic.name}</Link>
+                  <Link key={topic.id} href={topic.url} className="trending-link">{topic.name}</Link>
                 ))}
             </div>
         </div>

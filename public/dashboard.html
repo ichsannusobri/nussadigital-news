@@ -588,40 +588,85 @@
             <div class="tab-content" id="panel-trending">
                 <div class="panel-header">
                     <h2>Manage Trending Topics</h2>
-                    <button class="btn-primary" onclick="showAddTrendingForm()">+ Add Topic</button>
                 </div>
-                
-                <form class="article-form" id="trending-form" onsubmit="handleSaveTrending(event)" style="display: none; margin-bottom: 24px;">
-                    <input type="hidden" id="trending-id">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="trending-name">Topic Name</label>
-                            <input type="text" id="trending-name" required placeholder="e.g. World Cup 2026">
-                        </div>
-                        <div class="form-group">
-                            <label for="trending-category">Target Category</label>
-                            <input type="text" id="trending-category" required placeholder="e.g. sport">
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn-primary">💾 Save Topic</button>
-                        <button type="button" class="btn-secondary" onclick="hideTrendingForm()">Cancel</button>
-                    </div>
-                </form>
 
-                <div class="articles-table">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr>
-                                <th style="padding: 14px 18px; text-align: left; border-bottom: 1px solid #e5e7eb;">Topic Name</th>
-                                <th style="padding: 14px 18px; text-align: left; border-bottom: 1px solid #e5e7eb;">Target Category</th>
-                                <th style="padding: 14px 18px; text-align: right; border-bottom: 1px solid #e5e7eb;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="trending-table-body">
-                            <!-- JS fills -->
-                        </tbody>
-                    </table>
+                <!-- Mode Selector -->
+                <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">Trending Mode</label>
+                    <div style="display: flex; gap: 24px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" name="trending-mode" value="auto" checked onchange="toggleTrendingMode('auto')">
+                            <span>🤖 Automatic (Based on Views)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" name="trending-mode" value="manual" onchange="toggleTrendingMode('manual')">
+                            <span>✍️ Manual (Custom List)</span>
+                        </label>
+                    </div>
+                    <p id="trending-mode-desc" style="font-size: 0.85rem; color: #4b5563; margin-top: 10px;">
+                        Dalam mode otomatis, 6 topik teratas akan diambil langsung dari artikel yang paling banyak dibaca.
+                    </p>
+                </div>
+
+                <div id="manual-trending-container" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3>Custom Topics</h3>
+                        <button class="btn-primary" onclick="showAddTrendingForm()">+ Add Topic</button>
+                    </div>
+                    
+                    <form class="article-form" id="trending-form" onsubmit="handleSaveTrending(event)" style="display: none; margin-bottom: 24px;">
+                        <input type="hidden" id="trending-id">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="trending-name">Topic Name</label>
+                                <input type="text" id="trending-name" required placeholder="e.g. World Cup 2026">
+                            </div>
+                            <div class="form-group">
+                                <label for="trending-category">Target Category</label>
+                                <input type="text" id="trending-category" required placeholder="e.g. sport">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">💾 Save Topic</button>
+                            <button type="button" class="btn-secondary" onclick="hideTrendingForm()">Cancel</button>
+                        </div>
+                    </form>
+
+                    <div class="articles-table">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 14px 18px; text-align: left; border-bottom: 1px solid #e5e7eb;">Topic Name</th>
+                                    <th style="padding: 14px 18px; text-align: left; border-bottom: 1px solid #e5e7eb;">Target Category</th>
+                                    <th style="padding: 14px 18px; text-align: right; border-bottom: 1px solid #e5e7eb;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trending-table-body">
+                                <!-- JS fills -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="auto-trending-container" style="display: block;">
+                    <div style="margin-bottom: 16px;">
+                        <h3>Live Auto Trending Topics (Based on Views)</h3>
+                    </div>
+                    <div class="articles-table">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="padding: 14px 18px; text-align: left; border-bottom: 1px solid #e5e7eb;">Rank</th>
+                                    <th style="padding: 14px 18px; text-align: left; border-bottom: 1px solid #e5e7eb;">Topic (Tag)</th>
+                                    <th style="padding: 14px 18px; text-align: left; border-bottom: 1px solid #e5e7eb;">Article Title</th>
+                                    <th style="padding: 14px 18px; text-align: right; border-bottom: 1px solid #e5e7eb;">Views</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auto-trending-table-body">
+                                <!-- JS fills -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -864,6 +909,7 @@
         
         // --- TRENDING TOPICS LOGIC ---
         let trendingTopicsCache = [];
+        let currentTrendingMode = "auto";
 
         async function fetchTrendingTopics() {
             if (!window.firebaseDB || !window.fsTools) return;
@@ -872,14 +918,62 @@
                 const docSnap = await window.fsTools.getDoc(docRef);
                 if (docSnap.exists()) {
                     trendingTopicsCache = docSnap.data().topics || [];
+                    currentTrendingMode = docSnap.data().mode || "auto";
                 }
             } catch (e) {
                 console.error("Error fetching trending topics", e);
             }
         }
 
+        function toggleTrendingModeUI(mode) {
+            const manualContainer = document.getElementById('manual-trending-container');
+            const autoContainer = document.getElementById('auto-trending-container');
+            const desc = document.getElementById('trending-mode-desc');
+            
+            if (mode === 'auto') {
+                manualContainer.style.display = 'none';
+                autoContainer.style.display = 'block';
+                desc.textContent = "Mode Otomatis aktif. Topik diambil dari kategori/tag artikel dengan views terbanyak. Anda tidak perlu mengedit apa pun secara manual.";
+            } else {
+                manualContainer.style.display = 'block';
+                autoContainer.style.display = 'none';
+                desc.textContent = "Mode Manual aktif. Anda dapat menambahkan, mengedit, dan menghapus topik trending yang tampil di halaman utama secara bebas.";
+            }
+        }
+
+        async function toggleTrendingMode(mode) {
+            currentTrendingMode = mode;
+            toggleTrendingModeUI(mode);
+            await saveTrendingTopics();
+            triggerDeploy();
+            if (mode === 'auto') {
+                renderAutoTrendingTable();
+            } else {
+                renderManualTrendingTable();
+            }
+        }
+
         async function renderTrendingTable() {
             await fetchTrendingTopics();
+            
+            // Sync radio button
+            const radios = document.getElementsByName('trending-mode');
+            radios.forEach(r => {
+                if (r.value === currentTrendingMode) {
+                    r.checked = true;
+                }
+            });
+            
+            toggleTrendingModeUI(currentTrendingMode);
+            
+            if (currentTrendingMode === 'auto') {
+                renderAutoTrendingTable();
+            } else {
+                renderManualTrendingTable();
+            }
+        }
+
+        function renderManualTrendingTable() {
             const tbody = document.getElementById('trending-table-body');
             if (trendingTopicsCache.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px; color: #9ca3af;">No trending topics yet.</td></tr>';
@@ -895,6 +989,38 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function renderAutoTrendingTable() {
+            const allArticles = loadArticles() || [];
+            const popularArticles = [...allArticles]
+                .sort((a, b) => (b.views || 0) - (a.views || 0))
+                .slice(0, 6);
+            
+            const tbody = document.getElementById('auto-trending-table-body');
+            if (popularArticles.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px; color: #9ca3af;">No articles found.</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = popularArticles.map((a, idx) => {
+                let topicName = '';
+                if (a.tags && a.tags.length > 0) {
+                    const tag = a.tags[0];
+                    topicName = tag.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                } else {
+                    topicName = a.category;
+                }
+                
+                return `
+                    <tr>
+                        <td style="padding: 14px 18px; border-bottom: 1px solid #f3f4f6;">#${idx + 1}</td>
+                        <td style="padding: 14px 18px; border-bottom: 1px solid #f3f4f6;"><strong>${topicName}</strong></td>
+                        <td style="padding: 14px 18px; border-bottom: 1px solid #f3f4f6; color: #4b5563;">${a.title}</td>
+                        <td style="padding: 14px 18px; border-bottom: 1px solid #f3f4f6; text-align: right; font-weight: 600;">${(a.views || 0).toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function showAddTrendingForm() {
@@ -930,7 +1056,7 @@
 
             await saveTrendingTopics();
             hideTrendingForm();
-            renderTrendingTable();
+            renderManualTrendingTable();
             triggerDeploy();
         }
 
@@ -938,7 +1064,7 @@
             if (confirm('Delete this trending topic?')) {
                 trendingTopicsCache.splice(idx, 1);
                 await saveTrendingTopics();
-                renderTrendingTable();
+                renderManualTrendingTable();
                 triggerDeploy();
             }
         }
@@ -947,7 +1073,7 @@
             if (!window.firebaseDB || !window.fsTools) return;
             try {
                 const docRef = window.fsTools.doc(window.firebaseDB, 'settings', 'trending');
-                await window.fsTools.setDoc(docRef, { topics: trendingTopicsCache });
+                await window.fsTools.setDoc(docRef, { topics: trendingTopicsCache, mode: currentTrendingMode });
             } catch (e) {
                 console.error("Error saving trending topics", e);
             }
