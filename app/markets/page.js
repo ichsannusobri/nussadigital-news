@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import TimeAgo from '../../components/TimeAgo';
+import { getOptimizedImageUrl } from '../../lib/data';
 import MarketsHeaderPanel from '../../components/MarketsHeaderPanel';
 import MarketMovers from '../../components/MarketMovers';
 
@@ -61,7 +62,7 @@ export default async function MarketsPage() {
             {/* Left: Main Featured Article */}
             <div className="markets-hero-main">
               <Link href={`/article/${financeArticles[0].id}`}>
-                <img src={financeArticles[0].image} alt={financeArticles[0].title} className="markets-main-img" />
+                <img src={getOptimizedImageUrl(financeArticles[0].image, 600)} alt={financeArticles[0].title} className="markets-main-img" loading="eager" fetchPriority="high" width={600} height={375} />
                 <h2 className="markets-main-title">{financeArticles[0].title}</h2>
                 <p className="markets-main-excerpt">{truncateText(financeArticles[0].excerpt, 150)}</p>
                 <div className="markets-list-meta" style={{ marginTop: '10px' }}>
@@ -89,7 +90,7 @@ export default async function MarketsPage() {
             <div className="markets-secondary-grid">
               {financeArticles.slice(6, 10).map((article) => (
                 <Link href={`/article/${article.id}`} className="markets-card-small" key={article.id}>
-                  <img src={article.image} alt={article.title} className="markets-card-img" />
+                  <img src={getOptimizedImageUrl(article.image, 300)} alt={article.title} className="markets-card-img" loading="lazy" decoding="async" width={300} height={188} />
                   <h4>{article.title}</h4>
                   <div className="markets-list-meta"><TimeAgo date={article.date} /></div>
                 </Link>

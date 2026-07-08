@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../../../../lib/firebase';
-import { DEFAULT_ARTICLES } from '../../../../../lib/data';
+import { DEFAULT_ARTICLES, getOptimizedImageUrl } from '../../../../../lib/data';
 import Pagination from '../../../../../components/Pagination';
 
 function formatDate(dateStr) {
@@ -116,7 +116,7 @@ export default async function CategoryPaginatedPage({ params }) {
             <article key={article.id} className="category-article" style={{display: 'flex', gap: '20px', marginBottom: '30px', paddingBottom: '30px', borderBottom: '1px solid #e2e8f0'}}>
               <div style={{width: '300px', height: '200px', flexShrink: 0}}>
                 <Link href={`/article/${article.id}`}>
-                  <img src={article.image} alt={article.title} style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px'}} loading="lazy" decoding="async" />
+                  <img src={getOptimizedImageUrl(article.image, 400)} alt={article.title} style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px'}} loading="lazy" decoding="async" width={400} height={250} />
                 </Link>
               </div>
               <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
-import { DEFAULT_ARTICLES } from '../../../lib/data';
+import { DEFAULT_ARTICLES, getOptimizedImageUrl } from '../../../lib/data';
 import Pagination from '../../../components/Pagination';
 
 function formatDate(dateStr) {
@@ -84,11 +84,13 @@ export default async function PaginatedHomePage({ params }) {
           <article key={article.id} style={{ display: 'flex', flexDirection: 'column' }}>
             <Link href={`/article/${article.id}`} style={{ display: 'block', aspectRatio: '16/9', overflow: 'hidden', borderRadius: '8px', marginBottom: '15px' }}>
               <img 
-                src={article.image || '/images/placeholder.jpg'} 
+                src={getOptimizedImageUrl(article.image, 400)} 
                 alt={article.title} 
                 style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
                 loading="lazy"
                 decoding="async"
+                width={400}
+                height={250}
               />
             </Link>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>

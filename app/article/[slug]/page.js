@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
-import { DEFAULT_ARTICLES } from '../../../lib/data';
+import { DEFAULT_ARTICLES, getOptimizedImageUrl } from '../../../lib/data';
 import ViewCounter from '../../../components/ViewCounter';
 import { marked } from 'marked';
 
@@ -189,7 +189,7 @@ export default async function ArticlePage({ params }) {
                       <span className="article-read-time">{article.readTime || '5 min read'}</span>
                     </div>
                   </div>
-                  <img className="article-hero-img" src={article.image} alt={article.title} fetchPriority="high" loading="eager" decoding="async" width={800} height={500} />
+                  <img className="article-hero-img" src={getOptimizedImageUrl(article.image, 800)} alt={article.title} fetchPriority="high" loading="eager" decoding="async" width={800} height={500} />
                   
                   <div className="article-body markdown-body" dangerouslySetInnerHTML={{ __html: finalHtml }} />
 
@@ -229,7 +229,7 @@ export default async function ArticlePage({ params }) {
                       <div id="related-articles-container">
                         {relatedArticles.length === 0 ? <p>No related articles found.</p> : relatedArticles.map(a => (
                           <div className="related-item" key={`rel-${a.id}`}>
-                            <img src={a.image} alt={a.title} loading="lazy" decoding="async" width={800} height={500} />
+                            <img src={getOptimizedImageUrl(a.image, 150)} alt={a.title} loading="lazy" decoding="async" width={150} height={94} />
                             <div>
                               <Link href={`/article/${a.id}`} className="related-title">{a.title}</Link>
                               <span className="card-meta">{formatDate(a.date)}</span>

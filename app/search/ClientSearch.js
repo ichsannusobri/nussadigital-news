@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
-import { DEFAULT_ARTICLES } from '../../lib/data';
+import { DEFAULT_ARTICLES, getOptimizedImageUrl } from '../../lib/data';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -81,7 +81,7 @@ export default function ClientSearch() {
           {results.map(a => (
             <Link href={`/article/${a.id}`} key={`search-${a.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div style={{ position: 'relative', height: '200px', marginBottom: '1rem' }}>
-                <img src={a.image} alt={a.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                <img src={getOptimizedImageUrl(a.image, 400)} alt={a.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" decoding="async" width={400} height={250} />
                 <span style={{ position: 'absolute', top: '10px', left: '10px', background: '#D97706', color: 'white', padding: '0.25rem 0.5rem', fontSize: '0.8rem', fontWeight: 'bold' }}>
                   {a.category.toUpperCase()}
                 </span>

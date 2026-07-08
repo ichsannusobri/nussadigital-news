@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { collection, getDocs, query, orderBy, where, limit } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
-import { DEFAULT_ARTICLES } from '../../../lib/data';
+import { DEFAULT_ARTICLES, getOptimizedImageUrl } from '../../../lib/data';
 import Pagination from '../../../components/Pagination';
 
 function formatDate(dateStr) {
@@ -115,7 +115,7 @@ export default async function CategoryPage({ params }) {
               {pageArticles.map(a => (
               <Link href={`/article/${a.id}`} key={`cat-${a.id}`} style={{textDecoration: 'none', color: 'inherit'}}>
                 <div style={{position: 'relative', height: '200px', marginBottom: '1rem'}}>
-                  <img src={a.image} alt={a.title} style={{width: '100%', height: '100%', objectFit: 'cover'}} loading="lazy" decoding="async" width={800} height={500} />
+                  <img src={getOptimizedImageUrl(a.image, 400)} alt={a.title} style={{width: '100%', height: '100%', objectFit: 'cover'}} loading="lazy" decoding="async" width={400} height={250} />
                   <span style={{position: 'absolute', top: '10px', left: '10px', background: '#D97706', color: 'white', padding: '0.25rem 0.5rem', fontSize: '0.8rem', fontWeight: 'bold'}}>{a.category.toUpperCase()}</span>
                 </div>
                 <div>
