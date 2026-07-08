@@ -189,7 +189,7 @@ export default async function ArticlePage({ params }) {
                       <span className="article-read-time">{article.readTime || '5 min read'}</span>
                     </div>
                   </div>
-                  <img className="article-hero-img" src={article.image} alt={article.title} loading="lazy" decoding="async" width={800} height={500} />
+                  <img className="article-hero-img" src={article.image} alt={article.title} fetchPriority="high" loading="eager" decoding="async" width={800} height={500} />
                   
                   <div className="article-body markdown-body" dangerouslySetInnerHTML={{ __html: finalHtml }} />
 
