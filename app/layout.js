@@ -2,6 +2,7 @@ import './globals.css';
 import Link from 'next/link';
 import Script from 'next/script';
 import Header from '../components/Header';
+import CookieConsent from '../components/CookieConsent';
 
 export const metadata = {
   metadataBase: new URL('https://nussadigital.co.id'),
@@ -75,6 +76,8 @@ export default function RootLayout({ children }) {
         <Header />
 
         {children}
+
+        <CookieConsent />
 
         <footer className="main-footer">
           <div className="footer-container">
