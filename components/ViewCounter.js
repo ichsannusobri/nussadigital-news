@@ -7,10 +7,6 @@ export default function ViewCounter({ articleId }) {
   useEffect(() => {
     if (!articleId) return;
 
-    // 1. Skip if the client is a search engine bot, crawler, or performance test tool
-    const isBot = /bot|google|baidu|bing|msn|duckduckgo|teoma|slurp|yandex|lighthouse/i.test(navigator.userAgent);
-    if (isBot) return;
-    
     try {
       // 2. Throttle view counts to once per 24 hours per user session using localStorage
       const storageKey = `ndnews_viewed_${articleId}`;
