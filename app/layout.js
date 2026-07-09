@@ -7,7 +7,7 @@ import CookieConsent from '../components/CookieConsent';
 export const metadata = {
   metadataBase: new URL('https://nussadigital.co.id'),
   title: 'NDNews - APAC Economy, Finance & Sports News',
-  description: 'NDNews delivers the latest breaking news, in-depth analysis and coverage of economy, finance and sports across the Asia-Pacific region.',
+  description: 'NDNews delivers breaking news, in-depth analysis and coverage of economy, finance and sports across Asia-Pacific. Your trusted APAC news source.',
   icons: {
     icon: '/favicon.png',
   },
@@ -20,14 +20,15 @@ export const metadata = {
   },
   openGraph: {
     title: 'NDNews - APAC Economy, Finance & Sports News',
-    description: 'NDNews delivers the latest breaking news, in-depth analysis and coverage of economy, finance and sports across the Asia-Pacific region.',
+    description: 'NDNews delivers breaking news, in-depth analysis and coverage of economy, finance and sports across Asia-Pacific. Your trusted APAC news source.',
     url: 'https://nussadigital.co.id',
     siteName: 'NDNews',
     images: [
       {
-        url: '/favicon.png', // Will fallback to actual images on article pages
-        width: 800,
-        height: 600,
+        url: '/og-home.png',
+        width: 1200,
+        height: 630,
+        alt: 'NDNews - APAC Economy, Finance & Sports News',
       },
     ],
     locale: 'en_US',
@@ -36,8 +37,8 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'NDNews - APAC Economy, Finance & Sports News',
-    description: 'NDNews delivers the latest breaking news, in-depth analysis and coverage of economy, finance and sports across the Asia-Pacific region.',
-    images: ['/favicon.png'],
+    description: 'NDNews delivers breaking news, in-depth analysis and coverage of economy, finance and sports across Asia-Pacific. Your trusted APAC news source.',
+    images: ['/og-home.png'],
   },
 };
 

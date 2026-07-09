@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { collection, getDocs, query, orderBy, doc, getDoc, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { DEFAULT_ARTICLES, TRENDING_TOPICS, getOptimizedImageUrl } from '../lib/data';
+import { DEFAULT_ARTICLES, TRENDING_TOPICS, getOptimizedImageUrl, getAuthorAvatar } from '../lib/data';
 import TimeAgo from '../components/TimeAgo';
 import Pagination from '../components/Pagination';
 
@@ -128,7 +128,7 @@ export default async function HomePage() {
 
   return (
     <main className="home-page">
-      <h1 className="sr-only">NDNews - Latest APAC Economy, Finance & Sports News</h1>
+      <h1 className="sr-only">Latest APAC Economy, Finance & Sports Breaking News</h1>
 
       {/* 2. TRENDING BAR */}
       <div className="trending-bar">
@@ -213,7 +213,7 @@ export default async function HomePage() {
               <h4 className="alj-sidebar-header">OPINION</h4>
               {opinionArticles.slice(0, 1).map(a => (
                 <Link href={`/article/${a.id}`} className="alj-opinion-card" key={`op-${a.id}`}>
-                  <img src={getOptimizedImageUrl(a.image, 300)} alt={a.author} loading="lazy" decoding="async" width={300} height={188} />
+                  <img src={getAuthorAvatar(a.author) || getOptimizedImageUrl(a.image, 300)} alt={a.author} loading="lazy" decoding="async" width={100} height={100} style={{ objectFit: 'cover' }} />
                   <span className="item-title">{truncateText(a.title, 60)}</span>
                 </Link>
               ))}
@@ -270,19 +270,26 @@ export default async function HomePage() {
                   </div>
               </main>
               <aside className="content-sidebar">
-          {opinionArticles.length > 0 && (
+           {opinionArticles.length > 0 && (
             <div className="sidebar-section">
               <h3 className="section-header">Opinion</h3>
               <div id="opinion-container">
-                {opinionArticles.map(a => (
-                  <article className="opinion-item" key={`op-${a.id}`}>
-                    <div className="opinion-avatar">{getInitials(a.author)}</div>
-                    <div className="opinion-body">
-                      <Link href={`/article/${a.id}`} className="opinion-title">{a.title}</Link>
-                      <span className="opinion-author">{a.author}</span>
-                    </div>
-                  </article>
-                ))}
+                {opinionArticles.map(a => {
+                  const avatarUrl = getAuthorAvatar(a.author);
+                  return (
+                    <article className="opinion-item" key={`op-${a.id}`}>
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt={a.author} className="opinion-avatar" style={{ objectFit: 'cover' }} />
+                      ) : (
+                        <div className="opinion-avatar">{getInitials(a.author)}</div>
+                      )}
+                      <div className="opinion-body">
+                        <Link href={`/article/${a.id}`} className="opinion-title">{a.title}</Link>
+                        <span className="opinion-author">{a.author}</span>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -369,7 +376,7 @@ export default async function HomePage() {
           </div>
       </section>
 
-      {/* 12. NEWSLETTER SIGNUP */}
+      {/* 12. NEWSLETTER SIGNUP (Hidden temporarily for AdSense approval)
       <section className="newsletter-section">
           <div className="newsletter-card">
               <h2>Sign up for Breaking News Alerts</h2>
@@ -380,6 +387,7 @@ export default async function HomePage() {
               </form>
           </div>
       </section>
+      */}
 
       {/* 13. MORE NEWS SECTION */}
       <section className="featured-section">

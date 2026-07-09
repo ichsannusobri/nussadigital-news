@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
-import { DEFAULT_ARTICLES, getOptimizedImageUrl } from '../../../lib/data';
+import { DEFAULT_ARTICLES, getOptimizedImageUrl, getAuthorAvatar } from '../../../lib/data';
 import ViewCounter from '../../../components/ViewCounter';
 import { marked } from 'marked';
 
@@ -75,8 +75,8 @@ export async function generateMetadata({ params }) {
       images: [
         {
           url: article.image,
-          width: 800,
-          height: 500,
+          width: 1200,
+          height: 630,
           alt: seoTitle,
         },
       ],
@@ -180,7 +180,11 @@ export default async function ArticlePage({ params }) {
                   <span className="article-category">{article.category.toUpperCase()}</span>
                   <h1 className="article-title">{article.title}</h1>
                   <div className="article-meta">
-                    <div className="article-author-avatar">{getInitials(article.author)}</div>
+                    {getAuthorAvatar(article.author) ? (
+                      <img src={getAuthorAvatar(article.author)} alt={article.author} className="article-author-avatar" style={{ objectFit: 'cover' }} />
+                    ) : (
+                      <div className="article-author-avatar">{getInitials(article.author)}</div>
+                    )}
                     <div>
                       <span className="article-author-name">{article.author}</span>
                       <span style={{ margin: '0 8px', color: '#9ca3af' }}>&bull;</span>
@@ -270,7 +274,7 @@ export default async function ArticlePage({ params }) {
           </div>
       </section>
 
-      {/* 5. NEWSLETTER SIGNUP */}
+      {/* 5. NEWSLETTER SIGNUP (Hidden temporarily for AdSense approval)
       <section className="newsletter-section">
           <div className="newsletter-card">
               <h2>Sign up for Breaking News Alerts</h2>
@@ -281,6 +285,7 @@ export default async function ArticlePage({ params }) {
               </form>
           </div>
       </section>
+      */}
     </main>
   );
 }

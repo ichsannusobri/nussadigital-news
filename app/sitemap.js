@@ -55,6 +55,12 @@ export default async function sitemap() {
       priority: 1.0,
     },
     {
+      url: `${baseUrl}/markets`,
+      lastModified: globalLatestDate,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/archive`,
       lastModified: globalLatestDate,
       changeFrequency: 'daily',

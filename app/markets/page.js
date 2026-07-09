@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
 import TimeAgo from '../../components/TimeAgo';
-import { getOptimizedImageUrl } from '../../lib/data';
+import { getOptimizedImageUrl, DEFAULT_ARTICLES } from '../../lib/data';
 import MarketsHeaderPanel from '../../components/MarketsHeaderPanel';
 import MarketMovers from '../../components/MarketMovers';
 
@@ -40,6 +40,10 @@ export default async function MarketsPage() {
   querySnapshot.forEach((doc) => {
     allArticles.push({ id: doc.id, ...doc.data() });
   });
+
+  if (allArticles.length === 0) {
+    allArticles = DEFAULT_ARTICLES;
+  }
 
   // Filter only Finance and Economy articles for this page
   const financeArticles = allArticles.filter(a => 
