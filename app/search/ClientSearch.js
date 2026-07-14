@@ -15,7 +15,7 @@ function formatDate(dateStr) {
 
 export default function ClientSearch() {
   const searchParams = useSearchParams();
-  const q = searchParams.get('q') || '';
+  const q = searchParams.get('q') || searchParams.get('search') || '';
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
 
