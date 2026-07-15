@@ -45,8 +45,8 @@ async function runRewrite() {
     return;
   }
   
-  // Batch size limit: up to 5 articles per run
-  const batchLimit = 5;
+  // Batch size limit: up to 10 articles per run
+  const batchLimit = 10;
   const batch = pendingReports.slice(0, batchLimit);
   console.log(`Processing batch of ${batch.length} articles...`);
   
@@ -96,7 +96,7 @@ ${promptRules}
 
     console.log("Calling Gemini API for rewrite...");
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
