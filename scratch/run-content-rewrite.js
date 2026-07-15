@@ -13,8 +13,100 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Parser function to extract CMS fields from Gemini output
+function parseCMSFields(responseText) {
+  const result = {
+    title: "",
+    excerpt: "",
+    content: "",
+    category: "",
+    author: "",
+    imageUrl: "",
+    tags: [],
+    breaking: false,
+    live: false,
+    sourcingNotes: "",
+    expansionRatio: ""
+  };
+  
+  // Split response by "---" to separate Sourcing Notes
+  const parts = responseText.split(/---/);
+  const mainPart = parts[0];
+  const notesPart = parts.slice(1).join("---");
+  
+  // Parse main part fields
+  const lines = mainPart.split("\n");
+  let currentField = null;
+  let contentAccumulator = [];
+  
+  for (const line of lines) {
+    const titleMatch = line.match(/^Title:\s*(.*)/i);
+    const excerptMatch = line.match(/^Excerpt:\s*(.*)/i);
+    const contentMatch = line.match(/^Content:\s*(.*)/i);
+    const categoryMatch = line.match(/^Category:\s*(.*)/i);
+    const authorMatch = line.match(/^Author:\s*(.*)/i);
+    const imageMatch = line.match(/^Image URL:\s*(.*)/i);
+    const tagsMatch = line.match(/^Tags:\s*(.*)/i);
+    const breakingMatch = line.match(/^Breaking News:\s*(.*)/i);
+    const liveMatch = line.match(/^Live Updates:\s*(.*)/i);
+    
+    if (titleMatch) {
+      result.title = titleMatch[1].trim();
+      currentField = "title";
+    } else if (excerptMatch) {
+      result.excerpt = excerptMatch[1].trim();
+      currentField = "excerpt";
+    } else if (contentMatch) {
+      result.content = contentMatch[1].trim();
+      currentField = "content";
+    } else if (categoryMatch) {
+      result.category = categoryMatch[1].trim();
+      currentField = "category";
+    } else if (authorMatch) {
+      result.author = authorMatch[1].trim();
+      currentField = "author";
+    } else if (imageMatch) {
+      result.imageUrl = imageMatch[1].trim();
+      currentField = "imageUrl";
+    } else if (tagsMatch) {
+      const tagsStr = tagsMatch[1].trim();
+      result.tags = tagsStr.split(",").map(t => t.trim()).filter(Boolean);
+      currentField = "tags";
+    } else if (breakingMatch) {
+      result.breaking = breakingMatch[1].trim().toLowerCase() === "true";
+      currentField = "breaking";
+    } else if (liveMatch) {
+      result.live = liveMatch[1].trim().toLowerCase() === "true";
+      currentField = "live";
+    } else {
+      if (currentField === "content") {
+        contentAccumulator.push(line);
+      } else if (currentField === "title" && result.title) {
+        result.title += "\n" + line;
+      } else if (currentField === "excerpt" && result.excerpt) {
+        result.excerpt += "\n" + line;
+      }
+    }
+  }
+  
+  if (contentAccumulator.length > 0) {
+    result.content = contentAccumulator.join("\n").trim();
+  }
+  
+  // Parse sourcing notes part
+  if (notesPart) {
+    result.sourcingNotes = notesPart.trim();
+    const ratioMatch = notesPart.match(/expansion_source_ratio:\s*(.*)/i);
+    if (ratioMatch) {
+      result.expansionRatio = ratioMatch[1].trim();
+    }
+  }
+  
+  return result;
+}
+
 async function runRewrite() {
-  console.log("=== STARTING FIRESTORE CONTENT REWRITE (FASE 2) ===");
+  console.log("=== STARTING FIRESTORE CONTENT REWRITE (FASE 2 - QUALITY SKILL) ===");
   
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -45,7 +137,7 @@ async function runRewrite() {
     return;
   }
   
-  // Batch size limit: up to 10 articles per run
+  // Process up to 10 articles per run
   const batchLimit = 10;
   const batch = pendingReports.slice(0, batchLimit);
   console.log(`Processing batch of ${batch.length} articles...`);
@@ -66,37 +158,60 @@ async function runRewrite() {
     const title = articleData.title || "";
     const category = articleData.category || "";
     const content = articleData.content || "";
+    const author = articleData.author || "NDNews Editorial Team";
+    const image = articleData.image || "NEEDS IMAGE";
+    const tags = articleData.tags || [];
     
     console.log(`Title: "${title}"`);
     console.log(`Flags: Thin=${report.thin_flag}, Template=${report.template_flag}, Generic=${report.generic_topic_flag}`);
     
-    // Construct Prompt
-    let promptRules = "";
-    if (report.template_flag) {
-      promptRules += `- REMOVE LEGACY TEMPLATE HEADERS: Remove generic sub-headers like 'Why It Matters', 'Business Impact', 'APAC Impact', 'Expert Opinion', 'Future Outlook', 'Closing', or 'The Bottom Line'. Instead, present this information as a smooth, naturally flowing narrative or use customized, descriptive headers.\n`;
-    }
-    if (report.generic_topic_flag) {
-      promptRules += `- UNIQUE APAC/INDONESIA ANGLE: The topic of this article is generic/oversaturated. You MUST introduce a unique, specific Asia-Pacific (APAC) or Indonesian angle/context (such as local business impacts, regional market sentiment, or Indonesian implications) to make the content valuable and unique.\n`;
-    }
-    if (report.thin_flag) {
-      promptRules += `- EXPAND CONTENT: The current content is thin. Expand it with professional, detailed analysis, regional context, and background details so the final word count is at least 600 - 800 words. Do NOT add hallucinated quotes or fake statistics.\n`;
-    }
-    
-    const prompt = `You are a professional editorial assistant. Your task is to rewrite the following news article to improve its SEO quality and make it AdSense compliant.
+    const prompt = `You are a senior editorial journalist at NDNews, an APAC-focused economy, finance, and sports publication — not a content generator producing SEO filler.
 
-Article Title: ${title}
+Your task is to rewrite the article below to resolve quality/AdSense issues using the following strict editorial guidelines:
+
+1. FACTUAL DISCIPLINE:
+- Attribute quotes/statistics to real named people/institutions ONLY if they are present in the source. Never invent named figures.
+- Do not add fake statistics or hallucinated quotes.
+
+2. ANTI-PADDING:
+- If expanding thin content, add deep, professional analysis, regional context, and background. Do not pad with speculative or repeating phrases.
+
+3. VOICE:
+- Tone must be concrete, professional, human editorial (avoid stock AI phrases like "in the ever-evolving landscape", "it is important to note", "delve into").
+
+4. STRUCTURE:
+- Do not use a recurring template structure. Format this story on its own terms.
+${report.template_flag ? "- REMOVE LEGACY HEADERS: Remove repeating sections like 'Why It Matters', 'Business Impact', 'APAC Impact', 'Expert Opinion', etc. Form the content into a natural narrative flow or custom sub-headers.\n" : ""}
+${report.generic_topic_flag ? "- UNIQUE APAC/INDONESIA ANGLE: This topic is generic/oversaturated. You MUST inject a unique Asia-Pacific or Indonesian angle/context to make the article unique.\n" : ""}
+${report.thin_flag ? "- EXPAND CONTENT: The current content is thin. Expand it so the final word count is at least 600 - 800 words.\n" : ""}
+
+5. CMS OUTPUT FORMAT:
+You MUST output the result in the following exact format and fields in this order:
+
+Title: [Specific, non-clickbait title]
+Excerpt: [1-2 sentences summarizing the news]
+Content: [Clean Markdown content body]
 Category: ${category}
-Current Content:
-${content}
+Author: ${author}
+Image URL: ${image}
+Tags: ${tags.join(", ")}
+Breaking News: ${articleData.isBreaking ? "true" : "false"}
+Live Updates: ${articleData.isLive ? "true" : "false"}
 
-REWRITE RULES:
-${promptRules}
-- FORMATTING: Output the rewritten article in clean Markdown format.
-- STRICT CONSTRAINT: Output ONLY the updated article content. Do not include any greeting, intro, outro, explanations, or wrapper (like "Here is the rewritten article").`;
+---
+SOURCING NOTES:
+[List all primary sources/institutions confirmed in the text]
+expansion_source_ratio: [Specify your honest estimate of what % of final factual claims trace directly to original content vs. general framing/transitions. Example: 95%]
 
-    console.log("Calling Gemini API for rewrite...");
+ARTICLE TO REWRITE:
+Title: ${title}
+Category: ${category}
+Content:
+${content}`;
+
+    console.log("Calling Gemini API (gemini-pro-latest) for rewrite...");
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${apiKey}`;
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,19 +232,31 @@ ${promptRules}
         throw new Error("Invalid response format received from Gemini API");
       }
       
-      const newContent = resJson.candidates[0].content.parts[0].text.trim();
-      const newWordCount = newContent.split(/\s+/).filter(Boolean).length;
+      const rawText = resJson.candidates[0].content.parts[0].text.trim();
+      const parsed = parseCMSFields(rawText);
+      const newWordCount = parsed.content.split(/\s+/).filter(Boolean).length;
       
-      console.log(`Success! Rewritten word count: ${newWordCount} words.`);
+      console.log(`Success! Parsed rewritten word count: ${newWordCount} words.`);
+      console.log(`Expansion Ratio: ${parsed.expansionRatio || "N/A"}`);
       
-      // Update original article in 'articles' collection with content_draft
+      // Update original article document with structured drafts
       await updateDoc(articleDocRef, {
-        content_draft: newContent,
+        title_draft: parsed.title,
+        excerpt_draft: parsed.excerpt,
+        content_draft: parsed.content,
+        category_draft: parsed.category,
+        author_draft: parsed.author,
+        image_draft: parsed.imageUrl,
+        tags_draft: parsed.tags,
+        isBreaking_draft: parsed.breaking,
+        isLive_draft: parsed.live,
+        sourcing_notes_draft: parsed.sourcingNotes,
+        expansion_ratio_draft: parsed.expansionRatio,
         rewrite_pending_review: true,
         rewritten_at: new Date()
       });
       
-      // Update audit report document status
+      // Update audit report status to reviewed
       const auditDocRef = doc(db, "content_audit_report", report.id);
       await updateDoc(auditDocRef, {
         reviewed: true,
