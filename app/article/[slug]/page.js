@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
-import { DEFAULT_ARTICLES, getOptimizedImageUrl, getAuthorAvatar } from '../../../lib/data';
+import { DEFAULT_ARTICLES, getOptimizedImageUrl, getAuthorAvatar, slugifyAuthor } from '../../../lib/data';
 import ViewCounter from '../../../components/ViewCounter';
 import { marked } from 'marked';
 
@@ -118,47 +118,42 @@ export default async function ArticlePage({ params }) {
     .filter(a => a.category.toLowerCase() === article.category.toLowerCase() && a.id !== article.id)
     .slice(0, 5);
 
+  const wordCount = (article.content || '').trim().split(/\s+/).filter(Boolean).length;
+  const authorSlug = slugifyAuthor(article.author);
+  const canonicalUrl = `https://nussadigital.co.id/article/${article.id}`;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
     "headline": article.title,
+    "description": article.excerpt,
     "image": [article.image],
     "datePublished": article.date,
-    "dateModified": article.date,
+    "dateModified": article.updatedAt || article.date,
+    "wordCount": wordCount,
+    "articleSection": article.category,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": canonicalUrl
+    },
     "author": [{
       "@type": "Person",
       "name": article.author,
-      "url": "https://nussadigital.co.id/about"
-    }]
+      "url": `https://nussadigital.co.id/author/${authorSlug}`
+    }],
+    "publisher": {
+      "@type": "Organization",
+      "name": "NDNews",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://nussadigital.co.id/favicon.png"
+      }
+    }
   };
 
   // Parse markdown to HTML string
-  const rawHtml = marked.parse(article.content || '');
-  
-  // Build article body paragraphs with ad injected in middle
-  const paragraphs = rawHtml.split('</p>');
-  const midPoint = Math.floor(paragraphs.length / 2);
-  
-  // Inject AdSense HTML
-  const adHtml = `
-    <div class="ad-container ad-leaderboard" style="margin: 30px 0;">
-      <span style="font-size: 10px; color: #888; display: block; margin-bottom: 5px; text-align: center;">Advertisement</span>
-      <ins class="adsbygoogle"
-           style="display:block; text-align:center;"
-           data-ad-client="ca-pub-2449102925093409"
-           data-ad-slot="1234567890"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-    </div>
-  `;
-
-  let finalHtml = '';
-  paragraphs.forEach((p, i) => {
-    finalHtml += p + (p.trim() ? '</p>' : '');
-    if (i === midPoint - 1 && p.trim()) {
-      finalHtml += adHtml;
-    }
-  });
+  // AdSense mid-content injection removed until account is approved.
+  const finalHtml = marked.parse(article.content || '');
 
   return (
     <main>
@@ -186,7 +181,7 @@ export default async function ArticlePage({ params }) {
                       <div className="article-author-avatar">{getInitials(article.author)}</div>
                     )}
                     <div>
-                      <span className="article-author-name">{article.author}</span>
+                      <Link href={`/author/${authorSlug}`} className="article-author-name">{article.author}</Link>
                       <span style={{ margin: '0 8px', color: '#9ca3af' }}>&bull;</span>
                       <span className="article-date">{formatDate(article.date)}</span>
                       <span style={{ margin: '0 8px', color: '#9ca3af' }}>&bull;</span>
@@ -219,15 +214,6 @@ export default async function ArticlePage({ params }) {
                   </div>
               </article>
               <aside className="article-sidebar">
-                  <div className="ad-container ad-sidebar">
-                      <span style={{fontSize: '10px', color: '#888', display: 'block', marginBottom: '5px'}}>Advertisement</span>
-                      <ins className="adsbygoogle"
-                           style={{display:'block', textAlign:'center'}}
-                           data-ad-client="ca-pub-2449102925093409"
-                           data-ad-slot="0987654321"
-                           data-ad-format="fluid"
-                           data-full-width-responsive="true"></ins>
-                  </div>
                   <div className="sidebar-section">
                       <h3 className="section-header">Related Articles</h3>
                       <div id="related-articles-container">
@@ -242,37 +228,13 @@ export default async function ArticlePage({ params }) {
                         ))}
                       </div>
                   </div>
-                  <div className="ad-container ad-sidebar">
-                      <span style={{fontSize: '10px', color: '#888', display: 'block', marginBottom: '5px'}}>Advertisement</span>
-                      <ins className="adsbygoogle"
-                           style={{display:'block', textAlign:'center'}}
-                           data-ad-client="ca-pub-2449102925093409"
-                           data-ad-slot="0987654321"
-                           data-ad-format="fluid"
-                           data-full-width-responsive="true"></ins>
-                  </div>
               </aside>
           </div>
       </section>
 
-      {/* 4. COMMENTS SECTION */}
-      <section className="comments-section">
-          <div className="section-wrapper">
-              <h2 className="section-header">Comments</h2>
-              <div id="comments-container">
-                <form className="comment-form" id="comment-form">
-                  <h4>Leave a comment</h4>
-                  <input type="text" id="comment-name" placeholder="Your Name" required />
-                  <input type="email" id="comment-email" placeholder="Your Email (will not be published)" required />
-                  <textarea id="comment-text" rows="4" placeholder="Share your thoughts..." required></textarea>
-                  <button type="submit" className="btn-primary">Post Comment</button>
-                </form>
-                <div className="comments-list" id="comments-list">
-                  <p>Be the first to comment on this article.</p>
-                </div>
-              </div>
-          </div>
-      </section>
+      {/* Comments section removed: the form was non-functional (no submit handler/backend),
+          which reads as a dead interactive element to reviewers. Re-add once wired to a
+          real comment backend (e.g. Firestore write + moderation). */}
 
       {/* 5. NEWSLETTER SIGNUP (Hidden temporarily for AdSense approval)
       <section className="newsletter-section">

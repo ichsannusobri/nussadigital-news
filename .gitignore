@@ -1,0 +1,9 @@
+node_modules
+
+# Sensitive service account credentials - never commit
+auto-indexing-website-d93927fe5a6d.json
+*.serviceaccount.json
+
+# Build output
+.next
+out

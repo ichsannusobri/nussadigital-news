@@ -1,6 +1,6 @@
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { DEFAULT_ARTICLES } from '../lib/data';
+import { DEFAULT_ARTICLES, slugifyAuthor } from '../lib/data';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -135,11 +135,29 @@ export default async function sitemap() {
     }
   }
 
+  // 9. Generate Author Page URLs
+  const authorStats = {};
+  articles.forEach(article => {
+    if (!article.author) return;
+    const slug = slugifyAuthor(article.author);
+    const articleDate = article.date ? new Date(article.date) : fallbackDate;
+    if (!authorStats[slug] || articleDate > authorStats[slug]) {
+      authorStats[slug] = articleDate;
+    }
+  });
+  const authorUrls = Object.entries(authorStats).map(([slug, latestDate]) => ({
+    url: `${baseUrl}/author/${slug}`,
+    lastModified: latestDate,
+    changeFrequency: 'weekly',
+    priority: 0.4,
+  }));
+
   // Combine and return all URLs
   return [
     ...corePages,
     ...categoryUrls,
     ...articleUrls,
+    ...authorUrls,
     ...paginationUrls,
     ...categoryPaginationUrls
   ];

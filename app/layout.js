@@ -65,12 +65,8 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2449102925093409"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+        {/* AdSense script removed until account is approved. Re-add once approved to avoid
+            being flagged as a site built primarily to serve ads with no valid account. */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-B5Q5GW1QX0"
           strategy="afterInteractive"

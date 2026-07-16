@@ -222,17 +222,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 4. AD BANNER */}
-      <div className="ad-container ad-leaderboard">
-          <span style={{fontSize: '10px', color: '#888', display: 'block', marginBottom: '5px'}}>Advertisement</span>
-          <ins className="adsbygoogle"
-               style={{display:'block', textAlign:'center'}}
-               data-ad-client="ca-pub-2449102925093409"
-               data-ad-slot="1234567890"
-               data-ad-format="auto"
-               data-full-width-responsive="true"></ins>
-      </div>
-
       {/* 5. BREAKING NEWS BANNER */}
       {breakingArticles.length > 0 && (
         <section className="breaking-banner" id="breaking-container">
@@ -294,23 +283,9 @@ export default async function HomePage() {
             </div>
           )}
 
-          <div className="ad-container ad-sidebar">
-                      <span style={{fontSize: '10px', color: '#888', display: 'block', marginBottom: '5px'}}>Advertisement</span>
-                      <ins className="adsbygoogle"
-                           style={{display:'block', textAlign:'center'}}
-                           data-ad-client="ca-pub-2449102925093409"
-                           data-ad-slot="0987654321"
-                           data-ad-format="fluid"
-                           data-full-width-responsive="true"></ins>
-                  </div>
               </aside>
           </div>
       </section>
-
-      {/* 9. AD BANNER */}
-      <div className="ad-container ad-leaderboard">
-          <span>Advertisement</span>
-      </div>
 
       {/* 10. SPORT SECTION + MOST POPULAR */}
       {sportArticles.length > 0 && (
