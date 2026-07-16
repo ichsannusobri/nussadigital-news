@@ -1,3 +1,4 @@
 // Trigger file for manual Cloudflare deploy
 // Edit this file (any change) and commit to fire the webhook.
 // Triggered: rebuild to sync cleaned article titles/excerpts (removed leaked "PART N:" prefixes) - 2026-07-16
+// Triggered: removed fake-expert attributions (5 articles), restructured template headers (1 article), published thin-content rewrite (1 article), cleaned up 18 redundant draft fields - 2026-07-16
