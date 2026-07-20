@@ -2908,3 +2908,16 @@ ul, ol {
 .markets-header-news-item:hover {
   color: var(--clr-primary);
 }
+
+/* Search Bar desktop visibility override */
+@media (min-width: 768px) {
+  .search-form {
+    width: 200px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+  }
+  .search-input {
+    width: 100% !important;
+    padding: 0 8px !important;
+    opacity: 1 !important;
+  }
+}

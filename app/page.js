@@ -126,8 +126,39 @@ export default async function HomePage() {
   // Explainer
   const explainers = homepageArticles.filter(a => a.category?.toLowerCase() === 'explainer');
 
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "NDNews",
+    "url": "https://nussadigital.co.id",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://nussadigital.co.id/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "NewsMediaOrganization",
+    "name": "NDNews",
+    "url": "https://nussadigital.co.id",
+    "logo": "https://nussadigital.co.id/favicon.png",
+    "sameAs": [
+      "https://www.linkedin.com/company/ndnews"
+    ]
+  };
+
   return (
     <main className="home-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+      />
       <h1 className="sr-only">Latest APAC Economy, Finance & Sports Breaking News</h1>
 
       {/* 2. TRENDING BAR */}

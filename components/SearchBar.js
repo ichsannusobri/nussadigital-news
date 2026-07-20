@@ -9,7 +9,7 @@ export default function SearchBar() {
   const router = useRouter();
 
   const handleSearch = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (query.trim()) {
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
       setIsExpanded(false);
@@ -21,7 +21,7 @@ export default function SearchBar() {
     <div className="search-container">
       <form onSubmit={handleSearch} className={`search-form ${isExpanded ? 'expanded' : ''}`}>
         <input
-          type="text"
+          type="search"
           placeholder="Search news..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -32,14 +32,16 @@ export default function SearchBar() {
           }}
         />
         <button 
-          type="button" 
+          type="submit" 
           className="search-btn" 
           aria-label="Search"
-          onClick={() => {
-            if (isExpanded && query.trim()) {
-              handleSearch(new Event('submit'));
-            } else {
-              setIsExpanded(!isExpanded);
+          onClick={(e) => {
+            if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+              return;
+            }
+            if (!isExpanded) {
+              e.preventDefault();
+              setIsExpanded(true);
             }
           }}
         >

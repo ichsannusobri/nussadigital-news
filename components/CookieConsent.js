@@ -3,29 +3,28 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function CookieConsent() {
-  const [showConsent, setShowConsent] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [hasConsent, setHasConsent] = useState(false);
 
   useEffect(() => {
-    // Check if user has already made a choice
+    setIsClient(true);
     const consent = localStorage.getItem('ndnews_cookie_consent');
-    if (!consent) {
-      // Small delay for smooth entrance animation
-      const timer = setTimeout(() => setShowConsent(true), 1500);
-      return () => clearTimeout(timer);
+    if (consent) {
+      setHasConsent(true);
     }
   }, []);
 
   const handleAccept = () => {
     localStorage.setItem('ndnews_cookie_consent', 'accepted');
-    setShowConsent(false);
+    setHasConsent(true);
   };
 
   const handleDecline = () => {
     localStorage.setItem('ndnews_cookie_consent', 'declined');
-    setShowConsent(false);
+    setHasConsent(true);
   };
 
-  if (!showConsent) return null;
+  if (isClient && hasConsent) return null;
 
   return (
     <div className="cookie-consent-banner">
