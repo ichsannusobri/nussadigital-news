@@ -93,24 +93,35 @@ export default async function HomePage() {
   const totalPages = Math.ceil(articles.length / ITEMS_PER_PAGE);
 
   // Pre-calculate subsets
-  const homepageArticles = articles.slice(0, 25);
+  const homepageArticles = articles.slice(0, 30);
   const breakingArticles = homepageArticles.filter(a => a.isBreaking);
   const featured = homepageArticles.filter(a => a.isFeatured);
   
-  // Hero
+  // Hero Main: Newest featured article or newest overall article
   const mainArticle = featured[0] || articles[0];
-  const midArticles = [
-    featured[1] || articles[1],
-    featured[2] || articles[2],
-    featured[3] || articles[3]
-  ].filter(Boolean);
+  
+  // Pool of articles excluding mainArticle to avoid duplication
+  const poolAfterMain = articles.filter(a => a.id !== mainArticle.id);
+  const remainingFeatured = poolAfterMain.filter(a => a.isFeatured);
+  const unfeaturedPool = poolAfterMain.filter(a => !a.isFeatured);
+
+  const midArticles = [];
+  for (let i = 0; i < 3; i++) {
+    if (remainingFeatured[i]) {
+      midArticles.push(remainingFeatured[i]);
+    } else if (unfeaturedPool.length > 0) {
+      midArticles.push(unfeaturedPool.shift());
+    }
+  }
+  
+  const heroUsedIds = new Set([mainArticle.id, ...midArticles.map(a => a.id)]);
   
   const pinnedArticles = articles.filter(a => a.isPinned);
-  const unpinnedSidebar = articles.filter(a => !a.isPinned).slice(4, 9);
-  const sidebarArticles = [...pinnedArticles, ...unpinnedSidebar];
+  const unpinnedSidebar = articles.filter(a => !a.isPinned && !heroUsedIds.has(a.id)).slice(0, 5);
+  const sidebarArticles = [...pinnedArticles, ...unpinnedSidebar].slice(0, 5);
   
-  // Latest News (skip first 2 logically, but let's just use recent ones)
-  const latestArticles = homepageArticles.slice(2, 12);
+  // Latest News (all recent articles excluding those used in main hero)
+  const latestArticles = articles.filter(a => !heroUsedIds.has(a.id)).slice(0, 10);
   
   // Opinions
   const opinionArticles = homepageArticles.filter(a => a.category?.toLowerCase() === 'opinion');
