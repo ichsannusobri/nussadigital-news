@@ -17,15 +17,15 @@ export const STANDARD_CATEGORIES = [
 ];
 
 export default function BudgetMeters({ 
-  expenses, 
-  categoryBudgets, 
+  expenses = [], 
+  categoryBudgets = {}, 
   categorySpentOverrides = {},
   categoryNotes = {},
-  currency, 
-  onUpdateCategoryBudget,
-  onUpdateCategorySpent,
-  onUpdateCategoryNotes,
-  onAddCustomCategory
+  currency = "IDR", 
+  onUpdateCategoryBudget = () => {},
+  onUpdateCategorySpent = () => {},
+  onUpdateCategoryNotes = () => {},
+  onAddCustomCategory = () => {}
 }) {
   const [showModal, setShowModal] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
@@ -42,14 +42,19 @@ export default function BudgetMeters({
 
   // Compute calculated spent from Expense Tracker per category in display currency
   const calculatedSpentPerCat = {};
-  expenses.forEach(e => {
+  (expenses || []).forEach(e => {
+    if (!e) return;
     const cat = e.category || "Uncategorized";
-    const amt = convertCurrency(e.amount, e.currency || "IDR", currency);
+    const amt = convertCurrency(e.amount || 0, e.currency || "IDR", currency);
     calculatedSpentPerCat[cat] = (calculatedSpentPerCat[cat] || 0) + amt;
   });
 
+  const safeBudgets = categoryBudgets || {};
+  const safeSpentOverrides = categorySpentOverrides || {};
+  const safeNotes = categoryNotes || {};
+
   // Unique list of all active categories (standard + custom + user settings)
-  const categorySet = new Set([...STANDARD_CATEGORIES, ...Object.keys(categoryBudgets || {})]);
+  const categorySet = new Set([...STANDARD_CATEGORIES, ...Object.keys(safeBudgets)]);
   const categories = Array.from(categorySet);
 
   // Calculate totals
@@ -57,13 +62,13 @@ export default function BudgetMeters({
   let grandTotalSpent = 0;
 
   categories.forEach(cat => {
-    const limitIDR = categoryBudgets[cat] || 0;
+    const limitIDR = safeBudgets[cat] || 0;
     const limitDisplay = convertCurrency(limitIDR, "IDR", currency);
     grandTotalBudget += limitDisplay;
 
     // Use override spent if set by user, otherwise use sum of expenses
-    const hasOverride = categorySpentOverrides[cat] !== undefined;
-    const spentIDR = hasOverride ? categorySpentOverrides[cat] : null;
+    const hasOverride = safeSpentOverrides[cat] !== undefined && safeSpentOverrides[cat] !== null;
+    const spentIDR = hasOverride ? safeSpentOverrides[cat] : null;
     const spentDisplay = hasOverride 
       ? convertCurrency(spentIDR, "IDR", currency)
       : (calculatedSpentPerCat[cat] || 0);
@@ -79,18 +84,18 @@ export default function BudgetMeters({
     setEditingCategory(cat);
     
     // Existing limit in display currency
-    const limitIDR = categoryBudgets[cat] || 0;
+    const limitIDR = safeBudgets[cat] || 0;
     const limitDisplay = convertCurrency(limitIDR, "IDR", currency);
     setLimitInput(limitDisplay ? String(limitDisplay) : "");
 
     // Existing spent override in display currency
-    const hasOverride = categorySpentOverrides[cat] !== undefined;
-    const spentIDR = hasOverride ? categorySpentOverrides[cat] : (calculatedSpentPerCat[cat] || 0);
+    const hasOverride = safeSpentOverrides[cat] !== undefined && safeSpentOverrides[cat] !== null;
+    const spentIDR = hasOverride ? safeSpentOverrides[cat] : (calculatedSpentPerCat[cat] || 0);
     const spentDisplay = convertCurrency(spentIDR, "IDR", currency);
     setSpentInput(spentDisplay ? String(spentDisplay) : "0");
 
     // Existing notes
-    setNotesInput(categoryNotes[cat] || "");
+    setNotesInput(safeNotes[cat] || "");
 
     setShowModal(true);
   };
@@ -183,15 +188,15 @@ export default function BudgetMeters({
       {/* CATEGORY METER GRID (CLICKABLE CARDS) */}
       <div className="meters-grid">
         {categories.map((cat) => {
-          const limitIDR = categoryBudgets[cat] || 0;
+          const limitIDR = safeBudgets[cat] || 0;
           const limit = convertCurrency(limitIDR, "IDR", currency);
 
-          const hasOverride = categorySpentOverrides[cat] !== undefined;
-          const spentIDR = hasOverride ? categorySpentOverrides[cat] : (calculatedSpentPerCat[cat] || 0);
+          const hasOverride = safeSpentOverrides[cat] !== undefined && safeSpentOverrides[cat] !== null;
+          const spentIDR = hasOverride ? safeSpentOverrides[cat] : (calculatedSpentPerCat[cat] || 0);
           const spent = convertCurrency(spentIDR, "IDR", currency);
 
           const pct = limit > 0 ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
-          const noteText = categoryNotes[cat] || "";
+          const noteText = safeNotes[cat] || "";
 
           let statusClass = "green";
           if (pct >= 90) statusClass = "red";
@@ -207,7 +212,7 @@ export default function BudgetMeters({
               <div className="meter-info-top">
                 <div className="meter-cat-title-group">
                   <span className="meter-cat-title">{cat}</span>
-                  <span className="badge-edit-pencil">✏️ Click to Edit</span>
+                  <span className="badge-edit-pencil">✏️ Edit</span>
                 </div>
                 <span className="meter-pct">{pct}% Used</span>
               </div>

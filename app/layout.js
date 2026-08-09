@@ -46,6 +46,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <style>{`
+          img { max-width: 100%; height: auto; }
+          .header-logo-img { height: 28px !important; width: auto !important; max-height: 28px !important; object-fit: contain !important; }
+        `}</style>
         <script
           dangerouslySetInnerHTML={{
             __html: `
