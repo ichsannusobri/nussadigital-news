@@ -4629,6 +4629,222 @@ ul, ol {
   color: #D97706;
 }
 
+/* ==========================================================================
+   NAVY BLUE BUDGET AI HEADER BADGE LINK
+   ========================================================================== */
+.nav-budget-ai-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%) !important;
+  color: #FFFFFF !important;
+  font-family: var(--ff-headline, 'Outfit', sans-serif) !important;
+  font-weight: 800 !important;
+  font-size: 0.82rem !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+}
+
+.nav-budget-ai-link:hover {
+  transform: translateY(-1px) !important;
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.5) !important;
+  color: #F59E0B !important;
+}
+
+.nav-budget-ai-link svg {
+  color: #F59E0B;
+}
+
+.nav-ai-title {
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
+}
+
+.nav-beta-badge {
+  font-size: 0.6rem;
+  font-weight: 900;
+  background: #F59E0B;
+  color: #0F172A;
+  padding: 1px 5px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   SMARTPHONE RESPONSIVE UX ENHANCEMENTS (Mobile Breakpoints)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .budget-page-container {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .budget-auth-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.85rem;
+  }
+
+  .auth-bar-left, .auth-bar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .login-prompt-box {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .btn-email-signin, .btn-google-signin {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .budget-top-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.85rem;
+  }
+
+  .currency-selector-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .currency-pills {
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .currency-pill-btn {
+    flex-shrink: 0;
+    padding: 6px 12px;
+  }
+
+  .budget-kpi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem;
+  }
+
+  .kpi-card {
+    padding: 1rem;
+  }
+
+  .wallos-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .btn-wallos-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .wallos-bar-right {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wallos-search-box {
+    width: 100%;
+  }
+  .wallos-search-box input {
+    width: 100%;
+  }
+
+  .wallos-filter-select {
+    width: 100%;
+  }
+  .wallos-filter-select select {
+    width: 100%;
+  }
+
+  .wallos-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem;
+  }
+
+  .meters-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem;
+  }
+
+  .total-budget-summary-box {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem;
+    padding: 0.85rem;
+  }
+
+  .meters-header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-sync-income-targets, .btn-add-budget-limit {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .budget-modal-box {
+    width: 95%;
+    max-height: 92vh;
+    padding: 1.15rem;
+    border-radius: 16px;
+  }
+
+  .modal-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-group {
+    grid-column: span 1 !important;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .btn-cancel, .btn-submit-save {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .chat-messages-area {
+    height: 220px;
+  }
+
+  .login-gate-card {
+    padding: 1.5rem 1.15rem;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .total-budget-summary-box {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
 
 
 

@@ -35,11 +35,15 @@ export default function Header() {
         </div>
         <nav className={`main-nav ${isOpen ? 'mobile-open' : ''}`}>
           <Link href="/" onClick={closeMenu}>Home</Link>
-          <Link href="/budget" onClick={closeMenu} style={{ color: '#10B981', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ fontSize: '14px' }}>✨</span>
-            BUDGET AI
-            <span style={{ fontSize: '0.65rem', background: 'linear-gradient(135deg, #10B981, #059669)', color: '#fff', padding: '1px 5px', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>BETA</span>
+          
+          <Link href="/budget" onClick={closeMenu} className="nav-budget-ai-link">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            <span className="nav-ai-title">BUDGET AI</span>
+            <span className="nav-beta-badge">BETA</span>
           </Link>
+
           <Link href="/markets" onClick={closeMenu} style={{ color: 'var(--brand-primary)', fontWeight: 'bold', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
             MARKETS
