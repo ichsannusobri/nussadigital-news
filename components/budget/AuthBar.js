@@ -10,7 +10,7 @@ import {
   updateProfile 
 } from 'firebase/auth';
 
-export default function AuthBar({ user, isDemo, onToggleDemo, onCustomUserLogin }) {
+export default function AuthBar({ user, onCustomUserLogin }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
   const [email, setEmail] = useState('');
@@ -28,7 +28,6 @@ export default function AuthBar({ user, isDemo, onToggleDemo, onCustomUserLogin 
       await signInWithPopup(auth, googleProvider);
     } catch (e) {
       console.error("Google Sign-In Error:", e);
-      // Open email modal as fallback
       setAuthError("Google Sign-In Domain Unauthorized. You can create a direct Email/Password account below!");
       setShowAuthModal(true);
     }
@@ -90,17 +89,6 @@ export default function AuthBar({ user, isDemo, onToggleDemo, onCustomUserLogin 
           <span className="app-badge-pill">BETA</span>
           <span className="app-badge-title">NDNews Personal Finance</span>
         </div>
-        <div className="demo-toggle-wrap">
-          <label className="demo-toggle-label">
-            <input
-              type="checkbox"
-              checked={isDemo}
-              onChange={(e) => onToggleDemo(e.target.checked)}
-            />
-            <span className="slider"></span>
-            <span className="toggle-text">{isDemo ? "🎮 Demo Mode" : "🔒 Live Account"}</span>
-          </label>
-        </div>
       </div>
 
       <div className="auth-bar-right">
@@ -112,8 +100,8 @@ export default function AuthBar({ user, isDemo, onToggleDemo, onCustomUserLogin 
               <div className="user-avatar-fallback">{user.displayName?.charAt(0) || user.email?.charAt(0) || "U"}</div>
             )}
             <div className="user-details">
-              <span className="user-name">{user.displayName || user.email?.split('@')[0]}</span>
-              <span className="user-email">{user.email}</span>
+              <span className="user-name">{user.displayName || (user.email ? user.email.split('@')[0] : "User")}</span>
+              <span className="user-email">{user.email || "Account Active"}</span>
             </div>
             <button onClick={handleLogout} className="btn-logout" title="Sign Out">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>

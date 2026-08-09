@@ -10,8 +10,8 @@ import {
   deleteUserExpense, 
   getUserSettings, 
   saveUserSettings,
-  DEMO_EXPENSES,
-  DEMO_SETTINGS
+  INITIAL_EXPENSES,
+  DEFAULT_SETTINGS
 } from '../../lib/budget/db';
 
 import { 
@@ -38,7 +38,6 @@ const CATEGORY_SYNC_RATIOS = {
 
 export default function BudgetPage() {
   const [user, setUser] = useState(null);
-  const [isDemo, setIsDemo] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // App Data State
@@ -55,28 +54,22 @@ export default function BudgetPage() {
   // 1. Auth Listener
   useEffect(() => {
     if (!auth) {
-      setIsDemo(true);
       setLoading(false);
       return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        setIsDemo(false);
-      } else if (!user) {
-        setIsDemo(true); // Default to demo mode if no custom or google user
-      }
+      setUser(currentUser);
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, []);
 
-  // 2. Load Data based on User/Demo status
+  // 2. Load Data based on User status
   useEffect(() => {
     async function loadData() {
-      const activeUid = isDemo || !user ? 'demo' : user.uid;
+      const activeUid = user ? user.uid : 'guest';
       setLoading(true);
 
       try {
@@ -85,13 +78,13 @@ export default function BudgetPage() {
           getUserSettings(activeUid)
         ]);
 
-        setExpenses(userExp || DEMO_EXPENSES);
+        setExpenses(userExp || INITIAL_EXPENSES);
         if (userSet) {
           setCurrency(userSet.currency || 'IDR');
           const loadedIncome = userSet.monthlyIncome || 18000000;
           setMonthlyIncome(loadedIncome);
 
-          let loadedBudgets = userSet.categoryBudgets || DEMO_SETTINGS.categoryBudgets;
+          let loadedBudgets = userSet.categoryBudgets || DEFAULT_SETTINGS.categoryBudgets;
           setCategoryBudgets(loadedBudgets);
           setCategorySpentOverrides(userSet.categorySpentOverrides || {});
           setCategoryNotes(userSet.categoryNotes || {});
@@ -104,22 +97,17 @@ export default function BudgetPage() {
     }
 
     loadData();
-  }, [user, isDemo]);
+  }, [user]);
 
   // Custom Direct Email/Password User Handler
   const handleCustomUserLogin = (customUser) => {
     setUser(customUser);
-    if (customUser) {
-      setIsDemo(false);
-    } else {
-      setIsDemo(true);
-    }
   };
 
   // Currency Change Handler
   const handleCurrencyChange = (newCurrency) => {
     setCurrency(newCurrency);
-    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    const activeUid = user ? user.uid : 'guest';
     saveUserSettings(activeUid, {
       currency: newCurrency,
       monthlyIncome,
@@ -151,7 +139,7 @@ export default function BudgetPage() {
     const syncedBudgets = generateSyncedCategoryBudgets(baselineIncomeIDR);
     setCategoryBudgets(syncedBudgets);
 
-    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    const activeUid = user ? user.uid : 'guest';
     await saveUserSettings(activeUid, {
       currency,
       monthlyIncome: baselineIncomeIDR,
@@ -165,7 +153,7 @@ export default function BudgetPage() {
     const syncedBudgets = generateSyncedCategoryBudgets(monthlyIncome);
     setCategoryBudgets(syncedBudgets);
 
-    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    const activeUid = user ? user.uid : 'guest';
     await saveUserSettings(activeUid, {
       currency,
       monthlyIncome,
@@ -179,21 +167,21 @@ export default function BudgetPage() {
   const handleAddExpense = async (newExp) => {
     const updated = [...expenses, newExp];
     setExpenses(updated);
-    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    const activeUid = user ? user.uid : 'guest';
     await saveUserExpense(activeUid, newExp);
   };
 
   const handleUpdateExpense = async (updatedExp) => {
     const updated = expenses.map(e => e.id === updatedExp.id ? updatedExp : e);
     setExpenses(updated);
-    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    const activeUid = user ? user.uid : 'guest';
     await saveUserExpense(activeUid, updatedExp);
   };
 
   const handleDeleteExpense = async (id) => {
     const updated = expenses.filter(e => e.id !== id);
     setExpenses(updated);
-    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    const activeUid = user ? user.uid : 'guest';
     await deleteUserExpense(activeUid, id);
   };
 
@@ -201,7 +189,7 @@ export default function BudgetPage() {
   const handleUpdateCategoryBudget = (cat, limitInIDR) => {
     const updatedBudgets = { ...categoryBudgets, [cat]: limitInIDR };
     setCategoryBudgets(updatedBudgets);
-    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    const activeUid = user ? user.uid : 'guest';
     saveUserSettings(activeUid, {
       currency,
       monthlyIncome,
@@ -214,7 +202,7 @@ export default function BudgetPage() {
   const handleUpdateCategorySpent = (cat, spentInIDR) => {
     const updatedOverrides = { ...categorySpentOverrides, [cat]: spentInIDR };
     setCategorySpentOverrides(updatedOverrides);
-    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    const activeUid = user ? user.uid : 'guest';
     saveUserSettings(activeUid, {
       currency,
       monthlyIncome,
@@ -227,7 +215,7 @@ export default function BudgetPage() {
   const handleUpdateCategoryNotes = (cat, notes) => {
     const updatedNotes = { ...categoryNotes, [cat]: notes };
     setCategoryNotes(updatedNotes);
-    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    const activeUid = user ? user.uid : 'guest';
     saveUserSettings(activeUid, {
       currency,
       monthlyIncome,
@@ -242,7 +230,7 @@ export default function BudgetPage() {
     const updatedNotes = { ...categoryNotes, [name]: notes };
     setCategoryBudgets(updatedBudgets);
     setCategoryNotes(updatedNotes);
-    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    const activeUid = user ? user.uid : 'guest';
     saveUserSettings(activeUid, {
       currency,
       monthlyIncome,
@@ -323,8 +311,6 @@ export default function BudgetPage() {
       {/* 1. AUTH & HEADER BAR */}
       <AuthBar 
         user={user} 
-        isDemo={isDemo} 
-        onToggleDemo={(val) => setIsDemo(val)} 
         onCustomUserLogin={handleCustomUserLogin}
       />
 
@@ -352,11 +338,9 @@ export default function BudgetPage() {
         </div>
 
         <div className="toolbar-status-badge">
-          {isDemo ? (
-            <span className="badge-demo-mode">🎮 Demo Mode (Sample Household Data)</span>
-          ) : (
-            <span className="badge-live-mode">🔒 Isolated Account ({user?.displayName || user?.email || 'User'})</span>
-          )}
+          <span className="badge-live-mode">
+            🔒 Private Account Workspace ({user ? (user.displayName || user.email || 'User') : 'Local Session'})
+          </span>
         </div>
       </div>
 
