@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { formatCurrency, convertCurrency, SUPPORTED_CURRENCIES } from '../../lib/budget/currencies';
+import { getExpenseLogoInfo, getPaymentBadge } from '../../lib/budget/brandLogos';
 
 const CATEGORIES = [
   "Housing",
@@ -17,11 +18,13 @@ const CATEGORIES = [
 ];
 
 const BILLING_CYCLES = ["Monthly", "Yearly", "Weekly", "One-Time"];
-const PAYMENT_METHODS = ["Bank Transfer", "Credit Card", "Debit Card", "Autopay", "E-Wallet / QRIS", "Cash"];
+const PAYMENT_METHODS = ["Bank Transfer", "Credit Card", "Debit Card", "Autopay", "Apple Pay", "PayPal", "QRIS / E-Wallet"];
 
 export default function ExpenseTracker({ expenses, currency, onAddExpense, onDeleteExpense, onUpdateExpense }) {
+  const [viewMode, setViewMode] = useState("grid"); // "grid" (Wallos style) or "table"
   const [showModal, setShowModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const [editingExpense, setEditingExpense] = useState(null);
 
   const [formData, setFormData] = useState({
@@ -71,7 +74,7 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.name || !formData.amount) {
-      alert("Please fill in the expense name and amount.");
+      alert("Please enter the expense name and amount.");
       return;
     }
 
@@ -89,21 +92,42 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
     setShowModal(false);
   };
 
-  const filteredExpenses = selectedCategory === "All"
-    ? expenses
-    : expenses.filter(e => e.category === selectedCategory);
+  // Filter items by search & category
+  const filteredExpenses = expenses.filter((item) => {
+    const matchCategory = selectedCategory === "All" || item.category === selectedCategory;
+    const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        (item.notes && item.notes.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchCategory && matchSearch;
+  });
 
   return (
-    <div className="wallos-tracker-card">
-      <div className="tracker-card-header">
-        <div className="header-title-group">
-          <span className="section-icon">📑</span>
-          <h3>Household Expenses & Subscriptions (Wallos-Style)</h3>
-          <span className="badge-count">{filteredExpenses.length} Items</span>
+    <div className="wallos-workspace-wrapper">
+      {/* TOP WALLOS CONTROLS BAR */}
+      <div className="wallos-top-bar">
+        <div className="wallos-bar-left">
+          <button onClick={handleOpenAdd} className="btn-wallos-primary">
+            <span className="btn-icon-plus">➕</span>
+            <span>New Expense / Subscription</span>
+          </button>
         </div>
 
-        <div className="header-actions">
-          <div className="category-filter-select">
+        <div className="wallos-bar-right">
+          {/* SEARCH BAR */}
+          <div className="wallos-search-box">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input
+              type="text"
+              placeholder="Search expenses, subscriptions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery("")} className="btn-clear-search">✕</button>
+            )}
+          </div>
+
+          {/* CATEGORY FILTER SELECT */}
+          <div className="wallos-filter-select">
             <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
               <option value="All">All Categories ({expenses.length})</option>
               {CATEGORIES.map(cat => (
@@ -112,32 +136,105 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
             </select>
           </div>
 
-          <button onClick={handleOpenAdd} className="btn-add-expense">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Add Expense / Bill
-          </button>
+          {/* VIEW MODE TOGGLE (Grid vs List) */}
+          <div className="wallos-view-toggle">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`toggle-btn ${viewMode === "grid" ? "active" : ""}`}
+              title="Grid View (Wallos Cards)"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+            </button>
+            <button
+              onClick={() => setViewMode("table")}
+              className={`toggle-btn ${viewMode === "table" ? "active" : ""}`}
+              title="Table List View"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* EXPENSE TABLE */}
-      <div className="tracker-table-container">
-        {filteredExpenses.length === 0 ? (
-          <div className="empty-expenses-state">
-            <p>No expenses found in this category.</p>
-            <button onClick={handleOpenAdd} className="btn-secondary-sm">Add First Expense</button>
-          </div>
-        ) : (
+      {/* CONTENT AREA */}
+      {filteredExpenses.length === 0 ? (
+        <div className="empty-expenses-state">
+          <span className="empty-icon">📂</span>
+          <p>No expenses found matching your filter.</p>
+          <button onClick={handleOpenAdd} className="btn-secondary-sm">Add New Item</button>
+        </div>
+      ) : viewMode === "grid" ? (
+        /* WALLOS 3-COLUMN CARD GRID VIEW */
+        <div className="wallos-cards-grid">
+          {filteredExpenses.map((item) => {
+            const logoInfo = getExpenseLogoInfo(item.name, item.category);
+            const payBadge = getPaymentBadge(item.paymentMethod);
+            const convertedAmt = convertCurrency(item.amount, item.currency || "IDR", currency);
+
+            return (
+              <div key={item.id} className="wallos-card">
+                {/* CARD HEADER */}
+                <div className="wallos-card-top">
+                  <div className="brand-logo-container">
+                    {logoInfo.type === "brand" ? (
+                      <img src={logoInfo.logo} alt={item.name} className="brand-img-logo" />
+                    ) : (
+                      <div className="stock-icon-avatar" style={{ backgroundColor: logoInfo.bg, color: logoInfo.color }}>
+                        {logoInfo.icon}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="card-menu-dropdown">
+                    <button onClick={() => handleOpenEdit(item)} className="btn-card-menu" title="Edit Item">
+                      ⋮
+                    </button>
+                  </div>
+                </div>
+
+                {/* CARD BODY */}
+                <div className="wallos-card-body">
+                  <h4 className="card-item-title">{item.name}</h4>
+                  <div className="card-item-price">
+                    {formatCurrency(convertedAmt, currency)}
+                  </div>
+                </div>
+
+                {/* CARD FOOTER */}
+                <div className="wallos-card-footer">
+                  <div className="card-meta-left">
+                    <span className="meta-line">
+                      <span className="icon-cycle">🔄</span> {item.cycle}
+                    </span>
+                    <span className="meta-line">
+                      <span className="icon-date">📅</span> Due {item.dueDate}
+                    </span>
+                  </div>
+
+                  <div className="card-meta-right">
+                    <span className="payment-badge-pill" style={{ backgroundColor: payBadge.bg, color: payBadge.color }}>
+                      {payBadge.text}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* TABLE LIST VIEW */
+        <div className="wallos-table-container">
           <table className="wallos-table">
             <thead>
               <tr>
-                <th>Expense / Subscription</th>
+                <th>Item / Subscription</th>
                 <th>Category</th>
                 <th>Cycle</th>
                 <th>Due Date</th>
                 <th>Method</th>
                 <th className="text-right">Cost ({currency})</th>
                 <th>Status</th>
-                <th className="text-center">Action</th>
+                <th className="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -148,8 +245,10 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
                 return (
                   <tr key={item.id} className={isPaid ? "row-paid" : ""}>
                     <td className="font-semibold text-main">
-                      {item.name}
-                      {item.notes && <span className="item-subnote">{item.notes}</span>}
+                      <div className="table-item-cell">
+                        <span className="table-item-name">{item.name}</span>
+                        {item.notes && <span className="item-subnote">{item.notes}</span>}
+                      </div>
                     </td>
                     <td>
                       <span className={`cat-badge cat-${item.category.toLowerCase()}`}>
@@ -169,12 +268,8 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
                     </td>
                     <td className="text-center">
                       <div className="action-btn-group">
-                        <button onClick={() => handleOpenEdit(item)} className="btn-icon-edit" title="Edit">
-                          ✏️
-                        </button>
-                        <button onClick={() => onDeleteExpense(item.id)} className="btn-icon-delete" title="Delete">
-                          🗑️
-                        </button>
+                        <button onClick={() => handleOpenEdit(item)} className="btn-icon-edit" title="Edit">✏️</button>
+                        <button onClick={() => onDeleteExpense(item.id)} className="btn-icon-delete" title="Delete">🗑️</button>
                       </div>
                     </td>
                   </tr>
@@ -182,24 +277,24 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
               })}
             </tbody>
           </table>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* MODAL FORM */}
+      {/* MODAL DIALOG */}
       {showModal && (
         <div className="budget-modal-overlay">
           <div className="budget-modal-box">
             <div className="modal-header">
-              <h4>{editingExpense ? "Edit Expense / Subscription" : "Add Household Expense / Bill"}</h4>
+              <h4>{editingExpense ? "Edit Subscription / Expense" : "Add Subscription / Expense"}</h4>
               <button onClick={() => setShowModal(false)} className="btn-close-modal">✕</button>
             </div>
 
             <form onSubmit={handleSubmit} className="modal-form-grid">
               <div className="form-group full-width">
-                <label>Expense / Subscription Name</label>
+                <label>Item Name (e.g. Netflix, PLN Electricity, Groceries)</label>
                 <input
                   type="text"
-                  placeholder="e.g. Netflix Premium, Electricity PLN, PLN Token, Mortgage"
+                  placeholder="e.g. Netflix, Spotify, PLN Electricity, Rent"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
@@ -284,7 +379,7 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
                 <label>Notes / Memo (Optional)</label>
                 <input
                   type="text"
-                  placeholder="e.g. Shared account with family, discount promo code"
+                  placeholder="e.g. Family plan 4-screen"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 />
@@ -295,7 +390,7 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
                   Cancel
                 </button>
                 <button type="submit" className="btn-submit-save">
-                  Save Expense
+                  Save Item
                 </button>
               </div>
             </form>
