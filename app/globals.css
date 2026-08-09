@@ -3639,18 +3639,102 @@ ul, ol {
 }
 
 .meters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
+
+.meters-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .meters-header h3 {
   font-family: var(--ff-headline, 'Outfit', sans-serif);
   font-size: 1.1rem;
   font-weight: 700;
-  display: inline-block;
-  margin: 0 8px 0 0;
+  margin: 0;
 }
+
 .meters-subtitle {
   font-size: 0.78rem;
   color: var(--clr-text-secondary, #6B7280);
+}
+
+.btn-add-budget-limit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--clr-bg-tertiary, #F3F4F6);
+  border: 1px solid var(--clr-border, #E5E7EB);
+  color: var(--clr-text, #1A1A1A);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-budget-limit:hover {
+  background: #10B981;
+  color: #FFFFFF;
+  border-color: #10B981;
+}
+
+/* TOTAL BUDGET SUMMARY BOX */
+.total-budget-summary-box {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  background: var(--clr-bg-secondary, #F8F8F8);
+  border: 1px solid var(--clr-border, #E5E7EB);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.summary-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-stat-item .stat-label {
+  font-size: 0.7rem;
+  color: var(--clr-text-secondary, #6B7280);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.summary-stat-item .stat-val {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 1rem;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+.meter-cat-title-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-edit-limit-icon {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.btn-edit-limit-icon:hover {
+  opacity: 1;
 }
 
 .meters-grid {
