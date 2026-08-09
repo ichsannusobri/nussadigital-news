@@ -29,7 +29,7 @@ export default function Header() {
             {isOpen ? '✕' : '☰'}
           </button>
           <Link href="/" className="logo" onClick={closeMenu}>
-            <img src="/favicon.png" alt="ND" className="header-logo-img" />
+            <img src="/favicon.png" alt="ND" className="header-logo-img" style={{ height: '28px', width: 'auto', maxHeight: '28px', objectFit: 'contain' }} />
             ND<span>News</span>
           </Link>
         </div>
