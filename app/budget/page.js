@@ -214,10 +214,30 @@ export default function BudgetPage() {
   // Financial Calculations
   const incomeInCurrentCurrency = convertCurrency(monthlyIncome, 'IDR', currency);
 
-  // Calculate Total Expenses considering category spent overrides if set
-  const totalExpenseInCurrentCurrency = expenses.reduce((acc, item) => {
-    return acc + convertCurrency(item.amount, item.currency || 'IDR', currency);
-  }, 0);
+  // Calculate Total Expenses: sum of actual category spent (overrides or item sums)
+  const categorySet = new Set([
+    "Housing", "Groceries", "Utilities", "Subscriptions", "Transport", 
+    "Insurance", "Healthcare", "Education", "Entertainment", "Savings",
+    ...Object.keys(categoryBudgets || {})
+  ]);
+
+  const calculatedSpentPerCat = {};
+  (expenses || []).forEach(e => {
+    if (!e) return;
+    const cat = e.category || "Uncategorized";
+    const amt = convertCurrency(e.amount || 0, e.currency || "IDR", currency);
+    calculatedSpentPerCat[cat] = (calculatedSpentPerCat[cat] || 0) + amt;
+  });
+
+  let totalExpenseInCurrentCurrency = 0;
+  Array.from(categorySet).forEach(cat => {
+    const hasOverride = categorySpentOverrides && categorySpentOverrides[cat] !== undefined && categorySpentOverrides[cat] !== null;
+    const spentIDR = hasOverride ? categorySpentOverrides[cat] : null;
+    const spentDisplay = hasOverride 
+      ? convertCurrency(spentIDR, "IDR", currency)
+      : (calculatedSpentPerCat[cat] || 0);
+    totalExpenseInCurrentCurrency += spentDisplay;
+  });
 
   const netSavings = incomeInCurrentCurrency - totalExpenseInCurrentCurrency;
   const savingsRate = incomeInCurrentCurrency > 0 
