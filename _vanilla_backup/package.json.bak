@@ -1,0 +1,20 @@
+{
+  "name": "nd-news-portal",
+  "version": "1.0.0",
+  "description": "High-fidelity premium APAC news portal inspired by Al Jazeera design system, featuring Google Ads and SEO optimizations",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 3000",
+    "dev": "npx http-server -p 3000"
+  },
+  "keywords": [
+    "news",
+    "portal",
+    "seo",
+    "ads",
+    "aljazeera",
+    "apac"
+  ],
+  "author": "NDNews Media Group",
+  "license": "ISC"
+}

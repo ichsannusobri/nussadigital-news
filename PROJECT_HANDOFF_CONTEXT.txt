@@ -1,0 +1,60 @@
+====================================================================
+PROJECT HANDOFF CONTEXT: NDNEWS (NUSSA DIGITAL NEWS)
+====================================================================
+This document serves as a memory/context file for any AI agent
+assisting the user in the future. It summarizes the project,
+the tech stack, historical enhancements, and future plans.
+
+1. PROJECT OVERVIEW
+-------------------
+Name: NDNews (Nussa Digital News)
+Niche: APAC Economy, Finance, and Sport news portal.
+Goal: To build a credible, high-quality news portal with strong
+topical authority, avoiding "content farm" or blackhat tactics.
+
+2. TECH STACK
+-------------
+Frontend: Next.js (App Router), React, Vanilla CSS.
+Database/Backend: Firebase (Firestore for articles, Storage for images).
+Hosting/Deployment: Cloudflare Pages connected to a GitHub repository.
+
+3. HISTORICAL ENHANCEMENTS & FEATURES BUILT
+-------------------------------------------
+- **Custom Admin Dashboard (`public/dashboard.html`)**: A vanilla HTML/JS dashboard
+  to manage articles and trending topics. It connects directly to Firebase.
+- **Article Metadata**: Added checkboxes for "Breaking News", "Featured", and "Live Updates".
+- **Pinned to Top (Pilihan Editor)**: Added a feature where checking "Pilihan Editor"
+  in the dashboard forces the article to stay permanently in the "MUST READ" sidebar
+  on the homepage (`app/page.js`), ensuring important evergreen content is always visible
+  without ruining the freshness of the main Hero image.
+- **Cloudflare Deploy Workaround**: Cloudflare webhooks often fail to trigger a build
+  if no code files changed (deduplication). We built a "Push Live Now" button in the
+  dashboard that opens `trigger.txt` on GitHub. Committing a change to this file
+  forces Cloudflare to rebuild and fetch the latest articles from Firebase.
+
+4. SEO & CONTENT STRATEGY
+-------------------------
+- Analyzed competitor (`pembaruan.id`) who uses a blackhat AdSense arbitrage strategy
+  (ranking for random high-volume keywords, then using bots/cheap tier-3 traffic to
+  click on high-CPC loan subdomains).
+- We rejected the blackhat approach.
+- **Adopted Strategy: "Whitehat Niche-Angled Harvesting"**:
+  We use keyword research (Google Trends) to find high-volume seasonal topics
+  (e.g., "HUT RI"), but we DO NOT write generic articles. We angle them to our niche
+  (e.g., "Dampak Ekonomi Peringatan HUT RI ke-80").
+
+5. PENDING TASKS / FUTURE PLANS
+-------------------------------
+- **Dashboard SEO Helper**: We planned to upgrade the Dashboard editor to include an
+  "SEO & Angle Helper" checklist (reminding the writer to include focus keywords in
+  the title and excerpt, and a quick link to Google Trends).
+- Ensure the user successfully commits `trigger.txt` to the main branch so the manual
+  deploy button works smoothly without 404 errors.
+
+====================================================================
+INSTRUCTION FOR NEXT AI AGENT:
+Read this document to understand the project's current state.
+Prioritize clean, modern UI/UX and maintain the professional tone
+of a serious news portal. Do not use generic solutions if a custom,
+niche-specific approach is better.
+====================================================================

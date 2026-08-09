@@ -4,6 +4,7 @@ import { db } from '../lib/firebase';
 import { DEFAULT_ARTICLES, TRENDING_TOPICS, getOptimizedImageUrl, getAuthorAvatar } from '../lib/data';
 import TimeAgo from '../components/TimeAgo';
 import Pagination from '../components/Pagination';
+import HeroBetaBanner from '../components/HeroBetaBanner';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -183,6 +184,9 @@ export default async function HomePage() {
             </div>
         </div>
       </div>
+
+      {/* BETA FEATURE HERO BANNER */}
+      <HeroBetaBanner />
 
       {/* 3. HERO ZONE */}
       <section className="hero-zone">

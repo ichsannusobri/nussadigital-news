@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article - NDNews</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <meta property="og:site_name" content="NDNews">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:image" content="">
+
+    <!-- Article Meta -->
+    <meta property="article:published_time" content="">
+    <meta property="article:modified_time" content="">
+    <meta property="article:author" content="">
+    <meta property="article:section" content="">
+    <meta property="article:tag" content="">
+
+    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2449102925093409" crossorigin="anonymous"></script>
+    <script type="module" src="firebase-config.js"></script>
+  <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+
+    <!-- ==================== 1. HEADER ==================== -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-left">
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle menu">☰</button>
+                <a href="index.html" class="logo"><img src="favicon.png" alt="ND" class="header-logo-img">ND<span>News</span></a>
+            </div>
+            <nav class="main-nav" id="main-nav">
+                <a href="index.html">News</a>
+                <a href="category.html?cat=apac">APAC</a>
+                <a href="category.html?cat=economy">Economy</a>
+                <a href="category.html?cat=finance">Finance</a>
+                <a href="category.html?cat=sport">Sport</a>
+                <a href="category.html?cat=opinion">Opinion</a>
+                <a href="#">Video</a>
+                <a href="#">More</a>
+            </nav>
+            <div class="header-right">
+
+                <button class="search-btn" onclick="toggleSearch()" aria-label="Search">🔍</button>
+
+            </div>
+        </div>
+        <div class="search-overlay" id="search-overlay">
+            <form class="search-form" action="category.html">
+                <input type="text" name="search" placeholder="Search NDNews..." autofocus>
+                <button type="submit">Search</button>
+                <button type="button" onclick="toggleSearch()">✕</button>
+            </form>
+        </div>
+    </header>
+
+    <!-- ==================== 2. BREADCRUMB ==================== -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a> > <span id="article-category">Category</span>
+    </nav>
+
+    <!-- ==================== 3. ARTICLE CONTENT + SIDEBAR ==================== -->
+    <section class="article-section">
+        <div class="article-grid">
+            <article class="article-main" id="article-detail-container">
+                <!-- JS fills: category badge, headline, author info (avatar + name + date + read time), hero image, article body paragraphs, tags, share buttons -->
+            </article>
+            <aside class="article-sidebar">
+                <div class="ad-container ad-sidebar">
+                    <span style="font-size: 10px; color: #888; display: block; margin-bottom: 5px;">Advertisement</span>
+                    <ins class="adsbygoogle"
+                         style="display:block; text-align:center;"
+                         data-ad-client="ca-pub-2449102925093409"
+                         data-ad-slot="0987654321"
+                         data-ad-format="fluid"
+                         data-full-width-responsive="true"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                </div>
+                <div class="sidebar-section">
+                    <h3 class="section-header">Related Articles</h3>
+                    <div id="related-articles-container">
+                        <!-- JS fills -->
+                    </div>
+                </div>
+                <div class="ad-container ad-sidebar">
+                    <span style="font-size: 10px; color: #888; display: block; margin-bottom: 5px;">Advertisement</span>
+                    <ins class="adsbygoogle"
+                         style="display:block; text-align:center;"
+                         data-ad-client="ca-pub-2449102925093409"
+                         data-ad-slot="0987654321"
+                         data-ad-format="fluid"
+                         data-full-width-responsive="true"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <!-- ==================== 4. COMMENTS SECTION ==================== -->
+    <section class="comments-section">
+        <div class="section-wrapper">
+            <h2 class="section-header">Comments</h2>
+            <div id="comments-container">
+                <!-- JS fills: comment form and comment list -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 5. NEWSLETTER SIGNUP ==================== -->
+    <section class="newsletter-section">
+        <div class="newsletter-card">
+            <h2>Sign up for Breaking News Alerts</h2>
+            <p>Get the latest breaking news delivered straight to your inbox.</p>
+            <form class="newsletter-form" id="newsletter-form">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ==================== 6. FOOTER ==================== -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>NDNews</h3>
+                    <p>Your trusted source for APAC economy, finance and sports news coverage.</p>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/company/nussadigital" target="_blank" aria-label="LinkedIn">in</a>
+                        <a href="#" aria-label="Twitter">𝕏</a>
+                        <a href="#" aria-label="Facebook">f</a>
+                        <a href="#" aria-label="YouTube">▶</a>
+                        <a href="#" aria-label="Instagram">📷</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Network</h4>
+                    <a href="#">NDNews English</a>
+                    <a href="#">NDNews APAC</a>
+                    <a href="#">NDNews Economy</a>
+                    <a href="#">NDNews Sport</a>
+                </div>
+                <div class="footer-col">
+                    <h4>More From NDNews</h4>
+                    <a href="#">Opinion</a>
+                    <a href="#">Explainer</a>
+                    <a href="#">Video</a>
+                    <a href="#">Podcasts</a>
+                </div>
+                <div class="footer-col">
+                    <h4>About</h4>
+                    <a href="#">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 NDNews Media Network. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== 7. STRUCTURED DATA ==================== -->
+    <script id="structured-data" type="application/ld+json"></script>
+
+    <!-- ==================== 8. SCRIPTS ==================== -->
+    <script>
+        function toggleSearch() {
+            document.getElementById('search-overlay').classList.toggle('active');
+        }
+        function toggleMobileMenu() {
+            document.getElementById('main-nav').classList.toggle('mobile-open');
+        }
+    </script>
+    <script src="app.js?v=2"></script>
+</body>
+</html>

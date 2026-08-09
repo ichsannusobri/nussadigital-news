@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NDNews - APAC Economy, Finance & Sports News</title>
+    <meta name="description" content="NDNews delivers the latest breaking news, in-depth analysis and coverage of economy, finance and sports across the Asia-Pacific region.">
+    <meta name="keywords" content="APAC news, economy news, finance news, sports news, Asia Pacific, breaking news">
+    <meta property="og:title" content="NDNews - APAC Economy, Finance & Sports News">
+    <meta property="og:description" content="Breaking news and analysis covering economy, finance and sports in the Asia-Pacific region.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="NDNews - APAC Economy, Finance & Sports News">
+    <meta name="twitter:description" content="NDNews delivers the latest breaking news, in-depth analysis and coverage of economy, finance and sports across the Asia-Pacific region.">
+    <link rel="canonical" href="https://nussadigital.co.id/">
+    <link rel="stylesheet" href="styles.css?v=6">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2449102925093409" crossorigin="anonymous"></script>
+    <script type="module" src="firebase-config.js"></script>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "NDNews",
+      "url": "https://nussadigital.co.id/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://nussadigital.co.id/category.html?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+</head>
+<body>
+
+    <!-- SEO H1 Tag -->
+    <h1 class="sr-only">NDNews - Latest APAC Economy, Finance & Sports News</h1>
+
+    <!-- ==================== 1. HEADER ==================== -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="header-left">
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle menu">☰</button>
+                <a href="index.html" class="logo"><img src="favicon.png" alt="ND" class="header-logo-img">ND<span>News</span></a>
+            </div>
+            <nav class="main-nav" id="main-nav">
+                <a href="index.html" class="active">News</a>
+                <a href="category.html?cat=apac">APAC</a>
+                <a href="category.html?cat=economy">Economy</a>
+                <a href="category.html?cat=finance">Finance</a>
+                <a href="category.html?cat=sport">Sport</a>
+                <a href="category.html?cat=opinion">Opinion</a>
+                <a href="#">Video</a>
+                <a href="#">More</a>
+            </nav>
+            <div class="header-right">
+
+                <button class="search-btn" onclick="toggleSearch()" aria-label="Search">🔍</button>
+
+            </div>
+        </div>
+        <div class="search-overlay" id="search-overlay">
+            <form class="search-form" action="category.html">
+                <input type="text" name="search" placeholder="Search NDNews..." autofocus>
+                <button type="submit">Search</button>
+                <button type="button" onclick="toggleSearch()">✕</button>
+            </form>
+        </div>
+    </header>
+
+    <!-- ==================== 2. TRENDING BAR ==================== -->
+    <div class="trending-bar">
+        <div class="trending-container">
+            <span class="trending-label">🔥 Trending</span>
+            <div class="trending-links" id="trending-container">
+                <!-- JS fills this -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 3. HERO ZONE ==================== -->
+    <section class="hero-zone">
+        <div class="hero-container" id="hero-container">
+            <!-- JS fills: col-hero-main, col-hero-mid, col-hero-sidebar -->
+        </div>
+    </section>
+
+    <!-- ==================== 4. AD BANNER ==================== -->
+    <div class="ad-container ad-leaderboard">
+        <span style="font-size: 10px; color: #888; display: block; margin-bottom: 5px;">Advertisement</span>
+        <ins class="adsbygoogle"
+             style="display:block; text-align:center;"
+             data-ad-client="ca-pub-2449102925093409"
+             data-ad-slot="1234567890"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+    <!-- ==================== 5. BREAKING NEWS BANNER ==================== -->
+    <section class="breaking-banner" id="breaking-container">
+        <!-- JS fills: BREAKING label + headline -->
+    </section>
+
+
+    <!-- ==================== 7. MAIN CONTENT + SIDEBAR ==================== -->
+    <section class="content-section">
+        <div class="content-grid">
+            <main class="content-main">
+                <h2 class="section-header">Latest News</h2>
+                <div id="latest-news-container">
+                    <!-- JS fills: article cards -->
+                </div>
+            </main>
+            <aside class="content-sidebar">
+                <div class="sidebar-section">
+                    <h3 class="section-header">Opinion</h3>
+                    <div id="opinion-container">
+                        <!-- JS fills: opinion items with avatars -->
+                    </div>
+                </div>
+                <div class="ad-container ad-sidebar">
+                    <span style="font-size: 10px; color: #888; display: block; margin-bottom: 5px;">Advertisement</span>
+                    <ins class="adsbygoogle"
+                         style="display:block; text-align:center;"
+                         data-ad-client="ca-pub-2449102925093409"
+                         data-ad-slot="0987654321"
+                         data-ad-format="fluid"
+                         data-full-width-responsive="true"></ins>
+                    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <!-- ==================== 8. STORY CAROUSEL ==================== -->
+    <section class="story-carousel-section">
+        <div class="section-wrapper">
+            <h2 class="section-header">Stories</h2>
+            <div class="carousel-wrapper">
+                <button class="carousel-btn carousel-prev" onclick="scrollCarousel(-1)">‹</button>
+                <div class="carousel-track" id="story-carousel-container">
+                    <!-- JS fills: portrait story cards -->
+                </div>
+                <button class="carousel-btn carousel-next" onclick="scrollCarousel(1)">›</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 9. AD BANNER ==================== -->
+    <div class="ad-container ad-leaderboard">
+        <span>Advertisement</span>
+    </div>
+
+    <!-- ==================== 10. SPORT SECTION + MOST POPULAR ==================== -->
+    <section class="sport-section">
+        <div class="sport-grid">
+            <div class="sport-main">
+                <h2 class="section-header">Sport</h2>
+                <div id="sport-section-container">
+                    <!-- JS fills: sport hero + articles -->
+                </div>
+            </div>
+            <div class="most-popular">
+                <h2 class="section-header">Most Popular</h2>
+                <div id="most-popular-container">
+                    <!-- JS fills: numbered list 1-10 -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 11. EXPLAINER SECTION ==================== -->
+    <section class="explainer-section">
+        <div class="section-wrapper">
+            <h2 class="section-header">Explainer</h2>
+            <div id="explainer-container">
+                <!-- JS fills -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 12. NEWSLETTER SIGNUP ==================== -->
+    <section class="newsletter-section">
+        <div class="newsletter-card">
+            <h2>Sign up for Breaking News Alerts</h2>
+            <p>Get the latest breaking news delivered straight to your inbox.</p>
+            <form class="newsletter-form" id="newsletter-form">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ==================== 13. FEATURED SECTION ==================== -->
+    <section class="featured-section">
+        <div class="section-wrapper">
+            <h2 class="section-header">Featured</h2>
+            <div class="featured-grid" id="featured-container">
+                <!-- JS fills -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 14. FOOTER ==================== -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>NDNews</h3>
+                    <p>Your trusted source for APAC economy, finance and sports news coverage.</p>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/company/nussadigital" target="_blank" aria-label="LinkedIn">in</a>
+                        <a href="#" aria-label="Twitter">𝕏</a>
+                        <a href="#" aria-label="Facebook">f</a>
+                        <a href="#" aria-label="YouTube">▶</a>
+                        <a href="#" aria-label="Instagram">📷</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Network</h4>
+                    <a href="#">NDNews English</a>
+                    <a href="#">NDNews APAC</a>
+                    <a href="#">NDNews Economy</a>
+                    <a href="#">NDNews Sport</a>
+                </div>
+                <div class="footer-col">
+                    <h4>More From NDNews</h4>
+                    <a href="#">Opinion</a>
+                    <a href="#">Explainer</a>
+                    <a href="#">Video</a>
+                    <a href="#">Podcasts</a>
+                </div>
+                <div class="footer-col">
+                    <h4>About</h4>
+                    <a href="#">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 NDNews Media Network. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== 15. SCRIPTS ==================== -->
+    <script>
+        function toggleSearch() {
+            document.getElementById('search-overlay').classList.toggle('active');
+        }
+        function toggleMobileMenu() {
+            document.getElementById('main-nav').classList.toggle('mobile-open');
+        }
+        function scrollCarousel(dir) {
+            const track = document.getElementById('story-carousel-container');
+            track.scrollBy({ left: dir * 300, behavior: 'smooth' });
+        }
+    </script>
+    <script src="app.js?v=2"></script>
+</body>
+</html>
+
