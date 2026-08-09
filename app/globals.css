@@ -4451,5 +4451,184 @@ ul, ol {
   margin-bottom: 1rem;
 }
 
+/* ==========================================================================
+   AUTHENTICATION LANDING GATE SCREEN (/budget)
+   ========================================================================== */
+.budget-login-gate-container {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.login-gate-card {
+  background: var(--clr-bg, #FFFFFF);
+  border: 1px solid var(--clr-border, #E5E7EB);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 480px;
+  padding: 2.25rem 2rem;
+}
+
+.gate-brand-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.gate-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: #FEF3C7;
+  color: #D97706;
+  padding: 3px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.gate-brand-header h2 {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--clr-text, #111827);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+.gate-subtitle {
+  font-size: 0.83rem;
+  color: var(--clr-text-secondary, #6B7280);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.gate-tab-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  background: var(--clr-bg-tertiary, #F3F4F6);
+  padding: 4px;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+}
+
+.gate-tab-btn {
+  padding: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--clr-text-secondary, #6B7280);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gate-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--clr-text, #111827);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn-gate-submit {
+  background: linear-gradient(135deg, #E15B45 0%, #D97706 100%);
+  color: #FFFFFF;
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(225, 91, 69, 0.3);
+  margin-top: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-gate-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(225, 91, 69, 0.45);
+}
+
+.gate-divider {
+  text-align: center;
+  margin: 1.25rem 0;
+  position: relative;
+}
+
+.gate-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--clr-border, #E5E7EB);
+  z-index: 1;
+}
+
+.gate-divider span {
+  position: relative;
+  z-index: 2;
+  background: var(--clr-bg, #FFFFFF);
+  padding: 0 12px;
+  font-size: 0.75rem;
+  color: var(--clr-text-secondary, #9CA3AF);
+  text-transform: uppercase;
+}
+
+.btn-gate-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #FFFFFF;
+  border: 1px solid var(--clr-border, #E5E7EB);
+  color: var(--clr-text, #1F2937);
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  transition: all 0.2s ease;
+}
+
+.btn-gate-google:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+.gate-footer-hint {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--clr-border, #F3F4F6);
+}
+
+.btn-preview-guest {
+  border: none;
+  background: none;
+  color: var(--clr-text-secondary, #6B7280);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.btn-preview-guest:hover {
+  color: #D97706;
+}
+
+
 
 

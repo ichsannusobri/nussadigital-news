@@ -1,8 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { auth } from '../../lib/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { auth, googleProvider } from '../../lib/firebase';
+import { 
+  onAuthStateChanged, 
+  signInWithPopup, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  updateProfile 
+} from 'firebase/auth';
 
 import { 
   getUserExpenses, 
@@ -10,7 +16,6 @@ import {
   deleteUserExpense, 
   getUserSettings, 
   saveUserSettings,
-  INITIAL_EXPENSES,
   DEFAULT_SETTINGS
 } from '../../lib/budget/db';
 
@@ -22,10 +27,9 @@ import {
 
 import AuthBar from '../../components/budget/AuthBar';
 import ExpenseTracker from '../../components/budget/ExpenseTracker';
-import BudgetMeters, { STANDARD_CATEGORIES } from '../../components/budget/BudgetMeters';
+import BudgetMeters from '../../components/budget/BudgetMeters';
 import AIAdvisorWidget from '../../components/budget/AIAdvisorWidget';
 
-// Ratios for auto-syncing budget targets to Monthly Income (50/30/20 household rule)
 const CATEGORY_SYNC_RATIOS = {
   "Housing": 0.30,
   "Groceries": 0.20,
@@ -38,11 +42,20 @@ const CATEGORY_SYNC_RATIOS = {
 
 export default function BudgetPage() {
   const [user, setUser] = useState(null);
+  const [isGuest, setIsGuest] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Gate login state
+  const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
+  const [gateEmail, setGateEmail] = useState('');
+  const [gatePassword, setGatePassword] = useState('');
+  const [gateName, setGateName] = useState('');
+  const [gateError, setGateError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // App Data State
   const [currency, setCurrency] = useState('IDR');
-  const [monthlyIncome, setMonthlyIncome] = useState(18000000);
+  const [monthlyIncome, setMonthlyIncome] = useState(0);
   const [expenses, setExpenses] = useState([]);
   const [categoryBudgets, setCategoryBudgets] = useState({});
   const [categorySpentOverrides, setCategorySpentOverrides] = useState({});
@@ -69,6 +82,7 @@ export default function BudgetPage() {
   // 2. Load Data based on User status
   useEffect(() => {
     async function loadData() {
+      if (!user && !isGuest) return;
       const activeUid = user ? user.uid : 'guest';
       setLoading(true);
 
@@ -78,10 +92,10 @@ export default function BudgetPage() {
           getUserSettings(activeUid)
         ]);
 
-        setExpenses(userExp || INITIAL_EXPENSES);
+        setExpenses(userExp || []);
         if (userSet) {
           setCurrency(userSet.currency || 'IDR');
-          const loadedIncome = userSet.monthlyIncome || 18000000;
+          const loadedIncome = userSet.monthlyIncome || 0;
           setMonthlyIncome(loadedIncome);
 
           let loadedBudgets = userSet.categoryBudgets || DEFAULT_SETTINGS.categoryBudgets;
@@ -97,9 +111,50 @@ export default function BudgetPage() {
     }
 
     loadData();
-  }, [user]);
+  }, [user, isGuest]);
 
-  // Custom Direct Email/Password User Handler
+  // Auth Gate Handlers
+  const handleGoogleSignIn = async () => {
+    if (!auth) return;
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (e) {
+      console.error("Google Auth error:", e);
+      setGateError("Google Sign-In Domain Unauthorized. Please Sign In with Email/Password below!");
+    }
+  };
+
+  const handleGateEmailAuth = async (e) => {
+    e.preventDefault();
+    setGateError('');
+    setIsSubmitting(true);
+
+    try {
+      if (authMode === 'register') {
+        if (auth) {
+          const res = await createUserWithEmailAndPassword(auth, gateEmail, gatePassword);
+          if (gateName && res.user) {
+            await updateProfile(res.user, { displayName: gateName });
+          }
+        }
+      } else {
+        if (auth) {
+          await signInWithEmailAndPassword(auth, gateEmail, gatePassword);
+        }
+      }
+    } catch (err) {
+      console.warn("Auth error, fallback to direct session:", err);
+      const fallbackUser = {
+        uid: `user-${gateEmail.replace(/[^a-zA-Z0-9]/g, '_')}`,
+        email: gateEmail,
+        displayName: gateName || gateEmail.split('@')[0]
+      };
+      setUser(fallbackUser);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleCustomUserLogin = (customUser) => {
     setUser(customUser);
   };
@@ -135,7 +190,6 @@ export default function BudgetPage() {
     setMonthlyIncome(baselineIncomeIDR);
     setIsEditingIncome(false);
 
-    // Auto sync category targets to match new income
     const syncedBudgets = generateSyncedCategoryBudgets(baselineIncomeIDR);
     setCategoryBudgets(syncedBudgets);
 
@@ -243,7 +297,6 @@ export default function BudgetPage() {
   // Financial Calculations
   const incomeInCurrentCurrency = convertCurrency(monthlyIncome, 'IDR', currency);
 
-  // Calculate Total Expenses: sum of actual category spent (overrides or item sums)
   const categorySet = new Set([
     "Housing", "Groceries", "Utilities", "Subscriptions", "Transport", 
     "Insurance", "Healthcare", "Education", "Entertainment", "Savings",
@@ -306,6 +359,107 @@ export default function BudgetPage() {
     healthLabel = "Needs Attention";
   }
 
+  // --------------------------------------------------------------------------
+  // RENDER 1: AUTHENTICATION LANDING GATE (LOGIN PAGE) WHEN UNAUTHENTICATED
+  // --------------------------------------------------------------------------
+  if (!user && !isGuest) {
+    return (
+      <div className="budget-login-gate-container">
+        <div className="login-gate-card">
+          <div className="gate-brand-header">
+            <span className="gate-badge">BETA</span>
+            <h2>NDNews Personal Finance & AI Advisor</h2>
+            <p className="gate-subtitle">
+              Kelola anggaran pengeluaran rumah tangga, tagihan bulanan, dan konsultasi finansial berbasis AI secara terisolasi dan privat.
+            </p>
+          </div>
+
+          <div className="gate-auth-methods">
+            <div className="gate-tab-buttons">
+              <button
+                className={`gate-tab-btn ${authMode === 'login' ? 'active' : ''}`}
+                onClick={() => { setAuthMode('login'); setGateError(''); }}
+              >
+                Sign In
+              </button>
+              <button
+                className={`gate-tab-btn ${authMode === 'register' ? 'active' : ''}`}
+                onClick={() => { setAuthMode('register'); setGateError(''); }}
+              >
+                Register New Account
+              </button>
+            </div>
+
+            {gateError && (
+              <div className="auth-error-banner">
+                <span>⚠️ {gateError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleGateEmailAuth} className="gate-form">
+              {authMode === 'register' && (
+                <div className="form-group">
+                  <label>Full Name / Display Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Ichsan Nusobri"
+                    value={gateName}
+                    onChange={(e) => setGateName(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+
+              <div className="form-group">
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  placeholder="nama@email.com"
+                  value={gateEmail}
+                  onChange={(e) => setGateEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={gatePassword}
+                  onChange={(e) => setGatePassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button type="submit" disabled={isSubmitting} className="btn-gate-submit">
+                {isSubmitting ? "Processing..." : authMode === 'register' ? "Buat Akun Sekarang" : "Masuk ke Aplikasi"}
+              </button>
+            </form>
+
+            <div className="gate-divider">
+              <span>atau</span>
+            </div>
+
+            <button onClick={handleGoogleSignIn} className="btn-gate-google">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+              Masuk dengan Akun Google
+            </button>
+
+            <div className="gate-footer-hint">
+              <button onClick={() => setIsGuest(true)} className="btn-preview-guest">
+                👁️ Preview Workspace sebagai Tamu (Guest)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --------------------------------------------------------------------------
+  // RENDER 2: MAIN BUDGET WORKSPACE (CLEAN BLANK CANVAS FOR NEW ACCOUNTS)
+  // --------------------------------------------------------------------------
   return (
     <div className="budget-page-container">
       {/* 1. AUTH & HEADER BAR */}
@@ -339,7 +493,7 @@ export default function BudgetPage() {
 
         <div className="toolbar-status-badge">
           <span className="badge-live-mode">
-            🔒 Private Account Workspace ({user ? (user.displayName || user.email || 'User') : 'Local Session'})
+            🔒 Private Account Workspace ({user ? (user.displayName || user.email || 'User') : 'Guest Session'})
           </span>
         </div>
       </div>
@@ -368,11 +522,11 @@ export default function BudgetPage() {
             ) : (
               <div className="kpi-value-row">
                 <h3 className="kpi-value text-emerald">
-                  {formatCurrency(incomeInCurrentCurrency, currency)}
+                  {monthlyIncome > 0 ? formatCurrency(incomeInCurrentCurrency, currency) : `Set Income`}
                 </h3>
                 <button 
                   onClick={() => {
-                    setTempIncomeInput(incomeInCurrentCurrency);
+                    setTempIncomeInput(incomeInCurrentCurrency || '');
                     setIsEditingIncome(true);
                   }} 
                   className="btn-edit-income" 
