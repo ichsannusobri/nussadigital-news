@@ -22,8 +22,19 @@ import {
 
 import AuthBar from '../../components/budget/AuthBar';
 import ExpenseTracker from '../../components/budget/ExpenseTracker';
-import BudgetMeters from '../../components/budget/BudgetMeters';
+import BudgetMeters, { STANDARD_CATEGORIES } from '../../components/budget/BudgetMeters';
 import AIAdvisorWidget from '../../components/budget/AIAdvisorWidget';
+
+// Ratios for auto-syncing budget targets to Monthly Income (50/30/20 household rule)
+const CATEGORY_SYNC_RATIOS = {
+  "Housing": 0.30,
+  "Groceries": 0.20,
+  "Utilities": 0.10,
+  "Transport": 0.10,
+  "Insurance": 0.10,
+  "Savings": 0.15,
+  "Subscriptions": 0.05
+};
 
 export default function BudgetPage() {
   const [user, setUser] = useState(null);
@@ -77,8 +88,11 @@ export default function BudgetPage() {
         setExpenses(userExp || DEMO_EXPENSES);
         if (userSet) {
           setCurrency(userSet.currency || 'IDR');
-          setMonthlyIncome(userSet.monthlyIncome || 18000000);
-          setCategoryBudgets(userSet.categoryBudgets || DEMO_SETTINGS.categoryBudgets);
+          const loadedIncome = userSet.monthlyIncome || 18000000;
+          setMonthlyIncome(loadedIncome);
+
+          let loadedBudgets = userSet.categoryBudgets || DEMO_SETTINGS.categoryBudgets;
+          setCategoryBudgets(loadedBudgets);
           setCategorySpentOverrides(userSet.categorySpentOverrides || {});
           setCategoryNotes(userSet.categoryNotes || {});
         }
@@ -115,6 +129,15 @@ export default function BudgetPage() {
     }).catch(console.error);
   };
 
+  // Helper to auto-sync category targets to an income value (in IDR)
+  const generateSyncedCategoryBudgets = (targetIncomeIDR) => {
+    const newBudgets = { ...categoryBudgets };
+    Object.keys(CATEGORY_SYNC_RATIOS).forEach(cat => {
+      newBudgets[cat] = Math.round(targetIncomeIDR * CATEGORY_SYNC_RATIOS[cat]);
+    });
+    return newBudgets;
+  };
+
   // Income Save Handler
   const handleSaveIncome = async () => {
     const num = Number(tempIncomeInput);
@@ -124,11 +147,29 @@ export default function BudgetPage() {
     setMonthlyIncome(baselineIncomeIDR);
     setIsEditingIncome(false);
 
+    // Auto sync category targets to match new income
+    const syncedBudgets = generateSyncedCategoryBudgets(baselineIncomeIDR);
+    setCategoryBudgets(syncedBudgets);
+
     const activeUid = isDemo || !user ? 'demo' : user.uid;
     await saveUserSettings(activeUid, {
       currency,
       monthlyIncome: baselineIncomeIDR,
-      categoryBudgets,
+      categoryBudgets: syncedBudgets,
+      categorySpentOverrides,
+      categoryNotes
+    });
+  };
+
+  const handleAutoSyncTargets = async () => {
+    const syncedBudgets = generateSyncedCategoryBudgets(monthlyIncome);
+    setCategoryBudgets(syncedBudgets);
+
+    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    await saveUserSettings(activeUid, {
+      currency,
+      monthlyIncome,
+      categoryBudgets: syncedBudgets,
       categorySpentOverrides,
       categoryNotes
     });
@@ -230,7 +271,12 @@ export default function BudgetPage() {
   });
 
   let totalExpenseInCurrentCurrency = 0;
+  let totalCategoryBudgetLimitDisplay = 0;
+
   Array.from(categorySet).forEach(cat => {
+    const limitIDR = categoryBudgets[cat] || 0;
+    totalCategoryBudgetLimitDisplay += convertCurrency(limitIDR, "IDR", currency);
+
     const hasOverride = categorySpentOverrides && categorySpentOverrides[cat] !== undefined && categorySpentOverrides[cat] !== null;
     const spentIDR = hasOverride ? categorySpentOverrides[cat] : null;
     const spentDisplay = hasOverride 
@@ -244,11 +290,33 @@ export default function BudgetPage() {
     ? Math.round((netSavings / incomeInCurrentCurrency) * 100) 
     : 0;
 
-  let healthScore = 70;
-  if (savingsRate >= 30) healthScore = 92;
-  else if (savingsRate >= 20) healthScore = 85;
-  else if (savingsRate >= 10) healthScore = 75;
-  else if (savingsRate < 0) healthScore = 45;
+  // DYNAMIC CONTINUOUS FINANCIAL HEALTH SCORE FORMULA (0-100)
+  const savingsComponent = Math.min(45, Math.max(0, savingsRate * 1.45));
+  const budgetControlComponent = totalCategoryBudgetLimitDisplay > 0 
+    ? Math.min(35, Math.max(0, (1 - (totalExpenseInCurrentCurrency / totalCategoryBudgetLimitDisplay)) * 35 + 20))
+    : 20;
+  const incomeCoverageComponent = incomeInCurrentCurrency > 0 
+    ? Math.min(20, Math.max(0, (1 - (totalExpenseInCurrentCurrency / incomeInCurrentCurrency)) * 20 + 10))
+    : 10;
+
+  const rawScore = Math.round(savingsComponent + budgetControlComponent + incomeCoverageComponent);
+  const healthScore = Math.min(99, Math.max(25, rawScore));
+
+  let healthBadgeClass = "badge-good";
+  let healthLabel = "Healthy";
+  if (healthScore >= 90) {
+    healthBadgeClass = "badge-excel";
+    healthLabel = "Excellent";
+  } else if (healthScore >= 75) {
+    healthBadgeClass = "badge-good";
+    healthLabel = "Good";
+  } else if (healthScore >= 60) {
+    healthBadgeClass = "badge-yellow";
+    healthLabel = "Moderate";
+  } else {
+    healthBadgeClass = "badge-red";
+    healthLabel = "Needs Attention";
+  }
 
   return (
     <div className="budget-page-container">
@@ -287,7 +355,7 @@ export default function BudgetPage() {
           {isDemo ? (
             <span className="badge-demo-mode">🎮 Demo Mode (Sample Household Data)</span>
           ) : (
-            <span className="badge-live-mode">🔒 Isolated Account ({user?.displayName || user?.email})</span>
+            <span className="badge-live-mode">🔒 Isolated Account ({user?.displayName || user?.email || 'User'})</span>
           )}
         </div>
       </div>
@@ -371,11 +439,11 @@ export default function BudgetPage() {
             <span className="kpi-label">Financial Health Score</span>
             <div className="health-score-row">
               <h3 className="kpi-value text-indigo">{healthScore}<span className="score-denom">/100</span></h3>
-              <span className={`health-status-badge ${healthScore >= 80 ? 'badge-excel' : 'badge-good'}`}>
-                {healthScore >= 80 ? 'Excellent' : 'Healthy'}
+              <span className={`health-status-badge ${healthBadgeClass}`}>
+                {healthLabel}
               </span>
             </div>
-            <span className="kpi-subtext">Automated risk assessment</span>
+            <span className="kpi-subtext">Automated continuous risk assessment</span>
           </div>
         </div>
       </div>
@@ -398,10 +466,12 @@ export default function BudgetPage() {
             categorySpentOverrides={categorySpentOverrides}
             categoryNotes={categoryNotes}
             currency={currency}
+            monthlyIncome={incomeInCurrentCurrency}
             onUpdateCategoryBudget={handleUpdateCategoryBudget}
             onUpdateCategorySpent={handleUpdateCategorySpent}
             onUpdateCategoryNotes={handleUpdateCategoryNotes}
             onAddCustomCategory={handleAddCustomCategory}
+            onAutoSyncTargets={handleAutoSyncTargets}
           />
         </div>
 

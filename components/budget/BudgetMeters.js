@@ -22,10 +22,12 @@ export default function BudgetMeters({
   categorySpentOverrides = {},
   categoryNotes = {},
   currency = "IDR", 
+  monthlyIncome = 0,
   onUpdateCategoryBudget = () => {},
   onUpdateCategorySpent = () => {},
   onUpdateCategoryNotes = () => {},
-  onAddCustomCategory = () => {}
+  onAddCustomCategory = () => {},
+  onAutoSyncTargets = () => {}
 }) {
   const [showModal, setShowModal] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
@@ -152,10 +154,15 @@ export default function BudgetMeters({
           <span className="meters-subtitle">({currency})</span>
         </div>
 
-        <button onClick={() => setShowAddCategoryModal(true)} className="btn-add-budget-limit">
-          <span className="btn-icon">➕</span>
-          <span>Add Custom Category</span>
-        </button>
+        <div className="meters-header-actions">
+          <button onClick={onAutoSyncTargets} className="btn-sync-income-targets" title="Auto-scale category budget targets to match Monthly Household Income">
+            <span>⚡ Auto-Sync Targets to Income</span>
+          </button>
+          <button onClick={() => setShowAddCategoryModal(true)} className="btn-add-budget-limit">
+            <span className="btn-icon">➕</span>
+            <span>Add Custom Category</span>
+          </button>
+        </div>
       </div>
 
       {/* OVERALL TOTAL BUDGET SUMMARY BOX */}
