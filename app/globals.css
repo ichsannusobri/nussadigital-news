@@ -4302,4 +4302,111 @@ ul, ol {
   }
 }
 
+/* CLICKABLE CATEGORY CARDS & REALIZED SPENT EDITING */
+.clickable-category-card {
+  cursor: pointer !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+  position: relative;
+}
+
+.clickable-category-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+  border-color: #10B981 !important;
+}
+
+.badge-edit-pencil {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #059669;
+  background: #D1FAE5;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+.click-hint-text {
+  font-size: 0.8rem;
+  color: var(--clr-text-secondary, #6B7280);
+  margin-bottom: 1rem;
+}
+
+.category-note-pill {
+  margin-top: 8px;
+  padding: 4px 8px;
+  background: var(--clr-bg-tertiary, #F3F4F6);
+  border-radius: 6px;
+  font-size: 0.72rem;
+  color: var(--clr-text-secondary, #6B7280);
+}
+
+.disabled-input {
+  background: var(--clr-bg-tertiary, #F3F4F6) !important;
+  cursor: not-allowed;
+}
+
+.field-hint {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--clr-text-secondary, #6B7280);
+  margin-top: 2px;
+}
+
+/* EMAIL AUTH BUTTON & TABS */
+.btn-email-signin {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #10B981;
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-right: 8px;
+  box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);
+}
+
+.btn-email-signin:hover {
+  background: #059669;
+}
+
+.auth-tab-buttons {
+  display: flex;
+  gap: 6px;
+  background: var(--clr-bg-tertiary, #F3F4F6);
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.tab-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--clr-text-secondary, #6B7280);
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: #FFFFFF;
+  color: #1A1A1A;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.auth-error-banner {
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  color: #DC2626;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+
 

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { formatCurrency, convertCurrency, SUPPORTED_CURRENCIES } from '../../lib/budget/currencies';
+import { formatCurrency, convertCurrency } from '../../lib/budget/currencies';
 
-const AVAILABLE_CATEGORIES = [
+export const STANDARD_CATEGORIES = [
   "Housing",
   "Groceries",
   "Utilities",
@@ -16,54 +16,125 @@ const AVAILABLE_CATEGORIES = [
   "Savings"
 ];
 
-export default function BudgetMeters({ expenses, categoryBudgets, currency, onUpdateBudgetLimit }) {
+export default function BudgetMeters({ 
+  expenses, 
+  categoryBudgets, 
+  categorySpentOverrides = {},
+  categoryNotes = {},
+  currency, 
+  onUpdateCategoryBudget,
+  onUpdateCategorySpent,
+  onUpdateCategoryNotes,
+  onAddCustomCategory
+}) {
   const [showModal, setShowModal] = useState(false);
-  const [editingCategory, setEditingCategory] = useState("Groceries");
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+
+  const [editingCategory, setEditingCategory] = useState("Housing");
   const [limitInput, setLimitInput] = useState("");
+  const [spentInput, setSpentInput] = useState("");
+  const [notesInput, setNotesInput] = useState("");
 
-  // Compute actual spent per category in active display currency
-  const spentPerCategory = {};
-  let grandTotalSpent = 0;
+  // Add custom category state
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatLimit, setNewCatLimit] = useState("");
+  const [newCatNotes, setNewCatNotes] = useState("");
 
+  // Compute calculated spent from Expense Tracker per category in display currency
+  const calculatedSpentPerCat = {};
   expenses.forEach(e => {
     const cat = e.category || "Uncategorized";
     const amt = convertCurrency(e.amount, e.currency || "IDR", currency);
-    spentPerCategory[cat] = (spentPerCategory[cat] || 0) + amt;
-    grandTotalSpent += amt;
+    calculatedSpentPerCat[cat] = (calculatedSpentPerCat[cat] || 0) + amt;
   });
 
-  const categories = Object.keys(categoryBudgets || {});
+  // Unique list of all active categories (standard + custom + user settings)
+  const categorySet = new Set([...STANDARD_CATEGORIES, ...Object.keys(categoryBudgets || {})]);
+  const categories = Array.from(categorySet);
 
-  // Calculate Grand Total Budget Target in active currency
+  // Calculate totals
   let grandTotalBudget = 0;
+  let grandTotalSpent = 0;
+
   categories.forEach(cat => {
-    grandTotalBudget += convertCurrency(categoryBudgets[cat] || 0, "IDR", currency);
+    const limitIDR = categoryBudgets[cat] || 0;
+    const limitDisplay = convertCurrency(limitIDR, "IDR", currency);
+    grandTotalBudget += limitDisplay;
+
+    // Use override spent if set by user, otherwise use sum of expenses
+    const hasOverride = categorySpentOverrides[cat] !== undefined;
+    const spentIDR = hasOverride ? categorySpentOverrides[cat] : null;
+    const spentDisplay = hasOverride 
+      ? convertCurrency(spentIDR, "IDR", currency)
+      : (calculatedSpentPerCat[cat] || 0);
+
+    grandTotalSpent += spentDisplay;
   });
 
   const remainingBudget = grandTotalBudget - grandTotalSpent;
   const overallPct = grandTotalBudget > 0 ? Math.min(100, Math.round((grandTotalSpent / grandTotalBudget) * 100)) : 0;
 
-  const handleOpenModal = (catToEdit = null) => {
-    const initialCat = catToEdit || (categories.length > 0 ? categories[0] : "Groceries");
-    setEditingCategory(initialCat);
-    const existingLimitIDR = categoryBudgets[initialCat] || 0;
-    const existingLimitCurrent = convertCurrency(existingLimitIDR, "IDR", currency);
-    setLimitInput(existingLimitCurrent ? String(existingLimitCurrent) : "");
+  // Open modal to edit existing category
+  const handleOpenEditModal = (cat) => {
+    setEditingCategory(cat);
+    
+    // Existing limit in display currency
+    const limitIDR = categoryBudgets[cat] || 0;
+    const limitDisplay = convertCurrency(limitIDR, "IDR", currency);
+    setLimitInput(limitDisplay ? String(limitDisplay) : "");
+
+    // Existing spent override in display currency
+    const hasOverride = categorySpentOverrides[cat] !== undefined;
+    const spentIDR = hasOverride ? categorySpentOverrides[cat] : (calculatedSpentPerCat[cat] || 0);
+    const spentDisplay = convertCurrency(spentIDR, "IDR", currency);
+    setSpentInput(spentDisplay ? String(spentDisplay) : "0");
+
+    // Existing notes
+    setNotesInput(categoryNotes[cat] || "");
+
     setShowModal(true);
   };
 
-  const handleSaveBudgetLimit = (e) => {
+  const handleSaveCategoryDetails = (e) => {
     e.preventDefault();
-    const num = Number(limitInput);
-    if (isNaN(num) || num < 0) {
-      alert("Please enter a valid positive number for the budget limit.");
+
+    const limitNum = Number(limitInput);
+    const spentNum = Number(spentInput);
+
+    if (isNaN(limitNum) || limitNum < 0 || isNaN(spentNum) || spentNum < 0) {
+      alert("Please enter valid non-negative numbers for limit and realized spent.");
       return;
     }
 
-    // Convert from current display currency back to IDR baseline for persistent storage
-    const limitInIDR = convertCurrency(num, currency, "IDR");
-    onUpdateBudgetLimit(editingCategory, limitInIDR);
+    // Convert back to IDR baseline for persistent storage
+    const limitInIDR = convertCurrency(limitNum, currency, "IDR");
+    const spentInIDR = convertCurrency(spentNum, currency, "IDR");
+
+    onUpdateCategoryBudget(editingCategory, limitInIDR);
+    onUpdateCategorySpent(editingCategory, spentInIDR);
+    onUpdateCategoryNotes(editingCategory, notesInput);
+
     setShowModal(false);
+  };
+
+  const handleCreateNewCategory = (e) => {
+    e.preventDefault();
+    const cleanName = newCatName.trim();
+    if (!cleanName) {
+      alert("Please enter a category name.");
+      return;
+    }
+
+    const limitNum = Number(newCatLimit) || 0;
+    const limitInIDR = convertCurrency(limitNum, currency, "IDR");
+
+    if (onAddCustomCategory) {
+      onAddCustomCategory(cleanName, limitInIDR, newCatNotes);
+    }
+    setNewCatName("");
+    setNewCatLimit("");
+    setNewCatNotes("");
+    setShowAddCategoryModal(false);
   };
 
   return (
@@ -72,17 +143,17 @@ export default function BudgetMeters({ expenses, categoryBudgets, currency, onUp
       <div className="meters-header">
         <div className="meters-title-group">
           <span className="section-icon">📊</span>
-          <h3>Category Spending Meters & Budget Limits</h3>
+          <h3>Category Spending Meters & Realized Limits</h3>
           <span className="meters-subtitle">({currency})</span>
         </div>
 
-        <button onClick={() => handleOpenModal()} className="btn-add-budget-limit">
-          <span className="btn-icon">⚙️</span>
-          <span>Set / Add Category Budget</span>
+        <button onClick={() => setShowAddCategoryModal(true)} className="btn-add-budget-limit">
+          <span className="btn-icon">➕</span>
+          <span>Add Custom Category</span>
         </button>
       </div>
 
-      {/* OVERALL TOTAL BUDGET SUMMARY BAR */}
+      {/* OVERALL TOTAL BUDGET SUMMARY BOX */}
       <div className="total-budget-summary-box">
         <div className="summary-stat-item">
           <span className="stat-label">Total Monthly Budget Target</span>
@@ -90,7 +161,7 @@ export default function BudgetMeters({ expenses, categoryBudgets, currency, onUp
         </div>
 
         <div className="summary-stat-item">
-          <span className="stat-label">Total Spent So Far</span>
+          <span className="stat-label">Realized Total Spent</span>
           <span className="stat-val text-amber">{formatCurrency(grandTotalSpent, currency)}</span>
         </div>
 
@@ -107,25 +178,36 @@ export default function BudgetMeters({ expenses, categoryBudgets, currency, onUp
         </div>
       </div>
 
-      {/* CATEGORY METER GRID */}
+      <p className="click-hint-text">💡 <em>Click on any category card below to directly edit Realized Spent (Realisasi) & Budget Limit!</em></p>
+
+      {/* CATEGORY METER GRID (CLICKABLE CARDS) */}
       <div className="meters-grid">
         {categories.map((cat) => {
-          const limit = convertCurrency(categoryBudgets[cat] || 0, "IDR", currency);
-          const spent = spentPerCategory[cat] || 0;
+          const limitIDR = categoryBudgets[cat] || 0;
+          const limit = convertCurrency(limitIDR, "IDR", currency);
+
+          const hasOverride = categorySpentOverrides[cat] !== undefined;
+          const spentIDR = hasOverride ? categorySpentOverrides[cat] : (calculatedSpentPerCat[cat] || 0);
+          const spent = convertCurrency(spentIDR, "IDR", currency);
+
           const pct = limit > 0 ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
-          
+          const noteText = categoryNotes[cat] || "";
+
           let statusClass = "green";
           if (pct >= 90) statusClass = "red";
           else if (pct >= 70) statusClass = "yellow";
 
           return (
-            <div key={cat} className={`meter-item meter-status-${statusClass}`}>
+            <div 
+              key={cat} 
+              onClick={() => handleOpenEditModal(cat)} 
+              className={`meter-item meter-status-${statusClass} clickable-category-card`}
+              title="Click to edit Realized Spent & Budget Target"
+            >
               <div className="meter-info-top">
                 <div className="meter-cat-title-group">
                   <span className="meter-cat-title">{cat}</span>
-                  <button onClick={() => handleOpenModal(cat)} className="btn-edit-limit-icon" title="Edit Budget Limit">
-                    ✏️
-                  </button>
+                  <span className="badge-edit-pencil">✏️ Click to Edit</span>
                 </div>
                 <span className="meter-pct">{pct}% Used</span>
               </div>
@@ -135,49 +217,67 @@ export default function BudgetMeters({ expenses, categoryBudgets, currency, onUp
               </div>
 
               <div className="meter-info-bottom">
-                <span className="spent-val">Spent: {formatCurrency(spent, currency)}</span>
-                <span className="limit-val">Limit: {formatCurrency(limit, currency)}</span>
+                <span className="spent-val">Spent (Realisasi): <strong>{formatCurrency(spent, currency)}</strong></span>
+                <span className="limit-val">Limit Target: <strong>{formatCurrency(limit, currency)}</strong></span>
               </div>
+
+              {noteText && (
+                <div className="category-note-pill">
+                  📝 {noteText}
+                </div>
+              )}
             </div>
           );
         })}
       </div>
 
-      {/* MODAL TO ADD / EDIT CATEGORY BUDGET LIMIT */}
+      {/* MODAL 1: EDIT CATEGORY REALIZED SPENT & BUDGET LIMIT */}
       {showModal && (
         <div className="budget-modal-overlay">
           <div className="budget-modal-box">
             <div className="modal-header">
-              <h4>Set Category Budget Target</h4>
+              <h4>Manage {editingCategory} Category</h4>
               <button onClick={() => setShowModal(false)} className="btn-close-modal">✕</button>
             </div>
 
-            <form onSubmit={handleSaveBudgetLimit} className="modal-form-grid">
+            <form onSubmit={handleSaveCategoryDetails} className="modal-form-grid">
               <div className="form-group full-width">
-                <label>Select Category</label>
-                <select
-                  value={editingCategory}
-                  onChange={(e) => {
-                    const selectedCat = e.target.value;
-                    setEditingCategory(selectedCat);
-                    const existingLimitIDR = categoryBudgets[selectedCat] || 0;
-                    const existingLimitCurrent = convertCurrency(existingLimitIDR, "IDR", currency);
-                    setLimitInput(existingLimitCurrent ? String(existingLimitCurrent) : "");
-                  }}
-                >
-                  {AVAILABLE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <label>Category Name</label>
+                <input type="text" value={editingCategory} disabled className="disabled-input" />
               </div>
 
-              <div className="form-group full-width">
+              <div className="form-group">
+                <label>Realized Actual Spent / Realisasi ({currency})</label>
+                <input
+                  type="number"
+                  placeholder={`Actual spent in ${currency}`}
+                  value={spentInput}
+                  onChange={(e) => setSpentInput(e.target.value)}
+                  required
+                  autoFocus
+                />
+                <small className="field-hint">Directly edit how much you actually spent this month</small>
+              </div>
+
+              <div className="form-group">
                 <label>Monthly Budget Target Limit ({currency})</label>
                 <input
                   type="number"
-                  placeholder={`e.g. 4000000 in ${currency}`}
+                  placeholder={`Budget limit in ${currency}`}
                   value={limitInput}
                   onChange={(e) => setLimitInput(e.target.value)}
                   required
-                  autoFocus
+                />
+                <small className="field-hint">Maximum limit for alert meter</small>
+              </div>
+
+              <div className="form-group full-width">
+                <label>Detailed Notes & Description (Optional)</label>
+                <textarea
+                  rows="2"
+                  placeholder="e.g. Belanja bahan pokok beras, telur, minyak goreng & Minimarket"
+                  value={notesInput}
+                  onChange={(e) => setNotesInput(e.target.value)}
                 />
               </div>
 
@@ -186,7 +286,63 @@ export default function BudgetMeters({ expenses, categoryBudgets, currency, onUp
                   Cancel
                 </button>
                 <button type="submit" className="btn-submit-save">
-                  Save Budget Target
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: ADD NEW CUSTOM CATEGORY */}
+      {showAddCategoryModal && (
+        <div className="budget-modal-overlay">
+          <div className="budget-modal-box">
+            <div className="modal-header">
+              <h4>Add New Custom Budget Category</h4>
+              <button onClick={() => setShowAddCategoryModal(false)} className="btn-close-modal">✕</button>
+            </div>
+
+            <form onSubmit={handleCreateNewCategory} className="modal-form-grid">
+              <div className="form-group full-width">
+                <label>Category Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Pendidikan Anak, Renovasi Rumah, Sedekah / Zakat"
+                  value={newCatName}
+                  onChange={(e) => setNewCatName(e.target.value)}
+                  required
+                  autoFocus
+                />
+              </div>
+
+              <div className="form-group full-width">
+                <label>Monthly Budget Target Limit ({currency})</label>
+                <input
+                  type="number"
+                  placeholder={`e.g. 2000000 in ${currency}`}
+                  value={newCatLimit}
+                  onChange={(e) => setNewCatLimit(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group full-width">
+                <label>Description & Notes (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Biaya kursus & SPP bulanan"
+                  value={newCatNotes}
+                  onChange={(e) => setNewCatNotes(e.target.value)}
+                />
+              </div>
+
+              <div className="modal-actions full-width">
+                <button type="button" onClick={() => setShowAddCategoryModal(false)} className="btn-cancel">
+                  Cancel
+                </button>
+                <button type="submit" className="btn-submit-save">
+                  Add Category
                 </button>
               </div>
             </form>

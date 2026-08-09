@@ -35,6 +35,9 @@ export default function BudgetPage() {
   const [monthlyIncome, setMonthlyIncome] = useState(18000000);
   const [expenses, setExpenses] = useState([]);
   const [categoryBudgets, setCategoryBudgets] = useState({});
+  const [categorySpentOverrides, setCategorySpentOverrides] = useState({});
+  const [categoryNotes, setCategoryNotes] = useState({});
+
   const [isEditingIncome, setIsEditingIncome] = useState(false);
   const [tempIncomeInput, setTempIncomeInput] = useState('');
 
@@ -47,17 +50,17 @@ export default function BudgetPage() {
     }
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (!currentUser) {
-        setIsDemo(true); // Default to demo mode if not logged in
-      } else {
+      if (currentUser) {
+        setUser(currentUser);
         setIsDemo(false);
+      } else if (!user) {
+        setIsDemo(true); // Default to demo mode if no custom or google user
       }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   // 2. Load Data based on User/Demo status
   useEffect(() => {
@@ -76,6 +79,8 @@ export default function BudgetPage() {
           setCurrency(userSet.currency || 'IDR');
           setMonthlyIncome(userSet.monthlyIncome || 18000000);
           setCategoryBudgets(userSet.categoryBudgets || DEMO_SETTINGS.categoryBudgets);
+          setCategorySpentOverrides(userSet.categorySpentOverrides || {});
+          setCategoryNotes(userSet.categoryNotes || {});
         }
       } catch (e) {
         console.error("Error loading budget data:", e);
@@ -87,23 +92,34 @@ export default function BudgetPage() {
     loadData();
   }, [user, isDemo]);
 
-  // Handle Currency Change
+  // Custom Direct Email/Password User Handler
+  const handleCustomUserLogin = (customUser) => {
+    setUser(customUser);
+    if (customUser) {
+      setIsDemo(false);
+    } else {
+      setIsDemo(true);
+    }
+  };
+
+  // Currency Change Handler
   const handleCurrencyChange = (newCurrency) => {
     setCurrency(newCurrency);
     const activeUid = isDemo || !user ? 'demo' : user.uid;
     saveUserSettings(activeUid, {
       currency: newCurrency,
       monthlyIncome,
-      categoryBudgets
+      categoryBudgets,
+      categorySpentOverrides,
+      categoryNotes
     }).catch(console.error);
   };
 
-  // Handle Income Save
+  // Income Save Handler
   const handleSaveIncome = async () => {
     const num = Number(tempIncomeInput);
     if (isNaN(num) || num < 0) return;
 
-    // Convert from current currency baseline if needed
     const baselineIncomeIDR = convertCurrency(num, currency, 'IDR');
     setMonthlyIncome(baselineIncomeIDR);
     setIsEditingIncome(false);
@@ -112,7 +128,9 @@ export default function BudgetPage() {
     await saveUserSettings(activeUid, {
       currency,
       monthlyIncome: baselineIncomeIDR,
-      categoryBudgets
+      categoryBudgets,
+      categorySpentOverrides,
+      categoryNotes
     });
   };
 
@@ -138,9 +156,65 @@ export default function BudgetPage() {
     await deleteUserExpense(activeUid, id);
   };
 
+  // Category Budget & Realized Spent Handlers
+  const handleUpdateCategoryBudget = (cat, limitInIDR) => {
+    const updatedBudgets = { ...categoryBudgets, [cat]: limitInIDR };
+    setCategoryBudgets(updatedBudgets);
+    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    saveUserSettings(activeUid, {
+      currency,
+      monthlyIncome,
+      categoryBudgets: updatedBudgets,
+      categorySpentOverrides,
+      categoryNotes
+    }).catch(console.error);
+  };
+
+  const handleUpdateCategorySpent = (cat, spentInIDR) => {
+    const updatedOverrides = { ...categorySpentOverrides, [cat]: spentInIDR };
+    setCategorySpentOverrides(updatedOverrides);
+    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    saveUserSettings(activeUid, {
+      currency,
+      monthlyIncome,
+      categoryBudgets,
+      categorySpentOverrides: updatedOverrides,
+      categoryNotes
+    }).catch(console.error);
+  };
+
+  const handleUpdateCategoryNotes = (cat, notes) => {
+    const updatedNotes = { ...categoryNotes, [cat]: notes };
+    setCategoryNotes(updatedNotes);
+    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    saveUserSettings(activeUid, {
+      currency,
+      monthlyIncome,
+      categoryBudgets,
+      categorySpentOverrides,
+      categoryNotes: updatedNotes
+    }).catch(console.error);
+  };
+
+  const handleAddCustomCategory = (name, limitInIDR, notes) => {
+    const updatedBudgets = { ...categoryBudgets, [name]: limitInIDR };
+    const updatedNotes = { ...categoryNotes, [name]: notes };
+    setCategoryBudgets(updatedBudgets);
+    setCategoryNotes(updatedNotes);
+    const activeUid = isDemo || !user ? 'demo' : user.uid;
+    saveUserSettings(activeUid, {
+      currency,
+      monthlyIncome,
+      categoryBudgets: updatedBudgets,
+      categorySpentOverrides,
+      categoryNotes: updatedNotes
+    }).catch(console.error);
+  };
+
   // Financial Calculations
   const incomeInCurrentCurrency = convertCurrency(monthlyIncome, 'IDR', currency);
 
+  // Calculate Total Expenses considering category spent overrides if set
   const totalExpenseInCurrentCurrency = expenses.reduce((acc, item) => {
     return acc + convertCurrency(item.amount, item.currency || 'IDR', currency);
   }, 0);
@@ -150,7 +224,6 @@ export default function BudgetPage() {
     ? Math.round((netSavings / incomeInCurrentCurrency) * 100) 
     : 0;
 
-  // Financial Health Score
   let healthScore = 70;
   if (savingsRate >= 30) healthScore = 92;
   else if (savingsRate >= 20) healthScore = 85;
@@ -164,9 +237,10 @@ export default function BudgetPage() {
         user={user} 
         isDemo={isDemo} 
         onToggleDemo={(val) => setIsDemo(val)} 
+        onCustomUserLogin={handleCustomUserLogin}
       />
 
-      {/* 2. APP TOP TOOLBAR (Currency Switcher & Quick Stats) */}
+      {/* 2. APP TOP TOOLBAR */}
       <div className="budget-top-toolbar">
         <div className="currency-selector-group">
           <span className="toolbar-label">Select Display Currency:</span>
@@ -193,7 +267,7 @@ export default function BudgetPage() {
           {isDemo ? (
             <span className="badge-demo-mode">🎮 Demo Mode (Sample Household Data)</span>
           ) : (
-            <span className="badge-live-mode">🔒 Isolated Private Cloud Data ({user?.email})</span>
+            <span className="badge-live-mode">🔒 Isolated Account ({user?.displayName || user?.email})</span>
           )}
         </div>
       </div>
@@ -250,7 +324,7 @@ export default function BudgetPage() {
             <h3 className="kpi-value text-amber">
               {formatCurrency(totalExpenseInCurrentCurrency, currency)}
             </h3>
-            <span className="kpi-subtext">{expenses.length} Recurring bills & subscriptions</span>
+            <span className="kpi-subtext">{expenses.length} Household items & subscriptions</span>
           </div>
         </div>
 
@@ -288,7 +362,7 @@ export default function BudgetPage() {
 
       {/* 4. MAIN WORKSPACE GRID */}
       <div className="budget-workspace-grid">
-        {/* LEFT COLUMN: Wallos Expense Tracker & Budget Progress Meters */}
+        {/* LEFT COLUMN: Wallos Expense Tracker & Clickable Budget Meters */}
         <div className="workspace-main-col">
           <ExpenseTracker
             expenses={expenses}
@@ -301,13 +375,13 @@ export default function BudgetPage() {
           <BudgetMeters
             expenses={expenses}
             categoryBudgets={categoryBudgets}
+            categorySpentOverrides={categorySpentOverrides}
+            categoryNotes={categoryNotes}
             currency={currency}
-            onUpdateBudgetLimit={(cat, limit) => {
-              const updatedBudgets = { ...categoryBudgets, [cat]: limit };
-              setCategoryBudgets(updatedBudgets);
-              const activeUid = isDemo || !user ? 'demo' : user.uid;
-              saveUserSettings(activeUid, { currency, monthlyIncome, categoryBudgets: updatedBudgets });
-            }}
+            onUpdateCategoryBudget={handleUpdateCategoryBudget}
+            onUpdateCategorySpent={handleUpdateCategorySpent}
+            onUpdateCategoryNotes={handleUpdateCategoryNotes}
+            onAddCustomCategory={handleAddCustomCategory}
           />
         </div>
 
