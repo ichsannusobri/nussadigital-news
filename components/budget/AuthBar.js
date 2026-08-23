@@ -157,7 +157,7 @@ export default function AuthBar({ user, onCustomUserLogin }) {
                   <label>Full Name / Display Name</label>
                   <input
                     type="text"
-                    placeholder="e.g. Ichsan Nusobri"
+                    placeholder="e.g. Alex Pratama"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     required

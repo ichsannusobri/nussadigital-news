@@ -26,6 +26,7 @@ export default function BudgetMeters({
   onUpdateCategoryBudget = () => {},
   onUpdateCategorySpent = () => {},
   onUpdateCategoryNotes = () => {},
+  onDeleteCategory = () => {},
   onAddCustomCategory = () => {},
   onAutoSyncTargets = () => {}
 }) {
@@ -124,6 +125,13 @@ export default function BudgetMeters({
     setShowModal(false);
   };
 
+  const handleDeleteCategoryClick = () => {
+    if (confirm(`Are you sure you want to delete category "${editingCategory}"?`)) {
+      onDeleteCategory(editingCategory);
+      setShowModal(false);
+    }
+  };
+
   const handleCreateNewCategory = (e) => {
     e.preventDefault();
     const cleanName = newCatName.trim();
@@ -190,7 +198,7 @@ export default function BudgetMeters({
         </div>
       </div>
 
-      <p className="click-hint-text">💡 <em>Click on any category card below to directly edit Realized Spent (Realisasi) & Budget Limit!</em></p>
+      <p className="click-hint-text">💡 <em>Click on any category card below to edit Realized Spent, Budget Limit, or delete category!</em></p>
 
       {/* CATEGORY METER GRID (CLICKABLE CARDS) */}
       <div className="meters-grid">
@@ -214,7 +222,7 @@ export default function BudgetMeters({
               key={cat} 
               onClick={() => handleOpenEditModal(cat)} 
               className={`meter-item meter-status-${statusClass} clickable-category-card`}
-              title="Click to edit Realized Spent & Budget Target"
+              title="Click to edit or delete category"
             >
               <div className="meter-info-top">
                 <div className="meter-cat-title-group">
@@ -243,7 +251,7 @@ export default function BudgetMeters({
         })}
       </div>
 
-      {/* MODAL 1: EDIT CATEGORY REALIZED SPENT & BUDGET LIMIT */}
+      {/* MODAL 1: EDIT / DELETE CATEGORY DETAILS */}
       {showModal && (
         <div className="budget-modal-overlay">
           <div className="budget-modal-box">
@@ -293,13 +301,18 @@ export default function BudgetMeters({
                 />
               </div>
 
-              <div className="modal-actions full-width">
-                <button type="button" onClick={() => setShowModal(false)} className="btn-cancel">
-                  Cancel
+              <div className="modal-actions full-width" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <button type="button" onClick={handleDeleteCategoryClick} className="btn-delete-cat" style={{ background: '#EF4444', color: '#FFFFFF', border: 'none', padding: '8px 14px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  🗑️ Delete Category
                 </button>
-                <button type="submit" className="btn-submit-save">
-                  Save Changes
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button type="button" onClick={() => setShowModal(false)} className="btn-cancel">
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-submit-save">
+                    Save Changes
+                  </button>
+                </div>
               </div>
             </form>
           </div>

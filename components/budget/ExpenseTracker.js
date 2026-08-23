@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { formatCurrency, convertCurrency, SUPPORTED_CURRENCIES } from '../../lib/budget/currencies';
 import { getExpenseLogoInfo, getPaymentBadge } from '../../lib/budget/brandLogos';
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
   "Housing",
   "Groceries",
   "Utilities",
@@ -20,16 +20,19 @@ const CATEGORIES = [
 const BILLING_CYCLES = ["Monthly", "Yearly", "Weekly", "One-Time"];
 const PAYMENT_METHODS = ["Bank Transfer", "Credit Card", "Debit Card", "Autopay", "Apple Pay", "PayPal", "QRIS / E-Wallet"];
 
-export default function ExpenseTracker({ expenses, currency, onAddExpense, onDeleteExpense, onUpdateExpense }) {
-  const [viewMode, setViewMode] = useState("grid"); // "grid" (Wallos style) or "table"
+export default function ExpenseTracker({ expenses, currency, onAddExpense, onDeleteExpense, onUpdateExpense, categories = [] }) {
+  const [viewMode, setViewMode] = useState("grid"); // "grid" or "table"
   const [showModal, setShowModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [editingExpense, setEditingExpense] = useState(null);
 
+  // Combine standard and custom categories dynamically
+  const availableCategories = Array.from(new Set([...DEFAULT_CATEGORIES, ...(categories || [])]));
+
   const [formData, setFormData] = useState({
     name: "",
-    category: "Housing",
+    category: availableCategories[0] || "Housing",
     amount: "",
     currency: currency,
     cycle: "Monthly",
@@ -43,7 +46,7 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
     setEditingExpense(null);
     setFormData({
       name: "",
-      category: "Housing",
+      category: availableCategories[0] || "Housing",
       amount: "",
       currency: currency,
       cycle: "Monthly",
@@ -92,6 +95,14 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
     setShowModal(false);
   };
 
+  const handleDeleteCurrentExpense = () => {
+    if (!editingExpense) return;
+    if (confirm(`Are you sure you want to delete expense "${editingExpense.name}"?`)) {
+      onDeleteExpense(editingExpense.id);
+      setShowModal(false);
+    }
+  };
+
   // Filter items by search & category
   const filteredExpenses = expenses.filter((item) => {
     const matchCategory = selectedCategory === "All" || item.category === selectedCategory;
@@ -126,11 +137,11 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
             )}
           </div>
 
-          {/* CATEGORY FILTER SELECT */}
+          {/* DYNAMIC CATEGORY FILTER SELECT */}
           <div className="wallos-filter-select">
             <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
               <option value="All">All Categories ({expenses.length})</option>
-              {CATEGORIES.map(cat => (
+              {availableCategories.map(cat => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
@@ -185,9 +196,19 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
                     )}
                   </div>
 
-                  <div className="card-menu-dropdown">
+                  <div className="card-menu-dropdown" style={{ display: 'flex', gap: '4px' }}>
                     <button onClick={() => handleOpenEdit(item)} className="btn-card-menu" title="Edit Item">
-                      ⋮
+                      ✏️
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (confirm(`Delete "${item.name}"?`)) onDeleteExpense(item.id);
+                      }} 
+                      className="btn-card-menu" 
+                      title="Delete Item"
+                      style={{ color: '#EF4444' }}
+                    >
+                      🗑️
                     </button>
                   </div>
                 </div>
@@ -251,7 +272,7 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
                       </div>
                     </td>
                     <td>
-                      <span className={`cat-badge cat-${item.category.toLowerCase()}`}>
+                      <span className={`cat-badge cat-${(item.category || '').toLowerCase()}`}>
                         {item.category}
                       </span>
                     </td>
@@ -262,14 +283,14 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
                       {formatCurrency(convertedAmt, currency)}
                     </td>
                     <td>
-                      <span className={`status-pill status-${item.status.toLowerCase()}`}>
+                      <span className={`status-pill status-${(item.status || '').toLowerCase()}`}>
                         {item.status}
                       </span>
                     </td>
                     <td className="text-center">
                       <div className="action-btn-group">
                         <button onClick={() => handleOpenEdit(item)} className="btn-icon-edit" title="Edit">✏️</button>
-                        <button onClick={() => onDeleteExpense(item.id)} className="btn-icon-delete" title="Delete">🗑️</button>
+                        <button onClick={() => { if (confirm(`Delete "${item.name}"?`)) onDeleteExpense(item.id); }} className="btn-icon-delete" title="Delete">🗑️</button>
                       </div>
                     </td>
                   </tr>
@@ -307,7 +328,7 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 >
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  {availableCategories.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
 
@@ -385,13 +406,20 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
                 />
               </div>
 
-              <div className="modal-actions full-width">
-                <button type="button" onClick={() => setShowModal(false)} className="btn-cancel">
-                  Cancel
-                </button>
-                <button type="submit" className="btn-submit-save">
-                  Save Item
-                </button>
+              <div className="modal-actions full-width" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {editingExpense ? (
+                  <button type="button" onClick={handleDeleteCurrentExpense} className="btn-delete-cat" style={{ background: '#EF4444', color: '#FFFFFF', border: 'none', padding: '8px 14px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    🗑️ Delete Expense
+                  </button>
+                ) : <div />}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button type="button" onClick={() => setShowModal(false)} className="btn-cancel">
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-submit-save">
+                    Save Item
+                  </button>
+                </div>
               </div>
             </form>
           </div>

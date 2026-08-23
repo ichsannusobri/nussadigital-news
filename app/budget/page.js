@@ -64,15 +64,39 @@ export default function BudgetPage() {
   const [isEditingIncome, setIsEditingIncome] = useState(false);
   const [tempIncomeInput, setTempIncomeInput] = useState('');
 
-  // 1. Auth Listener
+  // 1. Initial Session Mount & Auth Listener (Prevents Login Gate Kick on Refresh)
   useEffect(() => {
+    // Check localStorage for saved session on refresh
+    if (typeof window !== 'undefined') {
+      const savedUserStr = localStorage.getItem('ndnews_budget_active_user');
+      if (savedUserStr) {
+        try {
+          const savedUser = JSON.parse(savedUserStr);
+          if (savedUser) {
+            setUser(savedUser);
+            setLoading(false);
+          }
+        } catch (e) {}
+      }
+    }
+
     if (!auth) {
       setLoading(false);
       return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      if (currentUser) {
+        setUser(currentUser);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('ndnews_budget_active_user', JSON.stringify({
+            uid: currentUser.uid,
+            email: currentUser.email,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL
+          }));
+        }
+      }
       setLoading(false);
     });
 
@@ -84,7 +108,6 @@ export default function BudgetPage() {
     async function loadData() {
       if (!user && !isGuest) return;
       const activeUid = user ? user.uid : 'guest';
-      setLoading(true);
 
       try {
         const [userExp, userSet] = await Promise.all([
@@ -150,6 +173,9 @@ export default function BudgetPage() {
         displayName: gateName || gateEmail.split('@')[0]
       };
       setUser(fallbackUser);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('ndnews_budget_active_user', JSON.stringify(fallbackUser));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -157,6 +183,13 @@ export default function BudgetPage() {
 
   const handleCustomUserLogin = (customUser) => {
     setUser(customUser);
+    if (typeof window !== 'undefined') {
+      if (customUser) {
+        localStorage.setItem('ndnews_budget_active_user', JSON.stringify(customUser));
+      } else {
+        localStorage.removeItem('ndnews_budget_active_user');
+      }
+    }
   };
 
   // Currency Change Handler
@@ -239,7 +272,7 @@ export default function BudgetPage() {
     await deleteUserExpense(activeUid, id);
   };
 
-  // Category Budget & Realized Spent Handlers
+  // Category Budget, Realized Spent, Notes & Delete Category Handlers
   const handleUpdateCategoryBudget = (cat, limitInIDR) => {
     const updatedBudgets = { ...categoryBudgets, [cat]: limitInIDR };
     setCategoryBudgets(updatedBudgets);
@@ -275,6 +308,30 @@ export default function BudgetPage() {
       monthlyIncome,
       categoryBudgets,
       categorySpentOverrides,
+      categoryNotes: updatedNotes
+    }).catch(console.error);
+  };
+
+  const handleDeleteCategory = (catToDelete) => {
+    const updatedBudgets = { ...categoryBudgets };
+    delete updatedBudgets[catToDelete];
+
+    const updatedOverrides = { ...categorySpentOverrides };
+    delete updatedOverrides[catToDelete];
+
+    const updatedNotes = { ...categoryNotes };
+    delete updatedNotes[catToDelete];
+
+    setCategoryBudgets(updatedBudgets);
+    setCategorySpentOverrides(updatedOverrides);
+    setCategoryNotes(updatedNotes);
+
+    const activeUid = user ? user.uid : 'guest';
+    saveUserSettings(activeUid, {
+      currency,
+      monthlyIncome,
+      categoryBudgets: updatedBudgets,
+      categorySpentOverrides: updatedOverrides,
       categoryNotes: updatedNotes
     }).catch(console.error);
   };
@@ -360,6 +417,18 @@ export default function BudgetPage() {
   }
 
   // --------------------------------------------------------------------------
+  // RENDER 0: LOADING SPINNER DURING AUTH RESOLUTION (PREVENTS REFRESH KICK)
+  // --------------------------------------------------------------------------
+  if (loading) {
+    return (
+      <div className="budget-loading-screen" style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
+        <div className="spinner-ring" style={{ width: '40px', height: '40px', border: '4px solid #E5E7EB', borderTopColor: '#D97706', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+        <p style={{ color: '#6B7280', fontSize: '0.9rem', fontWeight: '600' }}>Loading your private budget workspace...</p>
+      </div>
+    );
+  }
+
+  // --------------------------------------------------------------------------
   // RENDER 1: AUTHENTICATION LANDING GATE (LOGIN PAGE) WHEN UNAUTHENTICATED
   // --------------------------------------------------------------------------
   if (!user && !isGuest) {
@@ -402,7 +471,7 @@ export default function BudgetPage() {
                   <label>Full Name / Display Name</label>
                   <input
                     type="text"
-                    placeholder="e.g. Ichsan Nusobri"
+                    placeholder="e.g. Alex Pratama"
                     value={gateName}
                     onChange={(e) => setGateName(e.target.value)}
                     required
@@ -458,7 +527,7 @@ export default function BudgetPage() {
   }
 
   // --------------------------------------------------------------------------
-  // RENDER 2: MAIN BUDGET WORKSPACE (CLEAN BLANK CANVAS FOR NEW ACCOUNTS)
+  // RENDER 2: MAIN BUDGET WORKSPACE
   // --------------------------------------------------------------------------
   return (
     <div className="budget-page-container">
@@ -593,6 +662,7 @@ export default function BudgetPage() {
           <ExpenseTracker
             expenses={expenses}
             currency={currency}
+            categories={Object.keys(categoryBudgets)}
             onAddExpense={handleAddExpense}
             onUpdateExpense={handleUpdateExpense}
             onDeleteExpense={handleDeleteExpense}
@@ -608,6 +678,7 @@ export default function BudgetPage() {
             onUpdateCategoryBudget={handleUpdateCategoryBudget}
             onUpdateCategorySpent={handleUpdateCategorySpent}
             onUpdateCategoryNotes={handleUpdateCategoryNotes}
+            onDeleteCategory={handleDeleteCategory}
             onAddCustomCategory={handleAddCustomCategory}
             onAutoSyncTargets={handleAutoSyncTargets}
           />
