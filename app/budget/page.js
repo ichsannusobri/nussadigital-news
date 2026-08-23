@@ -354,11 +354,7 @@ export default function BudgetPage() {
   // Financial Calculations
   const incomeInCurrentCurrency = convertCurrency(monthlyIncome, 'IDR', currency);
 
-  const categorySet = new Set([
-    "Housing", "Groceries", "Utilities", "Subscriptions", "Transport", 
-    "Insurance", "Healthcare", "Education", "Entertainment", "Savings",
-    ...Object.keys(categoryBudgets || {})
-  ]);
+  const categorySet = new Set(Object.keys(categoryBudgets || {}));
 
   const calculatedSpentPerCat = {};
   (expenses || []).forEach(e => {

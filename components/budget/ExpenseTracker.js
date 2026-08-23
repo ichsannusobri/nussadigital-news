@@ -27,8 +27,8 @@ export default function ExpenseTracker({ expenses, currency, onAddExpense, onDel
   const [searchQuery, setSearchQuery] = useState("");
   const [editingExpense, setEditingExpense] = useState(null);
 
-  // Combine standard and custom categories dynamically
-  const availableCategories = Array.from(new Set([...DEFAULT_CATEGORIES, ...(categories || [])]));
+  // Dynamic categories matching user's active categories
+  const availableCategories = (categories && categories.length > 0) ? categories : DEFAULT_CATEGORIES;
 
   const [formData, setFormData] = useState({
     name: "",

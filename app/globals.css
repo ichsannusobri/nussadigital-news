@@ -5989,6 +5989,207 @@ ul, ol {
   }
 }
 
+/* ==========================================================================
+   HOMEPAGE DEDICATED BUDGET AI PROMO BANNER (CNN STYLE)
+   ========================================================================== */
+.cnn-budget-promo-section {
+  margin: 2.25rem 0;
+}
+
+.cnn-budget-promo-card {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  color: #FFFFFF;
+}
+
+.budget-promo-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.budget-promo-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.budget-promo-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: #D97706;
+  color: #FFFFFF;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.budget-promo-tag {
+  font-size: 0.75rem;
+  color: #94A3B8;
+}
+
+.budget-promo-headline {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #FFFFFF;
+  margin: 0 0 0.85rem 0;
+}
+
+.budget-promo-text {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #CBD5E1;
+  margin: 0 0 1.25rem 0;
+}
+
+.budget-promo-feature-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.feature-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #F1F5F9;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.budget-promo-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-launch-budget-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #E15B45 0%, #D97706 100%);
+  color: #FFFFFF;
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 12px 22px;
+  border-radius: 10px;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(225, 91, 69, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-launch-budget-ai:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(225, 91, 69, 0.5);
+  color: #FFFFFF;
+}
+
+.budget-promo-free-hint {
+  font-size: 0.8rem;
+  color: #94A3B8;
+}
+
+/* MINI PREVIEW CARD */
+.budget-promo-mini-preview {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.preview-top-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
+.p-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+.p-dot.r { background: #EF4444; }
+.p-dot.y { background: #F59E0B; }
+.p-dot.g { background: #10B981; }
+
+.preview-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94A3B8;
+  margin-left: 4px;
+  text-transform: uppercase;
+}
+
+.preview-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.preview-kpi {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pk-label {
+  font-size: 0.65rem;
+  color: #94A3B8;
+}
+
+.pk-val {
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.preview-ai-bubble {
+  display: flex;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.sparkle-ai {
+  font-size: 1rem;
+}
+
+.preview-ai-bubble p {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #FEF3C7;
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .cnn-budget-promo-card {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+}
+
+
 
 
 

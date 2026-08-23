@@ -1,3 +1,6 @@
-Deploy Trigger - CNN Indonesia Layout Adoption for NDNews
-Timestamp: 2026-08-23 20:41:18 WIB
-Status: Verified static build (106/106 pages) with CNN layout: Mega Menu, Topic Hero Banner, 2-Column Grid (66% Main + 33% Sticky Sidebar), Compact CNN Article Cards, Standardized Section Headers with See All links, and Newsletter Bar.
+Deploy Trigger - Category Deletion Permanent Fix, Real-Time Expense Category Sync & Dedicated Budget AI Homepage Promo Banner
+Timestamp: 2026-08-23 20:53:10 WIB
+Status: Verified static build (106/106 pages).
+- Category deletion now permanently wipes deleted categories from UI, localStorage, and Firestore.
+- Adding custom categories instantly syncs to ExpenseTracker (+ New Expense) dropdown.
+- Dedicated modern promotional banner for Budget AI added to homepage.

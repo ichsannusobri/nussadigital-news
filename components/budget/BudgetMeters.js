@@ -3,19 +3,6 @@
 import { useState } from 'react';
 import { formatCurrency, convertCurrency } from '../../lib/budget/currencies';
 
-export const STANDARD_CATEGORIES = [
-  "Housing",
-  "Groceries",
-  "Utilities",
-  "Subscriptions",
-  "Transport",
-  "Insurance",
-  "Healthcare",
-  "Education",
-  "Entertainment",
-  "Savings"
-];
-
 export default function BudgetMeters({ 
   expenses = [], 
   categoryBudgets = {}, 
@@ -33,7 +20,7 @@ export default function BudgetMeters({
   const [showModal, setShowModal] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
 
-  const [editingCategory, setEditingCategory] = useState("Housing");
+  const [editingCategory, setEditingCategory] = useState("");
   const [limitInput, setLimitInput] = useState("");
   const [spentInput, setSpentInput] = useState("");
   const [notesInput, setNotesInput] = useState("");
@@ -56,9 +43,8 @@ export default function BudgetMeters({
   const safeSpentOverrides = categorySpentOverrides || {};
   const safeNotes = categoryNotes || {};
 
-  // Unique list of all active categories (standard + custom + user settings)
-  const categorySet = new Set([...STANDARD_CATEGORIES, ...Object.keys(safeBudgets)]);
-  const categories = Array.from(categorySet);
+  // Active categories are strictly the keys in user's categoryBudgets
+  const categories = Object.keys(safeBudgets);
 
   // Calculate totals
   let grandTotalBudget = 0;
@@ -69,7 +55,6 @@ export default function BudgetMeters({
     const limitDisplay = convertCurrency(limitIDR, "IDR", currency);
     grandTotalBudget += limitDisplay;
 
-    // Use override spent if set by user, otherwise use sum of expenses
     const hasOverride = safeSpentOverrides[cat] !== undefined && safeSpentOverrides[cat] !== null;
     const spentIDR = hasOverride ? safeSpentOverrides[cat] : null;
     const spentDisplay = hasOverride 
@@ -114,7 +99,6 @@ export default function BudgetMeters({
       return;
     }
 
-    // Convert back to IDR baseline for persistent storage
     const limitInIDR = convertCurrency(limitNum, currency, "IDR");
     const spentInIDR = convertCurrency(spentNum, currency, "IDR");
 
@@ -126,7 +110,7 @@ export default function BudgetMeters({
   };
 
   const handleDeleteCategoryClick = () => {
-    if (confirm(`Are you sure you want to delete category "${editingCategory}"?`)) {
+    if (confirm(`Are you sure you want to permanently delete category "${editingCategory}"?`)) {
       onDeleteCategory(editingCategory);
       setShowModal(false);
     }
@@ -201,55 +185,63 @@ export default function BudgetMeters({
       <p className="click-hint-text">💡 <em>Click on any category card below to edit Realized Spent, Budget Limit, or delete category!</em></p>
 
       {/* CATEGORY METER GRID (CLICKABLE CARDS) */}
-      <div className="meters-grid">
-        {categories.map((cat) => {
-          const limitIDR = safeBudgets[cat] || 0;
-          const limit = convertCurrency(limitIDR, "IDR", currency);
+      {categories.length === 0 ? (
+        <div className="empty-expenses-state" style={{ padding: '2rem 1rem', textAlign: 'center' }}>
+          <span className="empty-icon">📊</span>
+          <p>No categories configured yet.</p>
+          <button onClick={() => setShowAddCategoryModal(true)} className="btn-secondary-sm">Add First Category</button>
+        </div>
+      ) : (
+        <div className="meters-grid">
+          {categories.map((cat) => {
+            const limitIDR = safeBudgets[cat] || 0;
+            const limit = convertCurrency(limitIDR, "IDR", currency);
 
-          const hasOverride = safeSpentOverrides[cat] !== undefined && safeSpentOverrides[cat] !== null;
-          const spentIDR = hasOverride ? safeSpentOverrides[cat] : (calculatedSpentPerCat[cat] || 0);
-          const spent = convertCurrency(spentIDR, "IDR", currency);
+            const hasOverride = safeSpentOverrides[cat] !== undefined && safeSpentOverrides[cat] !== null;
+            const spentIDR = hasOverride ? safeSpentOverrides[cat] : (calculatedSpentPerCat[cat] || 0);
+            const spent = convertCurrency(spentIDR, "IDR", currency);
 
-          const pct = limit > 0 ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
-          const noteText = safeNotes[cat] || "";
+            const pct = limit > 0 ? Math.min(100, Math.round((spent / limit) * 100)) : 0;
+            const noteText = safeNotes[cat] || "";
 
-          let statusClass = "green";
-          if (pct >= 90) statusClass = "red";
-          else if (pct >= 70) statusClass = "yellow";
+            let statusClass = "green";
+            if (pct >= 90) statusClass = "red";
+            else if (pct >= 70) statusClass = "yellow";
 
-          return (
-            <div 
-              key={cat} 
-              onClick={() => handleOpenEditModal(cat)} 
-              className={`meter-item meter-status-${statusClass} clickable-category-card`}
-              title="Click to edit or delete category"
-            >
-              <div className="meter-info-top">
-                <div className="meter-cat-title-group">
-                  <span className="meter-cat-title">{cat}</span>
-                  <span className="badge-edit-pencil">✏️ Edit</span>
+            return (
+              <div 
+                key={cat} 
+                onClick={() => handleOpenEditModal(cat)} 
+                className={`meter-item meter-status-${statusClass} clickable-category-card`}
+                title="Click to edit or delete category"
+              >
+                <div className="meter-info-top">
+                  <div className="meter-cat-title-group">
+                    <span className="meter-cat-title">{cat}</span>
+                    <span className="badge-edit-pencil">✏️ Edit</span>
+                  </div>
+                  <span className="meter-pct">{pct}% Used</span>
                 </div>
-                <span className="meter-pct">{pct}% Used</span>
-              </div>
 
-              <div className="meter-bar-track">
-                <div className={`meter-bar-fill fill-${statusClass}`} style={{ width: `${pct}%` }}></div>
-              </div>
-
-              <div className="meter-info-bottom">
-                <span className="spent-val">Spent (Realisasi): <strong>{formatCurrency(spent, currency)}</strong></span>
-                <span className="limit-val">Limit Target: <strong>{formatCurrency(limit, currency)}</strong></span>
-              </div>
-
-              {noteText && (
-                <div className="category-note-pill">
-                  📝 {noteText}
+                <div className="meter-bar-track">
+                  <div className={`meter-bar-fill fill-${statusClass}`} style={{ width: `${pct}%` }}></div>
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+
+                <div className="meter-info-bottom">
+                  <span className="spent-val">Spent (Realisasi): <strong>{formatCurrency(spent, currency)}</strong></span>
+                  <span className="limit-val">Limit Target: <strong>{formatCurrency(limit, currency)}</strong></span>
+                </div>
+
+                {noteText && (
+                  <div className="category-note-pill">
+                    📝 {noteText}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* MODAL 1: EDIT / DELETE CATEGORY DETAILS */}
       {showModal && (

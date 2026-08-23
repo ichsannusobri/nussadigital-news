@@ -9,6 +9,7 @@ import HeroTopicBanner from '../components/HeroTopicBanner';
 import SectionHeader from '../components/SectionHeader';
 import ArticleCardCompact from '../components/ArticleCardCompact';
 import NewsletterBar from '../components/NewsletterBar';
+import BudgetAIPromoBanner from '../components/BudgetAIPromoBanner';
 
 function truncateText(text, max) {
   if (!text) return '';
@@ -183,6 +184,9 @@ export default async function HomePage() {
               </div>
             </section>
 
+            {/* DEDICATED PROMOTIONAL BANNER FOR BUDGET AI */}
+            <BudgetAIPromoBanner />
+
             {/* SPORT MODULE */}
             {sportArticles.length > 0 && (
               <section className="cnn-section-block">
@@ -245,7 +249,7 @@ export default async function HomePage() {
           {/* ================================================================= */}
           <aside className="cnn-sticky-sidebar">
             
-            {/* 1. BUDGET AI BETA PROMO CARD */}
+            {/* 1. BUDGET AI BETA SIDEBAR PROMO CARD */}
             <HeroBetaBanner />
 
             {/* 2. MOST POPULAR NUMBERED 1-10 MODULE (CNN STYLE) */}
