@@ -1,16 +1,14 @@
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy, doc, getDoc, limit } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { DEFAULT_ARTICLES, TRENDING_TOPICS, getOptimizedImageUrl, getAuthorAvatar } from '../lib/data';
+import { DEFAULT_ARTICLES, TRENDING_TOPICS, getAuthorAvatar } from '../lib/data';
 import TimeAgo from '../components/TimeAgo';
 import Pagination from '../components/Pagination';
 import HeroBetaBanner from '../components/HeroBetaBanner';
-
-function formatDate(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
+import HeroTopicBanner from '../components/HeroTopicBanner';
+import SectionHeader from '../components/SectionHeader';
+import ArticleCardCompact from '../components/ArticleCardCompact';
+import NewsletterBar from '../components/NewsletterBar';
 
 function truncateText(text, max) {
   if (!text) return '';
@@ -93,50 +91,32 @@ export default async function HomePage() {
   const ITEMS_PER_PAGE = 12;
   const totalPages = Math.ceil(articles.length / ITEMS_PER_PAGE);
 
-  // Pre-calculate subsets
-  const homepageArticles = articles.slice(0, 30);
-  const breakingArticles = homepageArticles.filter(a => a.isBreaking);
-  const featured = homepageArticles.filter(a => a.isFeatured);
+  // Pre-calculate editorial sets
+  const homepageArticles = articles.slice(0, 35);
+  const featuredArticles = homepageArticles.filter(a => a.isFeatured);
   
-  // Hero Main: Newest featured article or newest overall article
-  const mainArticle = featured[0] || articles[0];
+  // Hero Lead Article
+  const mainArticle = featuredArticles[0] || articles[0];
   
-  // Pool of articles excluding mainArticle to avoid duplication
+  // Pool of articles excluding main lead
   const poolAfterMain = articles.filter(a => a.id !== mainArticle.id);
-  const remainingFeatured = poolAfterMain.filter(a => a.isFeatured);
-  const unfeaturedPool = poolAfterMain.filter(a => !a.isFeatured);
-
-  const midArticles = [];
-  for (let i = 0; i < 3; i++) {
-    if (remainingFeatured[i]) {
-      midArticles.push(remainingFeatured[i]);
-    } else if (unfeaturedPool.length > 0) {
-      midArticles.push(unfeaturedPool.shift());
-    }
-  }
   
-  const heroUsedIds = new Set([mainArticle.id, ...midArticles.map(a => a.id)]);
+  // Latest News (first 8 for main column)
+  const latestNews = poolAfterMain.slice(0, 8);
   
-  const pinnedArticles = articles.filter(a => a.isPinned);
-  const unpinnedSidebar = articles.filter(a => !a.isPinned && !heroUsedIds.has(a.id)).slice(0, 5);
-  const sidebarArticles = [...pinnedArticles, ...unpinnedSidebar].slice(0, 5);
-  
-  // Latest News (all recent articles excluding those used in main hero)
-  const latestArticles = articles.filter(a => !heroUsedIds.has(a.id)).slice(0, 10);
-  
-  // Opinions
-  const opinionArticles = homepageArticles.filter(a => a.category?.toLowerCase() === 'opinion');
-  
-  // Sport
-  const sportArticles = homepageArticles.filter(a => a.category?.toLowerCase() === 'sport').slice(0, 4);
+  // Sport articles
+  const sportArticles = articles.filter(a => a.category?.toLowerCase() === 'sport').slice(0, 4);
   const sportHero = sportArticles[0];
-  const sportRest = sportArticles.slice(1, 4);
+  const sportSecondary = sportArticles.slice(1, 4);
   
-  // Most Popular
-  const mostPopular = [...homepageArticles].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+  // Opinion articles
+  const opinionArticles = articles.filter(a => a.category?.toLowerCase() === 'opinion').slice(0, 4);
   
-  // Explainer
-  const explainers = homepageArticles.filter(a => a.category?.toLowerCase() === 'explainer');
+  // Most Popular (Top 10 sorted by views)
+  const mostPopular = [...articles].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 10);
+  
+  // Explainer articles
+  const explainers = articles.filter(a => a.category?.toLowerCase() === 'explainer').slice(0, 3);
 
   const websiteSchema = {
     "@context": "https://schema.org",
@@ -162,7 +142,7 @@ export default async function HomePage() {
   };
 
   return (
-    <main className="home-page">
+    <main className="home-page cnn-layout-page">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
@@ -173,249 +153,160 @@ export default async function HomePage() {
       />
       <h1 className="sr-only">Latest APAC Economy, Finance & Sports Breaking News</h1>
 
-      {/* 2. TRENDING BAR */}
-      <div className="trending-bar">
-        <div className="trending-container">
-            <span className="trending-label">🔥 Trending</span>
-            <div className="trending-links" id="trending-container">
-                {dynamicTrending.map(topic => (
-                  <Link key={topic.id} href={topic.url} className="trending-link">{topic.name}</Link>
+      {/* 1. CNN-STYLE TOPIC HERO BANNER WITH INTEGRATED TRENDING STRIP */}
+      <HeroTopicBanner mainArticle={mainArticle} trendingTopics={dynamicTrending} />
+
+      {/* 2. MAIN 2-COLUMN HOMEPAGE GRID (MAIN 66% + STICKY SIDEBAR 33%) */}
+      <div className="cnn-main-container">
+        <div className="cnn-homepage-grid">
+          
+          {/* ================================================================= */}
+          {/* LEFT MAIN COLUMN (~66%)                                           */}
+          {/* ================================================================= */}
+          <div className="cnn-main-column">
+            
+            {/* LATEST NEWS MODULE */}
+            <section className="cnn-section-block">
+              <SectionHeader 
+                title="Latest News" 
+                seeAllLink="/category/apac" 
+                seeAllText="See All Latest →" 
+              />
+              <div className="cnn-latest-cards-list">
+                {latestNews.map((art, idx) => (
+                  <ArticleCardCompact 
+                    key={`latest-${art.id}`} 
+                    article={art} 
+                    isFeatured={idx === 0} 
+                  />
                 ))}
+              </div>
+            </section>
+
+            {/* SPORT MODULE */}
+            {sportArticles.length > 0 && (
+              <section className="cnn-section-block">
+                <SectionHeader 
+                  title="APAC Sport & Competitions" 
+                  seeAllLink="/category/sport" 
+                  seeAllText="See All Sport →" 
+                />
+                <div className="cnn-sport-layout">
+                  {sportHero && (
+                    <div className="cnn-sport-hero-card">
+                      <ArticleCardCompact 
+                        article={sportHero} 
+                        isFeatured={true} 
+                      />
+                    </div>
+                  )}
+                  <div className="cnn-sport-secondary-grid">
+                    {sportSecondary.map(art => (
+                      <ArticleCardCompact 
+                        key={`sp-${art.id}`} 
+                        article={art} 
+                        isFeatured={false} 
+                      />
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* EXPLAINER MODULE */}
+            {explainers.length > 0 && (
+              <section className="cnn-section-block">
+                <SectionHeader 
+                  title="Deep Explainer & Regional Insights" 
+                  seeAllLink="/category/explainer" 
+                  seeAllText="See All Explainers →" 
+                />
+                <div className="cnn-explainer-grid">
+                  {explainers.map(art => (
+                    <ArticleCardCompact 
+                      key={`exp-${art.id}`} 
+                      article={art} 
+                      isFeatured={false} 
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* PAGINATION */}
+            <div className="cnn-pagination-block">
+              <Pagination currentPage={1} totalPages={totalPages} basePath="/page" />
             </div>
+
+          </div>
+
+          {/* ================================================================= */}
+          {/* RIGHT STICKY SIDEBAR (~33%)                                       */}
+          {/* ================================================================= */}
+          <aside className="cnn-sticky-sidebar">
+            
+            {/* 1. BUDGET AI BETA PROMO CARD */}
+            <HeroBetaBanner />
+
+            {/* 2. MOST POPULAR NUMBERED 1-10 MODULE (CNN STYLE) */}
+            <div className="cnn-sidebar-widget cnn-widget-popular">
+              <SectionHeader 
+                title="Most Popular" 
+                seeAllLink="/category/finance" 
+                seeAllText="Top Read →" 
+              />
+              <div className="cnn-popular-list">
+                {mostPopular.map((art, idx) => (
+                  <Link href={`/article/${art.id}`} key={`pop-${art.id}`} className="cnn-popular-item">
+                    <span className="cnn-popular-rank">{idx + 1}</span>
+                    <div className="cnn-popular-info">
+                      <span className="cnn-popular-cat-tag">{(art.category || 'News').toUpperCase()}</span>
+                      <h4 className="cnn-popular-title">{truncateText(art.title, 75)}</h4>
+                      <span className="cnn-popular-time"><TimeAgo date={art.date} /></span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* 3. OPINION & ANALYSIS WIDGET */}
+            {opinionArticles.length > 0 && (
+              <div className="cnn-sidebar-widget cnn-widget-opinion">
+                <SectionHeader 
+                  title="Opinion & Analysis" 
+                  seeAllLink="/category/opinion" 
+                  seeAllText="See All →" 
+                />
+                <div className="cnn-opinion-list">
+                  {opinionArticles.map(art => {
+                    const avatarUrl = getAuthorAvatar(art.author);
+                    return (
+                      <Link href={`/article/${art.id}`} key={`op-${art.id}`} className="cnn-opinion-item">
+                        <div className="cnn-opinion-avatar-wrap">
+                          {avatarUrl ? (
+                            <img src={avatarUrl} alt={art.author} className="cnn-opinion-avatar-img" />
+                          ) : (
+                            <div className="cnn-opinion-avatar-fallback">{getInitials(art.author)}</div>
+                          )}
+                        </div>
+                        <div className="cnn-opinion-info">
+                          <h4 className="cnn-opinion-title">{truncateText(art.title, 65)}</h4>
+                          <span className="cnn-opinion-author-name">{art.author}</span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+          </aside>
+
         </div>
       </div>
 
-      {/* BETA FEATURE HERO BANNER */}
-      <HeroBetaBanner />
-
-      {/* 3. HERO ZONE */}
-      <section className="hero-zone">
-        <div className="hero-container" id="hero-container">
-          {mainArticle && (
-            <div className="alj-main-col">
-              <Link href={`/article/${mainArticle.id}`} className="alj-main-image-wrapper">
-                <img src={getOptimizedImageUrl(mainArticle.image, 800)} alt={mainArticle.title} fetchPriority="high" loading="eager" decoding="async" width={800} height={500} />
-                <div className="alj-main-title-box">
-                  <h2>{mainArticle.title}</h2>
-                </div>
-              </Link>
-              <ul className="alj-timeline">
-                {homepageArticles.slice(1, 5).map((a, i) => (
-                  <li className="alj-timeline-item" key={`tl-${a.id}`}>
-                    <span className="alj-bullet"></span>
-                    <TimeAgo date={a.date} />
-                    <Link href={`/article/${a.id}`}>{a.title}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {midArticles.length > 0 && (
-            <div className="alj-mid-col">
-              <div className="alj-mid-top">
-                <Link href={`/article/${midArticles[0].id}`}>
-                  <img src={getOptimizedImageUrl(midArticles[0].image, 400)} alt={midArticles[0].title} loading="lazy" decoding="async" width={400} height={250} />
-                  <h3>{midArticles[0].title}</h3>
-                </Link>
-              </div>
-              <div className="alj-mid-list">
-                {midArticles.slice(1).map(a => (
-                  <Link href={`/article/${a.id}`} className="alj-mid-card" key={`hm-${a.id}`}>
-                    <h4>{a.title}</h4>
-                    <img src={getOptimizedImageUrl(a.image, 150)} alt={a.title} loading="lazy" decoding="async" width={150} height={94} />
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="alj-sidebar-col">
-            <div className="alj-sidebar-section">
-              <h4 className="alj-sidebar-header">WORLD CUP 2026</h4>
-              {sportArticles.slice(0, 3).map(a => (
-                <Link href={`/article/${a.id}`} className="alj-sidebar-item" key={`wc-${a.id}`}>
-                  <div style={{flex: 1}}>
-                    <span className="item-title">{truncateText(a.title, 80)}</span>
-                  </div>
-                  <img src={getOptimizedImageUrl(a.image, 150)} alt={a.title} loading="lazy" decoding="async" width={150} height={94} />
-                </Link>
-              ))}
-            </div>
-            
-            <div className="alj-sidebar-section">
-              <h4 className="alj-sidebar-header">MUST READ</h4>
-              {sidebarArticles.slice(0, 2).map(a => (
-                <Link href={`/article/${a.id}`} className="alj-sidebar-item" key={`mr-${a.id}`}>
-                  <div style={{flex: 1}}>
-                    <span className="item-title">{truncateText(a.title, 80)}</span>
-                  </div>
-                  <img src={getOptimizedImageUrl(a.image, 150)} alt={a.title} loading="lazy" decoding="async" width={150} height={94} />
-                </Link>
-              ))}
-            </div>
-
-            <div className="alj-sidebar-section">
-              <h4 className="alj-sidebar-header">OPINION</h4>
-              {opinionArticles.slice(0, 1).map(a => (
-                <Link href={`/article/${a.id}`} className="alj-opinion-card" key={`op-${a.id}`}>
-                  <img src={getAuthorAvatar(a.author) || getOptimizedImageUrl(a.image, 300)} alt={a.author} loading="lazy" decoding="async" width={100} height={100} style={{ objectFit: 'cover' }} />
-                  <span className="item-title">{truncateText(a.title, 60)}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. BREAKING NEWS BANNER */}
-      {breakingArticles.length > 0 && (
-        <section className="breaking-banner" id="breaking-container">
-          {breakingArticles.map(a => (
-            <div className="section-wrapper" key={`break-${a.id}`}>
-              <span className="breaking-label">BREAKING</span>
-              <Link href={`/article/${a.id}`} className="breaking-headline">{a.title}</Link>
-            </div>
-          ))}
-        </section>
-      )}
-
-      {/* 7. MAIN CONTENT + SIDEBAR */}
-      <section className="content-section">
-          <div className="content-grid">
-              <main className="content-main">
-                  <h2 className="section-header">Latest News</h2>
-                  <div id="latest-news-container">
-                    {latestArticles.map(a => (
-                      <article className="news-card" key={`latest-${a.id}`}>
-                        <Link href={`/article/${a.id}`}>
-                          <img src={getOptimizedImageUrl(a.image, 400)} alt={a.title} loading="lazy" decoding="async" width={400} height={250} />
-                        </Link>
-                        <div className="card-body">
-                          <span className="card-category">{a.category.toUpperCase()}</span>
-                          <Link href={`/article/${a.id}`}><h3 className="card-title">{a.title}</h3></Link>
-                          <p className="card-excerpt">{truncateText(a.excerpt, 150)}</p>
-                          <div className="card-meta">
-                            <span>{a.author}</span>
-                            <span>{formatDate(a.date)}</span>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-              </main>
-              <aside className="content-sidebar">
-           {opinionArticles.length > 0 && (
-            <div className="sidebar-section">
-              <h3 className="section-header">Opinion</h3>
-              <div id="opinion-container">
-                {opinionArticles.map(a => {
-                  const avatarUrl = getAuthorAvatar(a.author);
-                  return (
-                    <article className="opinion-item" key={`op-${a.id}`}>
-                      {avatarUrl ? (
-                        <img src={avatarUrl} alt={a.author} className="opinion-avatar" style={{ objectFit: 'cover' }} />
-                      ) : (
-                        <div className="opinion-avatar">{getInitials(a.author)}</div>
-                      )}
-                      <div className="opinion-body">
-                        <Link href={`/article/${a.id}`} className="opinion-title">{a.title}</Link>
-                        <span className="opinion-author">{a.author}</span>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-              </aside>
-          </div>
-      </section>
-
-      {/* 10. SPORT SECTION + MOST POPULAR */}
-      {sportArticles.length > 0 && (
-      <section className="sport-section">
-        <div className="sport-grid">
-          <div className="sport-main">
-            <h2 className="section-header">Sport</h2>
-            <div id="sport-section-container">
-              {sportHero && (
-                <div className="sport-hero">
-                  <Link href={`/article/${sportHero.id}`}>
-                    <img src={getOptimizedImageUrl(sportHero.image, 600)} alt={sportHero.title} fetchPriority="high" loading="eager" decoding="async" width={600} height={375} />
-                    <div className="sport-overlay">
-                      <span className="sport-category">{sportHero.category.toUpperCase()}</span>
-                      <h3 className="sport-title">{sportHero.title}</h3>
-                    </div>
-                  </Link>
-                </div>
-              )}
-              {sportRest.map(a => (
-                <article className="sport-article" key={`sp-${a.id}`}>
-                  <img src={getOptimizedImageUrl(a.image, 150)} alt={a.title} loading="lazy" decoding="async" width={150} height={94} />
-                  <div>
-                    <Link href={`/article/${a.id}`}><h4>{a.title}</h4></Link>
-                    <span className="card-meta">{a.author} &bull; {formatDate(a.date)}</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-          
-          <div className="most-popular">
-            <h2 className="section-header">Most Popular</h2>
-            <div id="most-popular-container">
-              {mostPopular.map((a, i) => (
-                <div className="popular-item" key={`pop-${a.id}`}>
-                  <span className="popular-number">{i + 1}</span>
-                  <Link href={`/article/${a.id}`} className="popular-title">{truncateText(a.title, 80)}</Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-      )}
-
-      {/* 11. EXPLAINER SECTION */}
-      <section className="explainer-section">
-          <div className="section-wrapper">
-              <h2 className="section-header">Explainer</h2>
-              <div id="explainer-container">
-                  {explainers.length === 0 ? <p>No explainers available.</p> : explainers.map(a => (
-                    <div className="explainer-card" key={`exp-${a.id}`}>
-                      <div>
-                        <span className="explainer-label">EXPLAINER</span>
-                        <h3 className="explainer-title">{a.title}</h3>
-                        <p className="explainer-subtitle">{truncateText(a.excerpt, 120)}</p>
-                      </div>
-                      <img src={getOptimizedImageUrl(a.image, 400)} alt={a.title} loading="lazy" decoding="async" width={400} height={250} />
-                    </div>
-                  ))}
-              </div>
-          </div>
-      </section>
-
-      {/* 12. NEWSLETTER SIGNUP (Hidden temporarily for AdSense approval)
-      <section className="newsletter-section">
-          <div className="newsletter-card">
-              <h2>Sign up for Breaking News Alerts</h2>
-              <p>Get the latest breaking news delivered straight to your inbox.</p>
-              <form className="newsletter-form" id="newsletter-form" action="#">
-                  <input type="email" placeholder="Enter your email address" required />
-                  <button type="submit">Subscribe</button>
-              </form>
-          </div>
-      </section>
-      */}
-
-      {/* 13. MORE NEWS SECTION */}
-      <section className="featured-section">
-          <div className="section-wrapper">
-              <Pagination currentPage={1} totalPages={totalPages} basePath="/page" />
-          </div>
-      </section>
+      {/* 3. FULL-WIDTH NEWSLETTER SIGNUP BAR BEFORE FOOTER */}
+      <NewsletterBar />
     </main>
   );
 }

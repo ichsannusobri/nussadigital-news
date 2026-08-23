@@ -4880,6 +4880,1116 @@ ul, ol {
   }
 }
 
+/* ==========================================================================
+   CNN INDONESIA LAYOUT OVERHAUL FOR NDNEWS
+   ========================================================================== */
+
+/* 1. HEADER & MEGA MENU */
+.nav-mega-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-cat-header-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.mobile-accordion-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--clr-text-secondary, #6B7280);
+  font-size: 0.7rem;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.mega-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 580px;
+  background: var(--clr-bg, #FFFFFF);
+  border: 1px solid var(--clr-border, #E5E7EB);
+  border-radius: 12px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+  padding: 1.25rem;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.mega-menu-dropdown.visible,
+.nav-mega-item:hover .mega-menu-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.mega-menu-container {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 1.5rem;
+}
+
+.mega-subcats-col {
+  border-right: 1px solid var(--clr-border, #E5E7EB);
+  padding-right: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.mega-col-title {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #D97706;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.mega-subcats-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mega-subcat-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clr-text, #1F2937);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.mega-subcat-link:hover {
+  color: #D97706;
+}
+
+.mega-view-all-link {
+  margin-top: auto;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #D97706;
+  text-decoration: none;
+}
+
+.mega-latest-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.mega-latest-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mega-latest-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.mega-latest-card:hover {
+  background: var(--clr-bg-tertiary, #F3F4F6);
+}
+
+.mega-card-thumb {
+  width: 60px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.mega-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mega-card-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--clr-text, #111827);
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.mega-card-date {
+  font-size: 0.7rem;
+  color: var(--clr-text-secondary, #6B7280);
+}
+
+/* SEARCH BUTTON IN HEADER & OVERLAY */
+.btn-header-search-icon {
+  background: none;
+  border: none;
+  color: var(--clr-text-primary, #111827);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.btn-header-search-icon:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.cnn-search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 5rem;
+}
+
+.cnn-search-modal {
+  background: var(--clr-bg, #FFFFFF);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 650px;
+  padding: 1.75rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.cnn-search-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-modal-label {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #D97706;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-close-search {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--clr-text-secondary, #6B7280);
+  cursor: pointer;
+}
+
+.cnn-search-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.cnn-search-input-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-modal-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--clr-text-secondary, #9CA3AF);
+}
+
+.cnn-search-input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  font-size: 1rem;
+  border: 1.5px solid var(--clr-border, #D1D5DB);
+  border-radius: 10px;
+  background: var(--clr-bg-secondary, #F9FAFB);
+  color: var(--clr-text, #111827);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.cnn-search-input:focus {
+  border-color: #D97706;
+  background: #FFFFFF;
+}
+
+.btn-search-submit {
+  background: #D97706;
+  color: #FFFFFF;
+  font-weight: 700;
+  padding: 0 1.5rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-search-submit:hover {
+  background: #B45309;
+}
+
+.cnn-search-quick-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.quick-tags-label {
+  font-size: 0.78rem;
+  color: var(--clr-text-secondary, #6B7280);
+  margin-right: 4px;
+}
+
+.tag-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  background: var(--clr-bg-tertiary, #F3F4F6);
+  color: var(--clr-text, #374151);
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tag-pill:hover {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+/* 2. CNN TOPIC HERO BANNER */
+.cnn-hero-topic-wrapper {
+  margin-bottom: 2rem;
+}
+
+.cnn-hero-banner-container {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  background: #0F172A;
+}
+
+.cnn-hero-banner-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cnn-hero-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.cnn-hero-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.1) 0%, rgba(15, 23, 42, 0.65) 50%, rgba(15, 23, 42, 0.95) 100%);
+}
+
+.cnn-hero-content-box {
+  position: relative;
+  z-index: 2;
+  padding: 2.5rem;
+  max-width: 860px;
+  color: #FFFFFF;
+}
+
+.cnn-hero-top-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0.85rem;
+}
+
+.cnn-topic-pill {
+  background: #D97706;
+  color: #FFFFFF;
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.cnn-live-markets-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+}
+
+.cnn-live-markets-pill:hover {
+  background: #3B82F6;
+  border-color: #3B82F6;
+}
+
+.pulsing-live-dot {
+  width: 7px;
+  height: 7px;
+  background: #10B981;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #10B981;
+  animation: pulseLive 1.5s infinite;
+}
+
+@keyframes pulseLive {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.cnn-hero-title-link {
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.cnn-hero-headline {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin: 0 0 0.85rem 0;
+  color: #FFFFFF;
+  transition: color 0.15s ease;
+}
+
+.cnn-hero-title-link:hover .cnn-hero-headline {
+  color: #FCD34D;
+}
+
+.cnn-hero-description {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #E2E8F0;
+  margin: 0 0 1rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cnn-hero-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.82rem;
+  color: #CBD5E1;
+}
+
+.cnn-hero-read-more a {
+  color: #F59E0B;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cnn-hero-read-more a:hover {
+  text-decoration: underline;
+}
+
+/* TRENDING TOPICS STRIP */
+.cnn-trending-strip {
+  background: var(--clr-bg-secondary, #F8F9FA);
+  border: 1px solid var(--clr-border, #E5E7EB);
+  border-radius: 10px;
+  padding: 8px 16px;
+  margin-top: 0.75rem;
+}
+
+.trending-strip-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.trending-strip-label {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #D97706;
+  white-space: nowrap;
+}
+
+.trending-strip-scroll {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.trending-strip-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.trending-strip-item {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--clr-text-secondary, #4B5563);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.trending-strip-item:hover {
+  color: #D97706;
+}
+
+/* 3. CNN 2-COLUMN HOMEPAGE GRID (MAIN 66% + STICKY SIDEBAR 33%) */
+.cnn-main-container {
+  max-width: var(--max-width, 1320px);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.cnn-homepage-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.cnn-main-column {
+  min-width: 0;
+}
+
+.cnn-sticky-sidebar {
+  position: sticky;
+  top: 75px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-width: 0;
+}
+
+/* 4. STANDARDIZED SECTION HEADER */
+.cnn-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #D97706;
+  padding-bottom: 6px;
+  margin-bottom: 1.25rem;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title-text {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--clr-text, #111827);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.section-see-all-link {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #D97706;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.section-see-all-link:hover {
+  transform: translateX(3px);
+  color: #B45309;
+}
+
+/* 5. CNN HIGH-DENSITY COMPACT ARTICLE CARDS */
+.cnn-latest-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  margin-bottom: 2rem;
+}
+
+.cnn-article-card {
+  display: flex;
+  gap: 1.15rem;
+  text-decoration: none;
+  padding-bottom: 1.15rem;
+  border-bottom: 1px solid var(--clr-border, #E5E7EB);
+}
+
+.cnn-article-card:last-child {
+  border-bottom: none;
+}
+
+/* Compact Card Thumbnail */
+.cnn-card-compact .cnn-card-img-link {
+  flex-shrink: 0;
+  width: 140px;
+  height: 95px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cnn-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.cnn-article-card:hover .cnn-card-img {
+  transform: scale(1.04);
+}
+
+/* Featured Card Thumbnail */
+.cnn-card-featured {
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.cnn-card-featured .cnn-card-img-link {
+  width: 100%;
+  height: 280px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cnn-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cnn-card-category-row {
+  margin-bottom: 2px;
+}
+
+/* STANDARDIZED CATEGORY PILL BADGES */
+.cnn-category-pill {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.cat-pill-apac { background: #DBEAFE; color: #1D4ED8; }
+.cat-pill-economy { background: #DCFCE7; color: #15803D; }
+.cat-pill-finance { background: #F3E8FF; color: #7E22CE; }
+.cat-pill-sport { background: #FEE2E2; color: #B91C1C; }
+.cat-pill-opinion { background: #FEF3C7; color: #B45309; }
+.cat-pill-explainer { background: #E0E7FF; color: #4338CA; }
+
+.cnn-card-title-link {
+  text-decoration: none;
+}
+
+.cnn-card-title {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--clr-text, #111827);
+  line-height: 1.35;
+  margin: 0;
+  transition: color 0.15s ease;
+}
+
+.cnn-card-featured .cnn-card-title {
+  font-size: 1.4rem;
+}
+
+.cnn-card-title-link:hover .cnn-card-title {
+  color: #D97706;
+}
+
+.cnn-card-excerpt {
+  font-size: 0.88rem;
+  color: var(--clr-text-secondary, #4B5563);
+  line-height: 1.5;
+  margin: 4px 0 0 0;
+}
+
+.cnn-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  color: var(--clr-text-secondary, #6B7280);
+  margin-top: 4px;
+}
+
+/* SPORT MODULE LAYOUT */
+.cnn-sport-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.cnn-sport-secondary-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* EXPLAINER GRID */
+.cnn-explainer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.cnn-explainer-grid .cnn-article-card {
+  flex-direction: column;
+  border-bottom: none;
+  background: var(--clr-bg-secondary, #F8F9FA);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--clr-border, #E5E7EB);
+}
+
+.cnn-explainer-grid .cnn-card-img-link {
+  width: 100%;
+  height: 120px;
+}
+
+/* 6. SIDEBAR PROMO CARD & WIDGETS */
+.cnn-sidebar-promo-card {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  color: #FFFFFF;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-promo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-promo-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: #D97706;
+  color: #FFFFFF;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.sidebar-promo-tag {
+  font-size: 0.72rem;
+  color: #94A3B8;
+}
+
+.sidebar-promo-title {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  color: #FFFFFF;
+}
+
+.sidebar-promo-desc {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #CBD5E1;
+  margin: 0 0 1rem 0;
+}
+
+.btn-sidebar-promo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #D97706;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-sidebar-promo:hover {
+  background: #B45309;
+  transform: translateY(-1px);
+}
+
+/* MOST POPULAR NUMBERED LIST (CNN STYLE) */
+.cnn-sidebar-widget {
+  background: var(--clr-bg, #FFFFFF);
+  border: 1px solid var(--clr-border, #E5E7EB);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.cnn-popular-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.cnn-popular-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--clr-border, #F3F4F6);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.cnn-popular-item:last-child {
+  border-bottom: none;
+}
+
+.cnn-popular-rank {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #D97706;
+  line-height: 1;
+  min-width: 24px;
+}
+
+.cnn-popular-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cnn-popular-cat-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--clr-text-secondary, #6B7280);
+}
+
+.cnn-popular-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--clr-text, #111827);
+  line-height: 1.35;
+  margin: 0;
+  transition: color 0.15s ease;
+}
+
+.cnn-popular-item:hover .cnn-popular-title {
+  color: #D97706;
+}
+
+.cnn-popular-time {
+  font-size: 0.7rem;
+  color: var(--clr-text-secondary, #9CA3AF);
+}
+
+/* OPINION WIDGET */
+.cnn-opinion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.cnn-opinion-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.cnn-opinion-item:hover {
+  background: var(--clr-bg-tertiary, #F3F4F6);
+}
+
+.cnn-opinion-avatar-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cnn-opinion-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cnn-opinion-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  background: #D97706;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.cnn-opinion-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cnn-opinion-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--clr-text, #111827);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.cnn-opinion-author-name {
+  font-size: 0.72rem;
+  color: var(--clr-text-secondary, #6B7280);
+}
+
+/* 7. FULL-WIDTH NEWSLETTER SIGNUP BAR */
+.cnn-newsletter-bar {
+  background: linear-gradient(135deg, #111827 0%, #1F2937 100%);
+  color: #FFFFFF;
+  margin-top: 3rem;
+  padding: 2.5rem 1rem;
+}
+
+.newsletter-bar-container {
+  max-width: var(--max-width, 1320px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.newsletter-bar-left {
+  max-width: 580px;
+}
+
+.newsletter-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: #D97706;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.newsletter-bar-left h3 {
+  font-family: var(--ff-headline, 'Outfit', sans-serif);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 0.4rem 0;
+  color: #FFFFFF;
+}
+
+.newsletter-bar-left p {
+  font-size: 0.88rem;
+  color: #9CA3AF;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.newsletter-bar-form {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  max-width: 440px;
+}
+
+.newsletter-bar-input {
+  flex: 1;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #374151;
+  background: #111827;
+  color: #FFFFFF;
+  outline: none;
+}
+
+.newsletter-bar-input:focus {
+  border-color: #D97706;
+}
+
+.newsletter-bar-btn {
+  background: #D97706;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0 1.25rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.newsletter-bar-btn:hover {
+  background: #B45309;
+}
+
+/* 8. FOOTER SOCIAL ROW */
+.footer-social-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.footer-social-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1F2937;
+  color: #D1D5DB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.footer-social-icon:hover {
+  background: #D97706;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+/* 9. MOBILE RESPONSIVE OVERRIDES (CNN LAYOUT) */
+@media (max-width: 1024px) {
+  .cnn-homepage-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem;
+  }
+
+  .cnn-sticky-sidebar {
+    position: static;
+  }
+
+  .cnn-sport-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cnn-explainer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .mega-menu-dropdown {
+    display: none !important;
+  }
+
+  .mobile-accordion-toggle {
+    display: inline-block;
+  }
+
+  .mobile-subnav-drawer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 1.25rem;
+    margin-top: 4px;
+    margin-bottom: 6px;
+  }
+
+  .mobile-subcat-link {
+    font-size: 0.82rem;
+    color: var(--clr-text-secondary, #6B7280);
+    text-decoration: none;
+  }
+
+  .cnn-hero-headline {
+    font-size: 1.4rem;
+  }
+
+  .cnn-hero-content-box {
+    padding: 1.25rem;
+  }
+
+  .cnn-card-compact .cnn-card-img-link {
+    width: 110px;
+    height: 78px;
+  }
+
+  .newsletter-bar-form {
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .newsletter-bar-btn {
+    padding: 12px;
+  }
+}
+
+
 
 
 

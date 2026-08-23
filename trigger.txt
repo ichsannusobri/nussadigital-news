@@ -1,3 +1,3 @@
-Deploy Trigger - Session Refresh Persistence, Generic Placeholder, Delete Category/Expense & Dynamic Expense Categories Dropdown
-Timestamp: 2026-08-23 20:33:32 WIB
-Status: Verified static build with session persistence on refresh, Alex Pratama placeholder, delete category/expense buttons, and dynamic category linking in expense modal.
+Deploy Trigger - CNN Indonesia Layout Adoption for NDNews
+Timestamp: 2026-08-23 20:41:18 WIB
+Status: Verified static build (106/106 pages) with CNN layout: Mega Menu, Topic Hero Banner, 2-Column Grid (66% Main + 33% Sticky Sidebar), Compact CNN Article Cards, Standardized Section Headers with See All links, and Newsletter Bar.

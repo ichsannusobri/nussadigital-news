@@ -72,8 +72,6 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        {/* AdSense script removed until account is approved. Re-add once approved to avoid
-            being flagged as a site built primarily to serve ads with no valid account. */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-B5Q5GW1QX0"
           strategy="afterInteractive"
@@ -86,7 +84,7 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-B5Q5GW1QX0');
           `}
         </Script>
-        {/* SR-only Site Title */}
+        
         <span className="sr-only">NDNews - Latest APAC Economy, Finance & Sports News</span>
 
         <Header />
@@ -95,40 +93,67 @@ export default function RootLayout({ children }) {
 
         <CookieConsent />
 
+        {/* CNN-INSPIRED COMPREHENSIVE FOOTER */}
         <footer className="main-footer">
           <div className="footer-container">
             <div className="footer-grid">
-              <div className="footer-col">
-                <Link href="/" className="logo" style={{fontSize: '2rem', marginBottom: '1rem', display: 'block'}}>ND<span style={{fontWeight: 400}}>News</span></Link>
-                <p>Your trusted source for breaking news, in-depth analysis, and exclusive coverage across the Asia-Pacific region.</p>
+              <div className="footer-col footer-brand-col">
+                <Link href="/" className="logo footer-logo">
+                  <img src="/favicon.png" alt="ND" className="header-logo-img" style={{ height: '32px', width: 'auto' }} />
+                  ND<span>News</span>
+                </Link>
+                <p className="footer-desc">
+                  Your trusted digital news portal for breaking news, business, macroeconomic analysis, and sports across the Asia-Pacific region.
+                </p>
+                <div className="footer-social-row">
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="X (Twitter)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  </a>
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="LinkedIn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.67 1.67 0 1 0 0-3.34 1.67 1.67 0 0 0 0 3.34m1.39 9.74v-8.37H5.07v8.37h2.78z"/></svg>
+                  </a>
+                  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="Facebook">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+                  </a>
+                  <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="YouTube">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19a2.5 2.5 0 0 0-1.76-1.77C18.26 5 12 5 12 5s-6.26 0-7.82.42A2.5 2.5 0 0 0 2.42 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .42 4.81 2.5 2.5 0 0 0 1.76 1.77C5.74 19 12 19 12 19s6.26 0 7.82-.42a2.5 2.5 0 0 0 1.76-1.77C22 16.81 22 12 22 12s0-4.81-.42-4.81zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+                  </a>
+                  <a href="/feed.xml" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="RSS Feed">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6.18 17.82a2.18 2.18 0 1 1 0-4.36 2.18 2.18 0 0 1 0 4.36zM4 4.44A15.56 15.56 0 0 1 19.56 20h-3.34A12.22 12.22 0 0 0 4 7.78V4.44zm0 6.66A8.9 8.9 0 0 1 12.9 20H9.56A5.56 5.56 0 0 0 4 14.44V11.1z"/></svg>
+                  </a>
+                </div>
               </div>
 
               <div className="footer-col">
                 <h3>Sections</h3>
-                <Link href="/category/apac">APAC</Link>
-                <Link href="/category/economy">Economy</Link>
-                <Link href="/category/finance">Finance</Link>
-                <Link href="/category/sport">Sport</Link>
-                <Link href="/category/opinion">Opinion</Link>
+                <Link href="/category/apac">APAC News</Link>
+                <Link href="/category/economy">Economy & Growth</Link>
+                <Link href="/category/finance">Finance & Markets</Link>
+                <Link href="/category/sport">APAC Sport</Link>
+                <Link href="/category/opinion">Opinion & Analysis</Link>
+                <Link href="/category/explainer">Deep Explainers</Link>
               </div>
+
               <div className="footer-col">
-                <h3>About Us</h3>
+                <h3>Special Features</h3>
+                <Link href="/budget" style={{ color: '#F59E0B', fontWeight: '700' }}>Budget AI Advisor (Beta)</Link>
+                <Link href="/markets" style={{ color: '#3B82F6', fontWeight: '700' }}>Live Financial Markets</Link>
+                <Link href="/archive">Complete News Archive</Link>
+                <Link href="/feed.xml">RSS News Feed</Link>
+              </div>
+
+              <div className="footer-col">
+                <h3>Company</h3>
                 <Link href="/about">About NDNews</Link>
-                <Link href="/contact">Contact Us</Link>
-                <Link href="/terms">Terms of Use</Link>
+                <Link href="/contact">Contact Editorial</Link>
                 <Link href="/privacy">Privacy Policy</Link>
-              </div>
-              <div className="footer-col">
-                <h3>Network</h3>
-                <Link href="/archive">News Archive</Link>
-                <Link href="/category/opinion">Opinions & Analysis</Link>
-                <Link href="/category/economy">Economy Insights</Link>
-                <Link href="/category/sport">Sport Highlights</Link>
+                <Link href="/terms">Terms of Use</Link>
               </div>
             </div>
           </div>
+
           <div className="footer-bottom">
-            <p>&copy; {new Date().getFullYear()} Nussa Digital News. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Nussa Digital News (NDNews). All rights reserved.</p>
           </div>
         </footer>
       </body>
