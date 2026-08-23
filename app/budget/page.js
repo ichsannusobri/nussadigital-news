@@ -121,7 +121,9 @@ export default function BudgetPage() {
           const loadedIncome = userSet.monthlyIncome || 0;
           setMonthlyIncome(loadedIncome);
 
-          let loadedBudgets = userSet.categoryBudgets || DEFAULT_SETTINGS.categoryBudgets;
+          let loadedBudgets = (userSet.categoryBudgets !== undefined && userSet.categoryBudgets !== null) 
+            ? userSet.categoryBudgets 
+            : DEFAULT_SETTINGS.categoryBudgets;
           setCategoryBudgets(loadedBudgets);
           setCategorySpentOverrides(userSet.categorySpentOverrides || {});
           setCategoryNotes(userSet.categoryNotes || {});
@@ -206,10 +208,22 @@ export default function BudgetPage() {
   };
 
   // Helper to auto-sync category targets to an income value (in IDR)
+  // CRITICAL: Only calculate and sync for ACTIVE categories; NEVER resurrect deleted categories!
   const generateSyncedCategoryBudgets = (targetIncomeIDR) => {
+    const activeCats = Object.keys(categoryBudgets || {});
+    if (activeCats.length === 0) return {};
+
     const newBudgets = { ...categoryBudgets };
-    Object.keys(CATEGORY_SYNC_RATIOS).forEach(cat => {
-      newBudgets[cat] = Math.round(targetIncomeIDR * CATEGORY_SYNC_RATIOS[cat]);
+    let totalWeight = 0;
+    activeCats.forEach(cat => {
+      totalWeight += (CATEGORY_SYNC_RATIOS[cat] || (1 / activeCats.length));
+    });
+
+    if (totalWeight <= 0) totalWeight = 1;
+
+    activeCats.forEach(cat => {
+      const weight = (CATEGORY_SYNC_RATIOS[cat] || (1 / activeCats.length));
+      newBudgets[cat] = Math.round(targetIncomeIDR * (weight / totalWeight));
     });
     return newBudgets;
   };
@@ -312,7 +326,7 @@ export default function BudgetPage() {
     }).catch(console.error);
   };
 
-  const handleDeleteCategory = (catToDelete) => {
+  const handleDeleteCategory = async (catToDelete) => {
     const updatedBudgets = { ...categoryBudgets };
     delete updatedBudgets[catToDelete];
 
@@ -327,28 +341,49 @@ export default function BudgetPage() {
     setCategoryNotes(updatedNotes);
 
     const activeUid = user ? user.uid : 'guest';
-    saveUserSettings(activeUid, {
+    const cleanSettings = {
       currency,
       monthlyIncome,
       categoryBudgets: updatedBudgets,
       categorySpentOverrides: updatedOverrides,
       categoryNotes: updatedNotes
-    }).catch(console.error);
+    };
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('local_budget_settings', JSON.stringify(cleanSettings));
+    }
+
+    try {
+      await saveUserSettings(activeUid, cleanSettings);
+    } catch (e) {
+      console.error("Error saving deleted category settings:", e);
+    }
   };
 
-  const handleAddCustomCategory = (name, limitInIDR, notes) => {
+  const handleAddCustomCategory = async (name, limitInIDR, notes) => {
     const updatedBudgets = { ...categoryBudgets, [name]: limitInIDR };
     const updatedNotes = { ...categoryNotes, [name]: notes };
     setCategoryBudgets(updatedBudgets);
     setCategoryNotes(updatedNotes);
+
     const activeUid = user ? user.uid : 'guest';
-    saveUserSettings(activeUid, {
+    const cleanSettings = {
       currency,
       monthlyIncome,
       categoryBudgets: updatedBudgets,
       categorySpentOverrides,
       categoryNotes: updatedNotes
-    }).catch(console.error);
+    };
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('local_budget_settings', JSON.stringify(cleanSettings));
+    }
+
+    try {
+      await saveUserSettings(activeUid, cleanSettings);
+    } catch (e) {
+      console.error("Error saving new category:", e);
+    }
   };
 
   // Financial Calculations
