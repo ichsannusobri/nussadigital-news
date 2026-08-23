@@ -14,8 +14,7 @@ export default function BudgetMeters({
   onUpdateCategorySpent = () => {},
   onUpdateCategoryNotes = () => {},
   onDeleteCategory = () => {},
-  onAddCustomCategory = () => {},
-  onAutoSyncTargets = () => {}
+  onAddCustomCategory = () => {}
 }) {
   const [showModal, setShowModal] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
@@ -43,7 +42,7 @@ export default function BudgetMeters({
   const safeSpentOverrides = categorySpentOverrides || {};
   const safeNotes = categoryNotes || {};
 
-  // Active categories are strictly the keys in user's categoryBudgets
+  // Active categories are strictly the keys in user's categoryBudgets (Pos Kebutuhan / Pockets)
   const categories = Object.keys(safeBudgets);
 
   // Calculate totals
@@ -95,7 +94,7 @@ export default function BudgetMeters({
     const spentNum = Number(spentInput);
 
     if (isNaN(limitNum) || limitNum < 0 || isNaN(spentNum) || spentNum < 0) {
-      alert("Please enter valid non-negative numbers for limit and realized spent.");
+      alert("Masukkan angka yang valid untuk alokasi limit dan realisasi pengeluaran.");
       return;
     }
 
@@ -110,7 +109,7 @@ export default function BudgetMeters({
   };
 
   const handleDeleteCategoryClick = () => {
-    if (confirm(`Are you sure you want to permanently delete category "${editingCategory}"?`)) {
+    if (confirm(`Apakah Anda yakin ingin menghapus pos/kantong "${editingCategory}"?`)) {
       onDeleteCategory(editingCategory);
       setShowModal(false);
     }
@@ -120,7 +119,7 @@ export default function BudgetMeters({
     e.preventDefault();
     const cleanName = newCatName.trim();
     if (!cleanName) {
-      alert("Please enter a category name.");
+      alert("Masukkan nama pos / kantong kebutuhan.");
       return;
     }
 
@@ -141,18 +140,17 @@ export default function BudgetMeters({
       {/* HEADER BAR */}
       <div className="meters-header">
         <div className="meters-title-group">
-          <span className="section-icon">📊</span>
-          <h3>Category Spending Meters & Realized Limits</h3>
-          <span className="meters-subtitle">({currency})</span>
+          <span className="section-icon">🗂️</span>
+          <div>
+            <h3>Pos Anggaran & Kantong Kebutuhan (Pockets)</h3>
+            <span className="meters-subtitle">Plot Alokasi Dana per Kebutuhan Bulanan ({currency})</span>
+          </div>
         </div>
 
         <div className="meters-header-actions">
-          <button onClick={onAutoSyncTargets} className="btn-sync-income-targets" title="Auto-scale category budget targets to match Monthly Household Income">
-            <span>⚡ Auto-Sync Targets to Income</span>
-          </button>
           <button onClick={() => setShowAddCategoryModal(true)} className="btn-add-budget-limit">
             <span className="btn-icon">➕</span>
-            <span>Add Custom Category</span>
+            <span>Tambah Pos / Kantong Baru</span>
           </button>
         </div>
       </div>
@@ -160,36 +158,37 @@ export default function BudgetMeters({
       {/* OVERALL TOTAL BUDGET SUMMARY BOX */}
       <div className="total-budget-summary-box">
         <div className="summary-stat-item">
-          <span className="stat-label">Total Monthly Budget Target</span>
+          <span className="stat-label">Total Alokasi Pos Kebutuhan</span>
           <span className="stat-val text-bold">{formatCurrency(grandTotalBudget, currency)}</span>
         </div>
 
         <div className="summary-stat-item">
-          <span className="stat-label">Realized Total Spent</span>
+          <span className="stat-label">Total Terpakai (Realisasi)</span>
           <span className="stat-val text-amber">{formatCurrency(grandTotalSpent, currency)}</span>
         </div>
 
         <div className="summary-stat-item">
-          <span className="stat-label">Remaining Available</span>
+          <span className="stat-label">Sisa Saldo Kantong</span>
           <span className={`stat-val ${remainingBudget >= 0 ? 'text-emerald' : 'text-red'}`}>
             {formatCurrency(remainingBudget, currency)}
           </span>
         </div>
 
         <div className="summary-stat-item">
-          <span className="stat-label">Overall Usage</span>
+          <span className="stat-label">Total Pemakaian</span>
           <span className={`stat-val ${overallPct >= 90 ? 'text-red' : 'text-indigo'}`}>{overallPct}%</span>
         </div>
       </div>
 
-      <p className="click-hint-text">💡 <em>Click on any category card below to edit Realized Spent, Budget Limit, or delete category!</em></p>
+      <p className="click-hint-text">💡 <em>Klik kartu pos kebutuhan di bawah untuk mengubah alokasi budget, realisasi pengeluaran, atau menghapus pos!</em></p>
 
-      {/* CATEGORY METER GRID (CLICKABLE CARDS) */}
+      {/* CATEGORY METER GRID (CLICKABLE POCKET CARDS) */}
       {categories.length === 0 ? (
-        <div className="empty-expenses-state" style={{ padding: '2rem 1rem', textAlign: 'center' }}>
-          <span className="empty-icon">📊</span>
-          <p>No categories configured yet.</p>
-          <button onClick={() => setShowAddCategoryModal(true)} className="btn-secondary-sm">Add First Category</button>
+        <div className="empty-expenses-state" style={{ padding: '2.5rem 1rem', textAlign: 'center' }}>
+          <span className="empty-icon">🗂️</span>
+          <h4>Belum Ada Pos Kebutuhan</h4>
+          <p>Buat kantong kebutuhan pertama Anda, misalnya <strong>Belanja Dapur</strong>, <strong>Uang Sekolah</strong>, <strong>Transport</strong>, atau <strong>Transfer Keluarga</strong>.</p>
+          <button onClick={() => setShowAddCategoryModal(true)} className="btn-primary-sm">➕ Tambah Pos / Kantong Pertama</button>
         </div>
       ) : (
         <div className="meters-grid">
@@ -213,14 +212,14 @@ export default function BudgetMeters({
                 key={cat} 
                 onClick={() => handleOpenEditModal(cat)} 
                 className={`meter-item meter-status-${statusClass} clickable-category-card`}
-                title="Click to edit or delete category"
+                title="Klik untuk ubah alokasi atau hapus pos"
               >
                 <div className="meter-info-top">
                   <div className="meter-cat-title-group">
                     <span className="meter-cat-title">{cat}</span>
-                    <span className="badge-edit-pencil">✏️ Edit</span>
+                    <span className="badge-edit-pencil">✏️ Ubah</span>
                   </div>
-                  <span className="meter-pct">{pct}% Used</span>
+                  <span className="meter-pct">{pct}% Terpakai</span>
                 </div>
 
                 <div className="meter-bar-track">
@@ -228,8 +227,8 @@ export default function BudgetMeters({
                 </div>
 
                 <div className="meter-info-bottom">
-                  <span className="spent-val">Spent (Realisasi): <strong>{formatCurrency(spent, currency)}</strong></span>
-                  <span className="limit-val">Limit Target: <strong>{formatCurrency(limit, currency)}</strong></span>
+                  <span className="spent-val">Terpakai: <strong>{formatCurrency(spent, currency)}</strong></span>
+                  <span className="limit-val">Alokasi: <strong>{formatCurrency(limit, currency)}</strong></span>
                 </div>
 
                 {noteText && (
@@ -248,46 +247,46 @@ export default function BudgetMeters({
         <div className="budget-modal-overlay">
           <div className="budget-modal-box">
             <div className="modal-header">
-              <h4>Manage {editingCategory} Category</h4>
+              <h4>Kelola Pos Anggaran: {editingCategory}</h4>
               <button onClick={() => setShowModal(false)} className="btn-close-modal">✕</button>
             </div>
 
             <form onSubmit={handleSaveCategoryDetails} className="modal-form-grid">
               <div className="form-group full-width">
-                <label>Category Name</label>
+                <label>Nama Pos / Kantong</label>
                 <input type="text" value={editingCategory} disabled className="disabled-input" />
               </div>
 
               <div className="form-group">
-                <label>Realized Actual Spent / Realisasi ({currency})</label>
+                <label>Realisasi Pengeluaran / Terpakai ({currency})</label>
                 <input
                   type="number"
-                  placeholder={`Actual spent in ${currency}`}
+                  placeholder={`Realisasi dalam ${currency}`}
                   value={spentInput}
                   onChange={(e) => setSpentInput(e.target.value)}
                   required
                   autoFocus
                 />
-                <small className="field-hint">Directly edit how much you actually spent this month</small>
+                <small className="field-hint">Ubah langsung jumlah yang sudah Anda belanjakan bulan ini</small>
               </div>
 
               <div className="form-group">
-                <label>Monthly Budget Target Limit ({currency})</label>
+                <label>Alokasi Budget / Limit ({currency})</label>
                 <input
                   type="number"
-                  placeholder={`Budget limit in ${currency}`}
+                  placeholder={`Alokasi dalam ${currency}`}
                   value={limitInput}
                   onChange={(e) => setLimitInput(e.target.value)}
                   required
                 />
-                <small className="field-hint">Maximum limit for alert meter</small>
+                <small className="field-hint">Batas maksimal anggaran kantong ini</small>
               </div>
 
               <div className="form-group full-width">
-                <label>Detailed Notes & Description (Optional)</label>
+                <label>Catatan & Rincian (Opsional)</label>
                 <textarea
                   rows="2"
-                  placeholder="e.g. Belanja bahan pokok beras, telur, minyak goreng & Minimarket"
+                  placeholder="e.g. Belanja bahan pokok beras, telur, minimarket & dapur"
                   value={notesInput}
                   onChange={(e) => setNotesInput(e.target.value)}
                 />
@@ -295,14 +294,14 @@ export default function BudgetMeters({
 
               <div className="modal-actions full-width" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <button type="button" onClick={handleDeleteCategoryClick} className="btn-delete-cat" style={{ background: '#EF4444', color: '#FFFFFF', border: 'none', padding: '8px 14px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  🗑️ Delete Category
+                  🗑️ Hapus Pos / Kantong
                 </button>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button type="button" onClick={() => setShowModal(false)} className="btn-cancel">
-                    Cancel
+                    Batal
                   </button>
                   <button type="submit" className="btn-submit-save">
-                    Save Changes
+                    Simpan Perubahan
                   </button>
                 </div>
               </div>
@@ -316,16 +315,16 @@ export default function BudgetMeters({
         <div className="budget-modal-overlay">
           <div className="budget-modal-box">
             <div className="modal-header">
-              <h4>Add New Custom Budget Category</h4>
+              <h4>➕ Tambah Pos Anggaran / Kantong Baru</h4>
               <button onClick={() => setShowAddCategoryModal(false)} className="btn-close-modal">✕</button>
             </div>
 
             <form onSubmit={handleCreateNewCategory} className="modal-form-grid">
               <div className="form-group full-width">
-                <label>Category Name</label>
+                <label>Nama Pos / Kantong Kebutuhan</label>
                 <input
                   type="text"
-                  placeholder="e.g. Pendidikan Anak, Renovasi Rumah, Sedekah / Zakat"
+                  placeholder="e.g. Belanja Dapur, Uang Sekolah Anak, Renovasi Rumah, Transfer Orang Tua"
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
                   required
@@ -334,10 +333,10 @@ export default function BudgetMeters({
               </div>
 
               <div className="form-group full-width">
-                <label>Monthly Budget Target Limit ({currency})</label>
+                <label>Alokasi Budget Bulanan ({currency})</label>
                 <input
                   type="number"
-                  placeholder={`e.g. 2000000 in ${currency}`}
+                  placeholder={`e.g. 3500000 dalam ${currency}`}
                   value={newCatLimit}
                   onChange={(e) => setNewCatLimit(e.target.value)}
                   required
@@ -345,10 +344,10 @@ export default function BudgetMeters({
               </div>
 
               <div className="form-group full-width">
-                <label>Description & Notes (Optional)</label>
+                <label>Keterangan / Catatan (Opsional)</label>
                 <input
                   type="text"
-                  placeholder="e.g. Biaya kursus & SPP bulanan"
+                  placeholder="e.g. Kebutuhan operasional mingguan"
                   value={newCatNotes}
                   onChange={(e) => setNewCatNotes(e.target.value)}
                 />
@@ -356,10 +355,10 @@ export default function BudgetMeters({
 
               <div className="modal-actions full-width">
                 <button type="button" onClick={() => setShowAddCategoryModal(false)} className="btn-cancel">
-                  Cancel
+                  Batal
                 </button>
                 <button type="submit" className="btn-submit-save">
-                  Add Category
+                  Tambah Pos Kebutuhan
                 </button>
               </div>
             </form>

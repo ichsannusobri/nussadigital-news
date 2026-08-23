@@ -28,24 +28,15 @@ import {
 import AuthBar from '../../components/budget/AuthBar';
 import ExpenseTracker from '../../components/budget/ExpenseTracker';
 import BudgetMeters from '../../components/budget/BudgetMeters';
+import SavingsGoals from '../../components/budget/SavingsGoals';
 import AIAdvisorWidget from '../../components/budget/AIAdvisorWidget';
-
-const CATEGORY_SYNC_RATIOS = {
-  "Housing": 0.30,
-  "Groceries": 0.20,
-  "Utilities": 0.10,
-  "Transport": 0.10,
-  "Insurance": 0.10,
-  "Savings": 0.15,
-  "Subscriptions": 0.05
-};
 
 export default function BudgetPage() {
   const [user, setUser] = useState(null);
   const [isGuest, setIsGuest] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Gate login state
+  // Login Gate form state
   const [authMode, setAuthMode] = useState('login'); // 'login' | 'register'
   const [gateEmail, setGateEmail] = useState('');
   const [gatePassword, setGatePassword] = useState('');
@@ -60,13 +51,13 @@ export default function BudgetPage() {
   const [categoryBudgets, setCategoryBudgets] = useState({});
   const [categorySpentOverrides, setCategorySpentOverrides] = useState({});
   const [categoryNotes, setCategoryNotes] = useState({});
+  const [savingsGoals, setSavingsGoals] = useState([]);
 
   const [isEditingIncome, setIsEditingIncome] = useState(false);
   const [tempIncomeInput, setTempIncomeInput] = useState('');
 
-  // 1. Initial Session Mount & Auth Listener (Prevents Login Gate Kick on Refresh)
+  // 1. Initial Session Mount & Auth Listener
   useEffect(() => {
-    // Check localStorage for saved session on refresh
     if (typeof window !== 'undefined') {
       const savedUserStr = localStorage.getItem('ndnews_budget_active_user');
       if (savedUserStr) {
@@ -127,6 +118,7 @@ export default function BudgetPage() {
           setCategoryBudgets(loadedBudgets);
           setCategorySpentOverrides(userSet.categorySpentOverrides || {});
           setCategoryNotes(userSet.categoryNotes || {});
+          setSavingsGoals(userSet.savingsGoals || []);
         }
       } catch (e) {
         console.error("Error loading budget data:", e);
@@ -198,37 +190,21 @@ export default function BudgetPage() {
   const handleCurrencyChange = (newCurrency) => {
     setCurrency(newCurrency);
     const activeUid = user ? user.uid : 'guest';
-    saveUserSettings(activeUid, {
+    const cleanSettings = {
       currency: newCurrency,
       monthlyIncome,
       categoryBudgets,
       categorySpentOverrides,
-      categoryNotes
-    }).catch(console.error);
+      categoryNotes,
+      savingsGoals
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('local_budget_settings', JSON.stringify(cleanSettings));
+    }
+    saveUserSettings(activeUid, cleanSettings).catch(console.error);
   };
 
-  // Helper to auto-sync category targets to an income value (in IDR)
-  // CRITICAL: Only calculate and sync for ACTIVE categories; NEVER resurrect deleted categories!
-  const generateSyncedCategoryBudgets = (targetIncomeIDR) => {
-    const activeCats = Object.keys(categoryBudgets || {});
-    if (activeCats.length === 0) return {};
-
-    const newBudgets = { ...categoryBudgets };
-    let totalWeight = 0;
-    activeCats.forEach(cat => {
-      totalWeight += (CATEGORY_SYNC_RATIOS[cat] || (1 / activeCats.length));
-    });
-
-    if (totalWeight <= 0) totalWeight = 1;
-
-    activeCats.forEach(cat => {
-      const weight = (CATEGORY_SYNC_RATIOS[cat] || (1 / activeCats.length));
-      newBudgets[cat] = Math.round(targetIncomeIDR * (weight / totalWeight));
-    });
-    return newBudgets;
-  };
-
-  // Income Save Handler
+  // Income Save Handler (Manual allocation: does NOT alter existing pockets!)
   const handleSaveIncome = async () => {
     const num = Number(tempIncomeInput);
     if (isNaN(num) || num < 0) return;
@@ -237,31 +213,25 @@ export default function BudgetPage() {
     setMonthlyIncome(baselineIncomeIDR);
     setIsEditingIncome(false);
 
-    const syncedBudgets = generateSyncedCategoryBudgets(baselineIncomeIDR);
-    setCategoryBudgets(syncedBudgets);
-
     const activeUid = user ? user.uid : 'guest';
-    await saveUserSettings(activeUid, {
+    const cleanSettings = {
       currency,
       monthlyIncome: baselineIncomeIDR,
-      categoryBudgets: syncedBudgets,
+      categoryBudgets,
       categorySpentOverrides,
-      categoryNotes
-    });
-  };
+      categoryNotes,
+      savingsGoals
+    };
 
-  const handleAutoSyncTargets = async () => {
-    const syncedBudgets = generateSyncedCategoryBudgets(monthlyIncome);
-    setCategoryBudgets(syncedBudgets);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('local_budget_settings', JSON.stringify(cleanSettings));
+    }
 
-    const activeUid = user ? user.uid : 'guest';
-    await saveUserSettings(activeUid, {
-      currency,
-      monthlyIncome,
-      categoryBudgets: syncedBudgets,
-      categorySpentOverrides,
-      categoryNotes
-    });
+    try {
+      await saveUserSettings(activeUid, cleanSettings);
+    } catch (e) {
+      console.error("Error saving income:", e);
+    }
   };
 
   // Expense Handlers
@@ -286,44 +256,59 @@ export default function BudgetPage() {
     await deleteUserExpense(activeUid, id);
   };
 
-  // Category Budget, Realized Spent, Notes & Delete Category Handlers
+  // Category Pocket Handlers
   const handleUpdateCategoryBudget = (cat, limitInIDR) => {
     const updatedBudgets = { ...categoryBudgets, [cat]: limitInIDR };
     setCategoryBudgets(updatedBudgets);
     const activeUid = user ? user.uid : 'guest';
-    saveUserSettings(activeUid, {
+    const cleanSettings = {
       currency,
       monthlyIncome,
       categoryBudgets: updatedBudgets,
       categorySpentOverrides,
-      categoryNotes
-    }).catch(console.error);
+      categoryNotes,
+      savingsGoals
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('local_budget_settings', JSON.stringify(cleanSettings));
+    }
+    saveUserSettings(activeUid, cleanSettings).catch(console.error);
   };
 
   const handleUpdateCategorySpent = (cat, spentInIDR) => {
     const updatedOverrides = { ...categorySpentOverrides, [cat]: spentInIDR };
     setCategorySpentOverrides(updatedOverrides);
     const activeUid = user ? user.uid : 'guest';
-    saveUserSettings(activeUid, {
+    const cleanSettings = {
       currency,
       monthlyIncome,
       categoryBudgets,
       categorySpentOverrides: updatedOverrides,
-      categoryNotes
-    }).catch(console.error);
+      categoryNotes,
+      savingsGoals
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('local_budget_settings', JSON.stringify(cleanSettings));
+    }
+    saveUserSettings(activeUid, cleanSettings).catch(console.error);
   };
 
   const handleUpdateCategoryNotes = (cat, notes) => {
     const updatedNotes = { ...categoryNotes, [cat]: notes };
     setCategoryNotes(updatedNotes);
     const activeUid = user ? user.uid : 'guest';
-    saveUserSettings(activeUid, {
+    const cleanSettings = {
       currency,
       monthlyIncome,
       categoryBudgets,
       categorySpentOverrides,
-      categoryNotes: updatedNotes
-    }).catch(console.error);
+      categoryNotes: updatedNotes,
+      savingsGoals
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('local_budget_settings', JSON.stringify(cleanSettings));
+    }
+    saveUserSettings(activeUid, cleanSettings).catch(console.error);
   };
 
   const handleDeleteCategory = async (catToDelete) => {
@@ -346,7 +331,8 @@ export default function BudgetPage() {
       monthlyIncome,
       categoryBudgets: updatedBudgets,
       categorySpentOverrides: updatedOverrides,
-      categoryNotes: updatedNotes
+      categoryNotes: updatedNotes,
+      savingsGoals
     };
 
     if (typeof window !== 'undefined') {
@@ -372,7 +358,8 @@ export default function BudgetPage() {
       monthlyIncome,
       categoryBudgets: updatedBudgets,
       categorySpentOverrides,
-      categoryNotes: updatedNotes
+      categoryNotes: updatedNotes,
+      savingsGoals
     };
 
     if (typeof window !== 'undefined') {
@@ -386,9 +373,63 @@ export default function BudgetPage() {
     }
   };
 
+  // Savings Goals Handlers
+  const handleAddSavingsGoal = async (newGoal) => {
+    const updated = [...savingsGoals, newGoal];
+    setSavingsGoals(updated);
+    const activeUid = user ? user.uid : 'guest';
+    const cleanSettings = {
+      currency,
+      monthlyIncome,
+      categoryBudgets,
+      categorySpentOverrides,
+      categoryNotes,
+      savingsGoals: updated
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('local_budget_settings', JSON.stringify(cleanSettings));
+    }
+    await saveUserSettings(activeUid, cleanSettings);
+  };
+
+  const handleUpdateSavingsGoal = async (updatedGoal) => {
+    const updated = savingsGoals.map(g => g.id === updatedGoal.id ? updatedGoal : g);
+    setSavingsGoals(updated);
+    const activeUid = user ? user.uid : 'guest';
+    const cleanSettings = {
+      currency,
+      monthlyIncome,
+      categoryBudgets,
+      categorySpentOverrides,
+      categoryNotes,
+      savingsGoals: updated
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('local_budget_settings', JSON.stringify(cleanSettings));
+    }
+    await saveUserSettings(activeUid, cleanSettings);
+  };
+
+  const handleDeleteSavingsGoal = async (goalId) => {
+    const updated = savingsGoals.filter(g => g.id !== goalId);
+    setSavingsGoals(updated);
+    const activeUid = user ? user.uid : 'guest';
+    const cleanSettings = {
+      currency,
+      monthlyIncome,
+      categoryBudgets,
+      categorySpentOverrides,
+      categoryNotes,
+      savingsGoals: updated
+    };
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('local_budget_settings', JSON.stringify(cleanSettings));
+    }
+    await saveUserSettings(activeUid, cleanSettings);
+  };
+
   // Financial Calculations
   const incomeInCurrentCurrency = convertCurrency(monthlyIncome, 'IDR', currency);
-
   const categorySet = new Set(Object.keys(categoryBudgets || {}));
 
   const calculatedSpentPerCat = {};
@@ -419,7 +460,15 @@ export default function BudgetPage() {
     ? Math.round((netSavings / incomeInCurrentCurrency) * 100) 
     : 0;
 
-  // DYNAMIC CONTINUOUS FINANCIAL HEALTH SCORE FORMULA (0-100)
+  // Total Savings Goals Summary
+  let totalSavingsGoalTargetDisplay = 0;
+  let totalSavingsGoalSavedDisplay = 0;
+  savingsGoals.forEach(g => {
+    totalSavingsGoalTargetDisplay += convertCurrency(g.targetAmount || 0, "IDR", currency);
+    totalSavingsGoalSavedDisplay += convertCurrency(g.currentAmount || 0, "IDR", currency);
+  });
+
+  // Financial Health Score Formula (0-100)
   const savingsComponent = Math.min(45, Math.max(0, savingsRate * 1.45));
   const budgetControlComponent = totalCategoryBudgetLimitDisplay > 0 
     ? Math.min(35, Math.max(0, (1 - (totalExpenseInCurrentCurrency / totalCategoryBudgetLimitDisplay)) * 35 + 20))
@@ -447,59 +496,55 @@ export default function BudgetPage() {
     healthLabel = "Needs Attention";
   }
 
-  // --------------------------------------------------------------------------
-  // RENDER 0: LOADING SPINNER DURING AUTH RESOLUTION (PREVENTS REFRESH KICK)
-  // --------------------------------------------------------------------------
+  // Loading Screen
   if (loading) {
     return (
-      <div className="budget-loading-screen" style={{ minHeight: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-        <div className="spinner-ring" style={{ width: '40px', height: '40px', border: '4px solid #E5E7EB', borderTopColor: '#D97706', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-        <p style={{ color: '#6B7280', fontSize: '0.9rem', fontWeight: '600' }}>Loading your private budget workspace...</p>
+      <div className="budget-page-loading-screen">
+        <div className="spinner-loader"></div>
+        <p>Memuat Workspace Finansial Anda...</p>
       </div>
     );
   }
 
-  // --------------------------------------------------------------------------
-  // RENDER 1: AUTHENTICATION LANDING GATE (LOGIN PAGE) WHEN UNAUTHENTICATED
-  // --------------------------------------------------------------------------
+  // Login Gate Landing
   if (!user && !isGuest) {
     return (
-      <div className="budget-login-gate-container">
-        <div className="login-gate-card">
-          <div className="gate-brand-header">
-            <span className="gate-badge">BETA</span>
-            <h2>NDNews Personal Finance & AI Advisor</h2>
+      <div className="budget-gate-wrapper">
+        <div className="budget-gate-container">
+          <div className="gate-brand-box">
+            <span className="gate-icon">🤖</span>
+            <h1>NDNews Budget AI Advisor</h1>
             <p className="gate-subtitle">
-              Kelola anggaran pengeluaran rumah tangga, tagihan bulanan, dan konsultasi finansial berbasis AI secara terisolasi dan privat.
+              Sistem Manajemen Keuangan Rumah Tangga, Pos Kebutuhan (Pockets), dan Target Tabungan Berbasis AI.
             </p>
           </div>
 
-          <div className="gate-auth-methods">
-            <div className="gate-tab-buttons">
-              <button
+          <div className="login-gate-card">
+            <div className="gate-tabs">
+              <button 
+                onClick={() => { setAuthMode('login'); setGateError(''); }} 
                 className={`gate-tab-btn ${authMode === 'login' ? 'active' : ''}`}
-                onClick={() => { setAuthMode('login'); setGateError(''); }}
               >
-                Sign In
+                Masuk (Sign In)
               </button>
-              <button
+              <button 
+                onClick={() => { setAuthMode('register'); setGateError(''); }} 
                 className={`gate-tab-btn ${authMode === 'register' ? 'active' : ''}`}
-                onClick={() => { setAuthMode('register'); setGateError(''); }}
               >
-                Register New Account
+                Daftar Akun Baru
               </button>
             </div>
 
             {gateError && (
-              <div className="auth-error-banner">
-                <span>⚠️ {gateError}</span>
+              <div className="gate-error-banner">
+                ⚠️ {gateError}
               </div>
             )}
 
             <form onSubmit={handleGateEmailAuth} className="gate-form">
               {authMode === 'register' && (
                 <div className="form-group">
-                  <label>Full Name / Display Name</label>
+                  <label>Nama Lengkap / Panggilan</label>
                   <input
                     type="text"
                     placeholder="e.g. Alex Pratama"
@@ -557,9 +602,7 @@ export default function BudgetPage() {
     );
   }
 
-  // --------------------------------------------------------------------------
-  // RENDER 2: MAIN BUDGET WORKSPACE
-  // --------------------------------------------------------------------------
+  // Main Budget Workspace
   return (
     <div className="budget-page-container">
       {/* 1. AUTH & HEADER BAR */}
@@ -571,7 +614,7 @@ export default function BudgetPage() {
       {/* 2. APP TOP TOOLBAR */}
       <div className="budget-top-toolbar">
         <div className="currency-selector-group">
-          <span className="toolbar-label">Select Display Currency:</span>
+          <span className="toolbar-label">Mata Uang Tampilan:</span>
           <div className="currency-pills">
             {Object.keys(SUPPORTED_CURRENCIES).map((code) => {
               const info = SUPPORTED_CURRENCIES[code];
@@ -593,7 +636,7 @@ export default function BudgetPage() {
 
         <div className="toolbar-status-badge">
           <span className="badge-live-mode">
-            🔒 Private Account Workspace ({user ? (user.displayName || user.email || 'User') : 'Guest Session'})
+            🔒 Private Workspace ({user ? (user.displayName || user.email || 'User') : 'Guest Session'})
           </span>
         </div>
       </div>
@@ -606,23 +649,23 @@ export default function BudgetPage() {
             <span className="kpi-icon">💰</span>
           </div>
           <div className="kpi-content">
-            <span className="kpi-label">Monthly Household Income</span>
+            <span className="kpi-label">Pendapatan Bulanan (Income)</span>
             {isEditingIncome ? (
               <div className="income-edit-box">
                 <input
                   type="number"
                   value={tempIncomeInput}
                   onChange={(e) => setTempIncomeInput(e.target.value)}
-                  placeholder={`Amount in ${currency}`}
+                  placeholder={`Nominal dalam ${currency}`}
                   autoFocus
                 />
-                <button onClick={handleSaveIncome} className="btn-save-sm">Save</button>
+                <button onClick={handleSaveIncome} className="btn-save-sm">Simpan</button>
                 <button onClick={() => setIsEditingIncome(false)} className="btn-cancel-sm">✕</button>
               </div>
             ) : (
               <div className="kpi-value-row">
                 <h3 className="kpi-value text-emerald">
-                  {monthlyIncome > 0 ? formatCurrency(incomeInCurrentCurrency, currency) : `Set Income`}
+                  {monthlyIncome > 0 ? formatCurrency(incomeInCurrentCurrency, currency) : `Atur Income`}
                 </h3>
                 <button 
                   onClick={() => {
@@ -630,13 +673,13 @@ export default function BudgetPage() {
                     setIsEditingIncome(true);
                   }} 
                   className="btn-edit-income" 
-                  title="Change Income"
+                  title="Ubah Income"
                 >
-                  ✏️ Edit
+                  ✏️ Ubah
                 </button>
               </div>
             )}
-            <span className="kpi-subtext">Base monthly family take-home</span>
+            <span className="kpi-subtext">Total penghasilan rumah tangga per bulan</span>
           </div>
         </div>
 
@@ -646,25 +689,25 @@ export default function BudgetPage() {
             <span className="kpi-icon">💸</span>
           </div>
           <div className="kpi-content">
-            <span className="kpi-label">Total Monthly Expenses</span>
+            <span className="kpi-label">Total Realisasi Pengeluaran</span>
             <h3 className="kpi-value text-amber">
               {formatCurrency(totalExpenseInCurrentCurrency, currency)}
             </h3>
-            <span className="kpi-subtext">{expenses.length} Household items & subscriptions</span>
+            <span className="kpi-subtext">{expenses.length} Pos & Tagihan Rumah Tangga</span>
           </div>
         </div>
 
-        {/* Net Savings Card */}
+        {/* Savings Goals / Net Savings Card */}
         <div className="kpi-card kpi-savings">
           <div className="kpi-icon-wrap bg-blue-light">
-            <span className="kpi-icon">🏦</span>
+            <span className="kpi-icon">🎯</span>
           </div>
           <div className="kpi-content">
-            <span className="kpi-label">Net Monthly Savings</span>
-            <h3 className={`kpi-value ${netSavings >= 0 ? 'text-blue' : 'text-red'}`}>
-              {formatCurrency(netSavings, currency)}
+            <span className="kpi-label">Target Menabung & Impian</span>
+            <h3 className="kpi-value text-blue">
+              {formatCurrency(totalSavingsGoalSavedDisplay, currency)}
             </h3>
-            <span className="kpi-subtext">Savings Rate: <strong>{savingsRate}%</strong> of income</span>
+            <span className="kpi-subtext">Terkumpul dari target: <strong>{formatCurrency(totalSavingsGoalTargetDisplay, currency)}</strong></span>
           </div>
         </div>
 
@@ -674,31 +717,23 @@ export default function BudgetPage() {
             <span className="kpi-icon">🛡️</span>
           </div>
           <div className="kpi-content">
-            <span className="kpi-label">Financial Health Score</span>
+            <span className="kpi-label">Skor Kesehatan Finansial</span>
             <div className="health-score-row">
               <h3 className="kpi-value text-indigo">{healthScore}<span className="score-denom">/100</span></h3>
               <span className={`health-status-badge ${healthBadgeClass}`}>
                 {healthLabel}
               </span>
             </div>
-            <span className="kpi-subtext">Automated continuous risk assessment</span>
+            <span className="kpi-subtext">Analisis risiko & rasio likuiditas otomatis</span>
           </div>
         </div>
       </div>
 
       {/* 4. MAIN WORKSPACE GRID */}
       <div className="budget-workspace-grid">
-        {/* LEFT COLUMN: Wallos Expense Tracker & Clickable Budget Meters */}
+        {/* LEFT COLUMN: Pockets, Expenses, and Savings Goals */}
         <div className="workspace-main-col">
-          <ExpenseTracker
-            expenses={expenses}
-            currency={currency}
-            categories={Object.keys(categoryBudgets)}
-            onAddExpense={handleAddExpense}
-            onUpdateExpense={handleUpdateExpense}
-            onDeleteExpense={handleDeleteExpense}
-          />
-
+          {/* 1. KANTONG / POS ANGGARAN KEBUTUHAN */}
           <BudgetMeters
             expenses={expenses}
             categoryBudgets={categoryBudgets}
@@ -711,7 +746,25 @@ export default function BudgetPage() {
             onUpdateCategoryNotes={handleUpdateCategoryNotes}
             onDeleteCategory={handleDeleteCategory}
             onAddCustomCategory={handleAddCustomCategory}
-            onAutoSyncTargets={handleAutoSyncTargets}
+          />
+
+          {/* 2. TARGET TABUNGAN & SAVINGS GOALS (FITUR BARU) */}
+          <SavingsGoals
+            savingsGoals={savingsGoals}
+            currency={currency}
+            onAddSavingsGoal={handleAddSavingsGoal}
+            onUpdateSavingsGoal={handleUpdateSavingsGoal}
+            onDeleteSavingsGoal={handleDeleteSavingsGoal}
+          />
+
+          {/* 3. DAFTAR PENGELUARAN & SUBSCRIPTIONS */}
+          <ExpenseTracker
+            expenses={expenses}
+            currency={currency}
+            categories={Object.keys(categoryBudgets)}
+            onAddExpense={handleAddExpense}
+            onUpdateExpense={handleUpdateExpense}
+            onDeleteExpense={handleDeleteExpense}
           />
         </div>
 
@@ -721,6 +774,8 @@ export default function BudgetPage() {
             expenses={expenses}
             income={incomeInCurrentCurrency}
             currency={currency}
+            savingsGoals={savingsGoals}
+            pockets={categoryBudgets}
           />
         </div>
       </div>

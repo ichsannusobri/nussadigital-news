@@ -1,6 +1,5 @@
-Deploy Trigger - Final Permanent Category Deletion & Anti-Resurrection Fix
-Timestamp: 2026-08-23 21:06:20 WIB
+Deploy Trigger - Budget Pockets & Dedicated Savings Goals (Target Menabung) Feature
+Timestamp: 2026-08-23 21:32:15 WIB
 Status: Verified static build (106/106 pages).
-- generateSyncedCategoryBudgets now strictly computes ratios over existing active categories and NEVER re-creates deleted categories upon saving income or auto-syncing.
-- loadData checks null/undefined instead of truthy evaluation on empty objects to prevent default category restoration.
-- handleDeleteCategory synchronously updates localStorage and Firestore document.
+- Categories redesigned 100% as Pos Anggaran & Kantong Kebutuhan (Budget Pockets) with full manual user allocation and zero auto-resurrection.
+- Dedicated new feature: Target Tabungan & Savings Goals (Kantong Menabung Impian) with progress meter, deposit modal, deadline, and multi-currency support.
