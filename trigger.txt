@@ -1,4 +1,4 @@
-Deploy Trigger - NDNews AI Content Pipeline Auto-Sync
-Timestamp: 2026-08-26 14:38:00 WIB
-Status: Published Bank Indonesia Benchmark Rate English Article
-Target: Rebuild static pages on Cloudflare Pages
+Deploy Trigger - NDNews AI Content Pipeline
+Timestamp: 2026-08-26 14:47:00 WIB
+Status: Cleaned test articles from database (69 total clean articles)
+Target: Fresh static export build on Cloudflare Pages

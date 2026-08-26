@@ -856,11 +856,11 @@
             showTab('editor');
         }
 
-        function confirmDelete(id) {
+        async function confirmDelete(id) {
             if (confirm('Are you sure you want to delete this article?')) {
-                deleteArticle(id);
-                triggerDeploy();
+                await deleteArticle(id);
                 renderArticlesTable();
+                await triggerDeploy();
             }
         }
         function renderArticlesTable() {
