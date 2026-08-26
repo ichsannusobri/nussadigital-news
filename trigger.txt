@@ -1,5 +1,4 @@
-Deploy Trigger - Budget Pockets & Dedicated Savings Goals (Target Menabung) Feature
-Timestamp: 2026-08-23 21:32:15 WIB
-Status: Verified static build (106/106 pages).
-- Categories redesigned 100% as Pos Anggaran & Kantong Kebutuhan (Budget Pockets) with full manual user allocation and zero auto-resurrection.
-- Dedicated new feature: Target Tabungan & Savings Goals (Kantong Menabung Impian) with progress meter, deposit modal, deadline, and multi-currency support.
+Deploy Trigger - NDNews AI Content Pipeline Auto-Sync
+Timestamp: 2026-08-26 14:38:00 WIB
+Status: Published Bank Indonesia Benchmark Rate English Article
+Target: Rebuild static pages on Cloudflare Pages
