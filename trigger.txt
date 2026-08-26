@@ -1,5 +1,5 @@
-Deploy Trigger - NDNews AI Serial Publish
-Article ID: art-mt9svv7o-ukof0
-Title: Bank Indonesia Holds Benchmark Rate at 6.00%
-Timestamp: 2026-08-26T07:56:49.804Z
+Deploy Trigger - NDNews Live Article Deployment
+Article ID: art-mt9un9dh-mlhl3
+Title: Bank Indonesia Keeps Policy Rate Steady at 6.00%
+Timestamp: 2026-08-26 17:39:00 WIB
 Target: Cloudflare Pages Auto Build
