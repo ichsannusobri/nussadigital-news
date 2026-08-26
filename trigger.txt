@@ -1,4 +1,5 @@
-Deploy Trigger - NDNews AI Content Pipeline
-Timestamp: 2026-08-26 14:47:00 WIB
-Status: Cleaned test articles from database (69 total clean articles)
-Target: Fresh static export build on Cloudflare Pages
+Deploy Trigger - NDNews AI Serial Publish
+Article ID: art-mt9svv7o-ukof0
+Title: Bank Indonesia Holds Benchmark Rate at 6.00%
+Timestamp: 2026-08-26T07:56:49.804Z
+Target: Cloudflare Pages Auto Build
