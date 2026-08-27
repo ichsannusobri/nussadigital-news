@@ -1,5 +1,4 @@
-Deploy Trigger - NDNews Live Article Deployment
-Article ID: art-mt9un9dh-mlhl3
-Title: Bank Indonesia Keeps Policy Rate Steady at 6.00%
-Timestamp: 2026-08-26 17:42:30 WIB
-Target: Cloudflare Pages Auto Build
+Deploy Trigger - NDNews Pipeline Live Publishing
+Timestamp: 2026-08-27T01:36:20.722Z
+Last Article: art-mtauqetv-ahebo
+Target: Cloudflare Pages Build
