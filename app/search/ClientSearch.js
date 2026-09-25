@@ -3,9 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
-import { DEFAULT_ARTICLES, getOptimizedImageUrl } from '../../lib/data';
+import { getOptimizedImageUrl } from '../../lib/data';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -23,21 +21,15 @@ export default function ClientSearch() {
     async function fetchAndFilter() {
       setLoading(true);
       try {
-        const querySnapshot = await getDocs(collection(db, "articles"));
-        let articles = [];
-        if (querySnapshot.empty) {
-          articles = DEFAULT_ARTICLES;
-        } else {
-          querySnapshot.forEach((doc) => {
-            articles.push({ id: doc.id, ...doc.data() });
-          });
-        }
+        const res = await fetch('/search-index.json');
+        const articles = res.ok ? await res.json() : [];
 
         const queryLower = q.toLowerCase();
         const filtered = articles.filter(a => 
           (a.title && a.title.toLowerCase().includes(queryLower)) ||
           (a.excerpt && a.excerpt.toLowerCase().includes(queryLower)) ||
-          (a.category && a.category.toLowerCase().includes(queryLower))
+          (a.category && a.category.toLowerCase().includes(queryLower)) ||
+          (a.tags || []).some(t => String(t).toLowerCase().includes(queryLower))
         );
 
         setResults(filtered);

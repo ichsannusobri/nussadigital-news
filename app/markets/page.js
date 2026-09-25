@@ -1,8 +1,7 @@
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
+import { getAllArticles } from '../../lib/articles';
 import TimeAgo from '../../components/TimeAgo';
-import { getOptimizedImageUrl, DEFAULT_ARTICLES } from '../../lib/data';
+import { getOptimizedImageUrl } from '../../lib/data';
 import MarketsHeaderPanel from '../../components/MarketsHeaderPanel';
 import MarketMovers from '../../components/MarketMovers';
 
@@ -20,7 +19,7 @@ function truncateText(text, max) {
 }
 
 export const metadata = {
-  title: 'Markets & Finance - NDNews',
+  title: 'Markets & Finance',
   description: 'Live global market data, personal finance insights, and investment strategies across the Asia-Pacific region.',
   alternates: {
     canonical: 'https://nussadigital.co.id/markets',
@@ -33,17 +32,8 @@ export const metadata = {
 };
 
 export default async function MarketsPage() {
-  const q = query(collection(db, "articles"), orderBy("date", "desc"), limit(25));
-  const querySnapshot = await getDocs(q);
-  
-  let allArticles = [];
-  querySnapshot.forEach((doc) => {
-    allArticles.push({ id: doc.id, ...doc.data() });
-  });
-
-  if (allArticles.length === 0) {
-    allArticles = DEFAULT_ARTICLES;
-  }
+  let allArticles = await getAllArticles();
+  allArticles = allArticles.slice(0, 25);
 
   // Filter only Finance and Economy articles for this page
   const financeArticles = allArticles.filter(a => 

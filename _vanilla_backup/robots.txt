@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-
-# Prevent indexing of the Creator Studio
-Disallow: /dashboard.html
-
-Sitemap: https://nussadigital.co.id/sitemap.xml

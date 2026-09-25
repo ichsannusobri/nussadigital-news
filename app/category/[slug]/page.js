@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy, where, limit } from 'firebase/firestore';
-import { db } from '../../../lib/firebase';
-import { DEFAULT_ARTICLES, getOptimizedImageUrl } from '../../../lib/data';
+import { getAllArticles, getCategoryStats } from '../../../lib/articles';
+import { getOptimizedImageUrl } from '../../../lib/data';
 import Pagination from '../../../components/Pagination';
 
 function formatDate(dateStr) {
@@ -10,42 +9,16 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase();
 }
 
-export async function generateStaticParams() {
-  const q = query(collection(db, "articles"));
-  const querySnapshot = await getDocs(q);
-  let categories = new Set();
-  
-  if (querySnapshot.empty) {
-    DEFAULT_ARTICLES.forEach(doc => {
-      if (doc.category) categories.add(doc.category.toLowerCase());
-    });
-  } else {
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      if (data.category) {
-        categories.add(data.category.toLowerCase());
-      }
-    });
-  }
+export const dynamicParams = false;
 
-  return Array.from(categories).map((cat) => ({
-    slug: cat,
-  }));
+export async function generateStaticParams() {
+  const stats = await getCategoryStats();
+  return Object.keys(stats).map((slug) => ({ slug }));
 }
 
 // Unique Metadata per Category
 export async function generateMetadata({ params }) {
-  const q = query(collection(db, "articles"));
-  const querySnapshot = await getDocs(q);
-  
-  let articles = [];
-  querySnapshot.forEach((doc) => {
-    articles.push({ id: doc.id, ...doc.data() });
-  });
-
-  if (articles.length === 0) {
-    articles = DEFAULT_ARTICLES;
-  }
+  let articles = await getAllArticles();
 
   const categoryArticles = articles.filter(
     a => a.category && a.category.toLowerCase() === params.slug.toLowerCase()
@@ -56,7 +29,7 @@ export async function generateMetadata({ params }) {
   const isEmpty = categoryArticles.length === 0;
 
   return {
-    title: `${catName} News - Latest Updates & Analysis - NDNews`,
+    title: `${catName} News - Latest Updates & Analysis`,
     description: `Browse the latest breaking news, in-depth analysis, and expert insights on ${catName} across the Asia-Pacific region.`,
     alternates: {
       canonical: canonicalUrl,
@@ -76,17 +49,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function CategoryPage({ params }) {
-  const q = query(collection(db, "articles"));
-  const querySnapshot = await getDocs(q);
-  
-  let articles = [];
-  querySnapshot.forEach((doc) => {
-    articles.push({ id: doc.id, ...doc.data() });
-  });
-
-  if (articles.length === 0) {
-    articles = DEFAULT_ARTICLES;
-  }
+  let articles = await getAllArticles();
 
   articles = articles
     .filter(a => a.category && a.category.toLowerCase() === params.slug.toLowerCase())

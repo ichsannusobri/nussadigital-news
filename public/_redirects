@@ -1,3 +1,8 @@
 /category.html /search 301
 /article.html /article 301
 /index.html / 301
+/author/ndnews-sportteam /author/ndnews-sport-team 301
+/author/filza-sya /author/filza-syah 301
+/author/ndnews-retail-consumer-analytics-desk /author/ndnews-retail-and-consumer-analytics-desk 301
+/budget / 301
+/budget/* / 301

@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../../../../../lib/firebase';
-import { DEFAULT_ARTICLES, getOptimizedImageUrl } from '../../../../../lib/data';
+import { getAllArticles, getCategoryStats } from '../../../../../lib/articles';
+import { getOptimizedImageUrl } from '../../../../../lib/data';
 import Pagination from '../../../../../components/Pagination';
 
 function formatDate(dateStr) {
@@ -12,37 +11,15 @@ function formatDate(dateStr) {
 
 const ITEMS_PER_PAGE = 12;
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
-  const q = query(collection(db, "articles"));
-  const querySnapshot = await getDocs(q);
-  
-  let allArticles = [];
-  if (querySnapshot.empty) {
-    allArticles = DEFAULT_ARTICLES;
-  } else {
-    querySnapshot.forEach((doc) => {
-      allArticles.push({ id: doc.id, ...doc.data() });
-    });
-  }
-
-  // Group by category
-  const categoryMap = {};
-  allArticles.forEach(article => {
-    if (article.category) {
-      const cat = article.category.toLowerCase();
-      if (!categoryMap[cat]) categoryMap[cat] = 0;
-      categoryMap[cat]++;
-    }
-  });
-
-  let paths = [];
-  for (const [slug, count] of Object.entries(categoryMap)) {
+  const stats = await getCategoryStats();
+  const paths = [];
+  for (const [slug, { count }] of Object.entries(stats)) {
     const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
-    for (let i = 2; i <= totalPages; i++) {
-      paths.push({ slug: slug, page: i.toString() });
-    }
+    for (let i = 2; i <= totalPages; i++) paths.push({ slug, page: String(i) });
   }
-
   return paths;
 }
 
@@ -50,24 +27,14 @@ export async function generateMetadata({ params }) {
   const catName = params.slug.charAt(0).toUpperCase() + params.slug.slice(1);
   const currentPage = parseInt(params.page);
   
-  const q = query(collection(db, "articles"), orderBy("date", "desc"));
-  const querySnapshot = await getDocs(q);
-  
-  let articles = [];
-  querySnapshot.forEach((doc) => {
-    articles.push({ id: doc.id, ...doc.data() });
-  });
-
-  if (articles.length === 0) {
-    articles = DEFAULT_ARTICLES;
-  }
+  let articles = await getAllArticles();
 
   let categoryArticles = articles.filter(a => a.category && a.category.toLowerCase() === params.slug.toLowerCase());
   const totalPages = Math.ceil(categoryArticles.length / ITEMS_PER_PAGE);
   const isEmpty = currentPage > totalPages || categoryArticles.length === 0;
 
   return {
-    title: `${catName} News - Page ${params.page} | NDNews`,
+    title: `${catName} News - Page ${params.page}`,
     description: `Latest news and updates on ${catName} - Page ${params.page}.`,
     alternates: {
       canonical: `https://nussadigital.co.id/category/${params.slug}/page/${params.page}`,
@@ -82,17 +49,7 @@ export async function generateMetadata({ params }) {
 export default async function CategoryPaginatedPage({ params }) {
   const currentPage = parseInt(params.page);
   
-  const q = query(collection(db, "articles"), orderBy("date", "desc"));
-  const querySnapshot = await getDocs(q);
-  
-  let articles = [];
-  querySnapshot.forEach((doc) => {
-    articles.push({ id: doc.id, ...doc.data() });
-  });
-
-  if (articles.length === 0) {
-    articles = DEFAULT_ARTICLES;
-  }
+  let articles = await getAllArticles();
 
   // Filter by category
   let categoryArticles = articles.filter(a => a.category && a.category.toLowerCase() === params.slug.toLowerCase());
@@ -139,15 +96,6 @@ export default async function CategoryPaginatedPage({ params }) {
         </div>
         
         <aside style={{width: '300px', flexShrink: 0}}>
-          <div className="ad-container ad-sidebar" style={{position: 'sticky', top: '100px'}}>
-            <span style={{fontSize: '10px', color: '#888', display: 'block', marginBottom: '5px'}}>Advertisement</span>
-            <ins className="adsbygoogle"
-                 style={{display:'block'}}
-                 data-ad-client="ca-pub-2449102925093409"
-                 data-ad-slot="1234567890"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-          </div>
         </aside>
       </div>
     </main>

@@ -34,7 +34,7 @@ export default function HeroTopicBanner({ mainArticle, trendingTopics = [] }) {
           </div>
 
           <Link href={`/article/${mainArticle.id}`} className="cnn-hero-title-link">
-            <h1 className="cnn-hero-headline">{mainArticle.title}</h1>
+            <h2 className="cnn-hero-headline">{mainArticle.title}</h2>
           </Link>
 
           {mainArticle.excerpt && (

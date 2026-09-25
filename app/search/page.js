@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import ClientSearch from './ClientSearch';
 
 export const metadata = {
-  title: 'Search - NDNews',
+  title: 'Search',
   description: 'Search for the latest news across the Asia-Pacific region.',
   robots: {
     index: false,

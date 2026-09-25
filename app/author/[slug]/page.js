@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../../lib/firebase';
-import { DEFAULT_ARTICLES, getOptimizedImageUrl, slugifyAuthor, getAuthorBio } from '../../../lib/data';
+import { getAllArticles } from '../../../lib/articles';
+import { getOptimizedImageUrl, slugifyAuthor, getAuthorBio } from '../../../lib/data';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -9,16 +8,7 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-async function getAllArticles() {
-  const querySnapshot = await getDocs(collection(db, "articles"));
-  let articles = [];
-  if (querySnapshot.empty) {
-    articles = DEFAULT_ARTICLES;
-  } else {
-    querySnapshot.forEach((doc) => articles.push({ id: doc.id, ...doc.data() }));
-  }
-  return articles;
-}
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const articles = await getAllArticles();
@@ -34,14 +24,14 @@ export async function generateMetadata({ params }) {
   const article = articles.find(a => slugifyAuthor(a.author) === params.slug);
 
   if (!article) {
-    return { title: 'Author Not Found - NDNews' };
+    return { title: 'Author Not Found', robots: { index: false } };
   }
 
   const { title } = getAuthorBio(article.author);
   const canonicalUrl = `https://nussadigital.co.id/author/${params.slug}`;
 
   return {
-    title: `${article.author} - ${title} - NDNews`,
+    title: `${article.author} - ${title}`,
     description: `Articles and analysis by ${article.author}, ${title} at NDNews.`,
     alternates: {
       canonical: canonicalUrl,

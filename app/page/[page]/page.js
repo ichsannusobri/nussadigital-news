@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../../../lib/firebase';
-import { DEFAULT_ARTICLES, getOptimizedImageUrl } from '../../../lib/data';
+import { getAllArticles } from '../../../lib/articles';
+import { getOptimizedImageUrl } from '../../../lib/data';
 import Pagination from '../../../components/Pagination';
 
 function formatDate(dateStr) {
@@ -18,10 +17,10 @@ function truncateText(text, max) {
 
 const ITEMS_PER_PAGE = 12; // Consistent with ClientNewsFeed previous load
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
-  const querySnapshot = await getDocs(collection(db, "articles"));
-  let totalArticles = querySnapshot.empty ? DEFAULT_ARTICLES.length : querySnapshot.size;
-  
+  const totalArticles = (await getAllArticles()).length;
   const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
   
   // Start from page 2, because page 1 is the main homepage
@@ -35,13 +34,12 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const currentPage = parseInt(params.page);
-  const querySnapshot = await getDocs(collection(db, "articles"));
-  let totalArticles = querySnapshot.empty ? DEFAULT_ARTICLES.length : querySnapshot.size;
+  const totalArticles = (await getAllArticles()).length;
   const totalPages = Math.ceil(totalArticles / ITEMS_PER_PAGE);
   const isEmpty = currentPage > totalPages;
 
   return {
-    title: `Latest News - Page ${params.page} | NDNews`,
+    title: `Latest News - Page ${params.page}`,
     description: `Browse the latest breaking news, economy, finance, and sports articles on NDNews - Page ${params.page}.`,
     alternates: {
       canonical: `https://nussadigital.co.id/page/${params.page}`,
@@ -56,17 +54,7 @@ export async function generateMetadata({ params }) {
 export default async function PaginatedHomePage({ params }) {
   const currentPage = parseInt(params.page);
   
-  const q = query(collection(db, "articles"), orderBy("date", "desc"));
-  const querySnapshot = await getDocs(q);
-  
-  let allArticles = [];
-  querySnapshot.forEach((doc) => {
-    allArticles.push({ id: doc.id, ...doc.data() });
-  });
-
-  if (allArticles.length === 0) {
-    allArticles = DEFAULT_ARTICLES;
-  }
+  let allArticles = await getAllArticles();
   
   const totalPages = Math.ceil(allArticles.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Contact Us - NDNews',
+  title: 'Contact Us',
   description: 'Get in touch with the NDNews editorial team, report issues, or inquire about advertising, press, and partnerships.',
   alternates: {
     canonical: 'https://nussadigital.co.id/contact',

@@ -1,0 +1,8 @@
+{
+  "name": "ndnews-maintenance",
+  "private": true,
+  "description": "Admin scripts. Not part of the website build. Install with: cd scripts/maintenance && npm install",
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}

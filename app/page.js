@@ -1,15 +1,13 @@
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy, doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { DEFAULT_ARTICLES, TRENDING_TOPICS, getAuthorAvatar } from '../lib/data';
+import { getAllArticles } from '../lib/articles';
+import { FALLBACK_TOPICS, getAuthorAvatar } from '../lib/data';
 import TimeAgo from '../components/TimeAgo';
 import Pagination from '../components/Pagination';
-import HeroBetaBanner from '../components/HeroBetaBanner';
 import HeroTopicBanner from '../components/HeroTopicBanner';
 import SectionHeader from '../components/SectionHeader';
 import ArticleCardCompact from '../components/ArticleCardCompact';
-import NewsletterBar from '../components/NewsletterBar';
-import BudgetAIPromoBanner from '../components/BudgetAIPromoBanner';
 
 function truncateText(text, max) {
   if (!text) return '';
@@ -25,7 +23,7 @@ function getInitials(name) {
 }
 
 export const metadata = {
-  title: 'NDNews - Breaking News, APAC Economy, Finance & Sports',
+  title: { absolute: 'NDNews - Breaking News, APAC Economy, Finance & Sports' },
   description: 'Your trusted source for the latest news in business, economy, and sports across the Asia-Pacific region.',
   alternates: {
     canonical: 'https://nussadigital.co.id',
@@ -33,16 +31,7 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const q = query(collection(db, "articles"), orderBy("date", "desc"));
-  const querySnapshot = await getDocs(q);
-  let articles = [];
-  querySnapshot.forEach((doc) => {
-    articles.push({ id: doc.id, ...doc.data() });
-  });
-
-  if (articles.length === 0) {
-    articles = DEFAULT_ARTICLES;
-  }
+  const articles = await getAllArticles();
 
   // Fetch dynamic trending topics
   let dynamicTrending = [];
@@ -86,7 +75,7 @@ export default async function HomePage() {
   }
 
   if (dynamicTrending.length === 0) {
-    dynamicTrending = TRENDING_TOPICS.map(t => ({ id: t, name: t, url: '/category/apac' }));
+    dynamicTrending = FALLBACK_TOPICS;
   }
 
   const ITEMS_PER_PAGE = 12;
@@ -184,9 +173,6 @@ export default async function HomePage() {
               </div>
             </section>
 
-            {/* DEDICATED PROMOTIONAL BANNER FOR BUDGET AI */}
-            <BudgetAIPromoBanner />
-
             {/* SPORT MODULE */}
             {sportArticles.length > 0 && (
               <section className="cnn-section-block">
@@ -249,9 +235,6 @@ export default async function HomePage() {
           {/* ================================================================= */}
           <aside className="cnn-sticky-sidebar">
             
-            {/* 1. BUDGET AI BETA SIDEBAR PROMO CARD */}
-            <HeroBetaBanner />
-
             {/* 2. MOST POPULAR NUMBERED 1-10 MODULE (CNN STYLE) */}
             <div className="cnn-sidebar-widget cnn-widget-popular">
               <SectionHeader 
@@ -310,7 +293,6 @@ export default async function HomePage() {
       </div>
 
       {/* 3. FULL-WIDTH NEWSLETTER SIGNUP BAR BEFORE FOOTER */}
-      <NewsletterBar />
     </main>
   );
 }

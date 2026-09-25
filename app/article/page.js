@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import ArticleRedirector from './ArticleRedirector';
 
 export const metadata = {
-  title: 'Redirecting to article... | NDNews',
+  title: 'Redirecting to article...',
   description: 'Redirecting you to the latest article on NDNews.',
   robots: {
     index: false,

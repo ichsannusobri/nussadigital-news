@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Terms of Service - NDNews',
+  title: 'Terms of Service',
   description: 'Terms of Service, intellectual property rights, and user agreements for accessing and using the NDNews portal.',
   alternates: {
     canonical: 'https://nussadigital.co.id/terms',

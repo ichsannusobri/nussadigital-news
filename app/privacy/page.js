@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Privacy Policy - NDNews',
+  title: 'Privacy Policy',
   description: 'Read the comprehensive privacy policy of NDNews, detailing our data collection, GDPR compliance, and advertising cookies.',
   alternates: {
     canonical: 'https://nussadigital.co.id/privacy',

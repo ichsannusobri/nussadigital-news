@@ -1,7 +1,5 @@
 import Link from 'next/link';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
-import { DEFAULT_ARTICLES } from '../../lib/data';
+import { getAllArticles } from '../../lib/articles';
 
 function formatDate(dateStr) {
   if (!dateStr) return '';
@@ -10,7 +8,7 @@ function formatDate(dateStr) {
 }
 
 export const metadata = {
-  title: 'News Archive - NDNews',
+  title: 'News Archive',
   description: 'Complete archive of all NDNews articles.',
   alternates: {
     canonical: 'https://nussadigital.co.id/archive',
@@ -18,17 +16,7 @@ export const metadata = {
 };
 
 export default async function ArchivePage() {
-  const q = query(collection(db, "articles"), orderBy("date", "desc"));
-  const querySnapshot = await getDocs(q);
-  
-  let articles = [];
-  querySnapshot.forEach((doc) => {
-    articles.push({ id: doc.id, ...doc.data() });
-  });
-
-  if (articles.length === 0) {
-    articles = DEFAULT_ARTICLES;
-  }
+  let articles = await getAllArticles();
 
   // Group articles by year and month
   const groupedArticles = articles.reduce((acc, article) => {

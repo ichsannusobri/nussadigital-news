@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'About Us & Editorial Standards - NDNews',
+  title: 'About Us & Editorial Standards',
   description: 'Learn about NDNews, our editorial mission, fact-checking standards, and our expert coverage of Economy, Finance, and Sports in the Asia-Pacific region.',
   alternates: {
     canonical: 'https://nussadigital.co.id/about',
