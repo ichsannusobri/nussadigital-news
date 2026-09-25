@@ -86,7 +86,14 @@ export default async function HomePage() {
   const featuredArticles = homepageArticles.filter(a => a.isFeatured);
   
   // Hero Lead Article
-  const mainArticle = featuredArticles[0] || articles[0];
+  // Newest story leads by default. An editor-featured story only takes the
+  // hero slot if it is recent (<= 3 days old), so stale features never block
+  // new reporting from the top of the homepage.
+  const HERO_FEATURE_MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000;
+  const recentFeatured = featuredArticles.find(
+    a => a.date && Date.now() - new Date(a.date).getTime() <= HERO_FEATURE_MAX_AGE_MS
+  );
+  const mainArticle = recentFeatured || articles[0];
   
   // Pool of articles excluding main lead
   const poolAfterMain = articles.filter(a => a.id !== mainArticle.id);
