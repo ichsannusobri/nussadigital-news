@@ -47,7 +47,9 @@ function parse(md) {
   const words = content.split(/\s+/).filter(Boolean).length;
   const extLinks = new Set((content.match(/\]\((https?:\/\/[^)\s]+)\)/g) || []).map((l) => l.slice(2, -1))).size;
   console.log(`Draft "${meta.title}" | ${words} words | ${extLinks} external source links`);
-  if (words < 800 || extLinks < 3) throw new Error('Editorial minimum not met (>=800 words, >=3 source links)');
+  const isWrap = meta.format === 'wrap';
+  const minWords = isWrap ? 350 : 800;
+  if (words < minWords || extLinks < 3) throw new Error(`Editorial minimum not met (>=${minWords} words, >=3 source links)`);
 
   const now = new Date().toISOString();
   const doc = {

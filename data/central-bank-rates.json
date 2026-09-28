@@ -1,0 +1,108 @@
+{
+  "updatedAt": "2026-09-28",
+  "note": "Maintained manually by the NDNews desk after each official decision. Update the entry, the updatedAt date and push; the site rebuilds automatically.",
+  "banks": [
+    {
+      "slug": "bank-indonesia", "bank": "Bank Indonesia", "short": "BI", "country": "Indonesia", "flag": "🇮🇩",
+      "rateName": "BI-Rate", "rate": 5.75,
+      "lastDecisionDate": "2026-09-23", "lastDecision": "Hold",
+      "lastChangeDate": "2026-06-18", "lastChange": "+25 bps (5.50% → 5.75%)",
+      "nextMeeting": "2026-10-21",
+      "trend2026": "tightening",
+      "context": "Raised a cumulative 100 bps between May and June 2026 (20 May +50 bps, 9 Jun +25 bps, 18 Jun +25 bps) to support the rupiah. Deposit facility 4.75%, lending facility 6.50%.",
+      "article": "/article/bi-rate-hikes-2026-what-they-mean-for-indonesian-mortgages",
+      "sources": ["https://www.bi.go.id/id/statistik/indikator/bi-rate.aspx", "https://www.bi.go.id/id/publikasi/ruang-media/news-release/Pages/sp_2819326.aspx"]
+    },
+    {
+      "slug": "bank-of-japan", "bank": "Bank of Japan", "short": "BoJ", "country": "Japan", "flag": "🇯🇵",
+      "rateName": "Short-term policy rate (overnight call rate)", "rate": 1.25,
+      "lastDecisionDate": "2026-09-18", "lastDecision": "+25 bps",
+      "lastChangeDate": "2026-09-18", "lastChange": "+25 bps (1.00% → 1.25%), effective 24 Sep",
+      "nextMeeting": "2026-10-30",
+      "trend2026": "tightening",
+      "context": "Second hike of 2026 after June; the September decision was a 7–2 vote.",
+      "sources": ["https://www.boj.or.jp/en/mopo/mpmdeci/mpr_2026/k260918a.pdf", "https://www.boj.or.jp/en/mopo/mpmsche_minu/index.htm"]
+    },
+    {
+      "slug": "peoples-bank-of-china", "bank": "People's Bank of China", "short": "PBoC", "country": "China", "flag": "🇨🇳",
+      "rateName": "1-year Loan Prime Rate", "rate": 3.00,
+      "secondary": "5-year LPR 3.50% · 7-day reverse repo 1.40%",
+      "lastDecisionDate": "2026-09-20", "lastDecision": "Hold",
+      "lastChangeDate": "2025-05-20", "lastChange": "−10 bps (3.10% → 3.00%)",
+      "nextMeeting": null,
+      "trend2026": "unchanged",
+      "context": "LPRs are fixed monthly (around the 20th) and have been unchanged for 16 consecutive months.",
+      "sources": ["https://english.www.gov.cn/archive/statistics/202609/20/content_WS6aaf80b4c6d00ca5f9a0d458.html"]
+    },
+    {
+      "slug": "reserve-bank-of-australia", "bank": "Reserve Bank of Australia", "short": "RBA", "country": "Australia", "flag": "🇦🇺",
+      "rateName": "Cash rate target", "rate": 4.35,
+      "lastDecisionDate": "2026-08-11", "lastDecision": "Hold",
+      "lastChangeDate": "2026-05-05", "lastChange": "+25 bps (4.10% → 4.35%)",
+      "nextMeeting": "2026-09-29",
+      "trend2026": "tightening",
+      "context": "Next decision is due on 29 September 2026 at 2:30 pm AEST; this entry will be updated after the announcement.",
+      "sources": ["https://www.rba.gov.au/media-releases/2026/mr-26-19.html", "https://www.rba.gov.au/media-releases/2026/mr-26-12.html"]
+    },
+    {
+      "slug": "bank-of-korea", "bank": "Bank of Korea", "short": "BOK", "country": "South Korea", "flag": "🇰🇷",
+      "rateName": "Base rate", "rate": 3.00,
+      "lastDecisionDate": "2026-08-27", "lastDecision": "+25 bps",
+      "lastChangeDate": "2026-08-27", "lastChange": "+25 bps (2.75% → 3.00%)",
+      "nextMeeting": "2026-10-22",
+      "trend2026": "tightening",
+      "context": "Second consecutive hike, following a July increase according to press reports.",
+      "sources": ["https://www.bok.or.kr/eng/main/contents.do?menuNo=400020"]
+    },
+    {
+      "slug": "reserve-bank-of-india", "bank": "Reserve Bank of India", "short": "RBI", "country": "India", "flag": "🇮🇳",
+      "rateName": "Policy repo rate", "rate": 5.25,
+      "lastDecisionDate": "2026-08-05", "lastDecision": "Hold",
+      "lastChangeDate": "2025-12-05", "lastChange": "−25 bps (5.50% → 5.25%)",
+      "nextMeeting": "2026-10-07",
+      "trend2026": "unchanged",
+      "context": "Neutral stance; standing deposit facility 5.00%, marginal standing facility 5.50%.",
+      "sources": ["https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=63287", "https://www.rbi.org.in/scripts/annualpolicy.aspx"]
+    },
+    {
+      "slug": "bank-negara-malaysia", "bank": "Bank Negara Malaysia", "short": "BNM", "country": "Malaysia", "flag": "🇲🇾",
+      "rateName": "Overnight Policy Rate", "rate": 2.75,
+      "lastDecisionDate": "2026-09-03", "lastDecision": "Hold",
+      "lastChangeDate": "2025-07-09", "lastChange": "−25 bps (3.00% → 2.75%)",
+      "nextMeeting": "2026-11-05",
+      "trend2026": "unchanged",
+      "context": "November's meeting is the last scheduled for 2026.",
+      "sources": ["https://www.bnm.gov.my/-/monetary-policy-statement-03092026", "https://www.bnm.gov.my/monetary-stability/mpc-meetings/-/tag/mpc-2026"]
+    },
+    {
+      "slug": "bank-of-thailand", "bank": "Bank of Thailand", "short": "BOT", "country": "Thailand", "flag": "🇹🇭",
+      "rateName": "Policy rate", "rate": 1.00,
+      "lastDecisionDate": "2026-08-26", "lastDecision": "Hold",
+      "lastChangeDate": "2026-02-25", "lastChange": "−25 bps (1.25% → 1.00%)",
+      "nextMeeting": "2026-10-28",
+      "trend2026": "easing",
+      "context": "Third consecutive hold after February's cut; August's decision was unanimous.",
+      "sources": ["https://www.bot.or.th/en/news-and-media/news/mpc/news-20260826-KsecaE98.html", "https://www.bot.or.th/en/our-roles/monetary-policy/mpc-meeting.html"]
+    },
+    {
+      "slug": "bangko-sentral-ng-pilipinas", "bank": "Bangko Sentral ng Pilipinas", "short": "BSP", "country": "Philippines", "flag": "🇵🇭",
+      "rateName": "Target reverse repurchase rate", "rate": 5.00,
+      "lastDecisionDate": "2026-08-27", "lastDecision": "+25 bps",
+      "lastChangeDate": "2026-08-27", "lastChange": "+25 bps (4.75% → 5.00%)",
+      "nextMeeting": null,
+      "trend2026": "tightening",
+      "context": "Third consecutive hike since April 2026 (cumulative +75 bps), according to press reports.",
+      "sources": ["https://www.philstar.com/business/2026/08/28/2552230/bsp-policy-rates-hiked-25-bps"]
+    },
+    {
+      "slug": "monetary-authority-of-singapore", "bank": "Monetary Authority of Singapore", "short": "MAS", "country": "Singapore", "flag": "🇸🇬",
+      "rateName": "S$NEER policy band (no policy rate)", "rate": null,
+      "lastDecisionDate": "2026-07-27", "lastDecision": "Tightened (slope raised slightly)",
+      "lastChangeDate": "2026-07-27", "lastChange": "Slope of the band raised; width and centre unchanged",
+      "nextMeeting": null,
+      "trend2026": "tightening",
+      "context": "MAS manages the Singapore dollar's trade-weighted exchange rate instead of an interest rate. It also tightened in April 2026.",
+      "sources": ["https://www.mas.gov.sg/news/monetary-policy-statements/2026/mas-monetary-policy-statement-27jul26"]
+    }
+  ]
+}

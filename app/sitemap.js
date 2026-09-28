@@ -1,5 +1,6 @@
 import { getAllArticles, getCategoryStats } from '../lib/articles';
 import { slugifyAuthor, SITE_URL } from '../lib/data';
+import rates from '../data/central-bank-rates.json';
 
 // Only canonical, indexable URLs. Paginated listing pages (/page/N,
 // /category/x/page/N) are left out on purpose: they are crawlable through
@@ -13,6 +14,7 @@ export default async function sitemap() {
   const core = [
     { url: SITE_URL, lastModified: latest },
     { url: `${SITE_URL}/markets`, lastModified: latest },
+    { url: `${SITE_URL}/markets/central-bank-rates`, lastModified: new Date(rates.updatedAt) },
     { url: `${SITE_URL}/archive`, lastModified: latest },
     { url: `${SITE_URL}/about`, lastModified: new Date('2026-07-01') },
     { url: `${SITE_URL}/contact`, lastModified: new Date('2026-07-01') },

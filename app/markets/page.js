@@ -50,6 +50,13 @@ export default async function MarketsPage() {
           </p>
         </header>
         <MarketsOverviewPanel />
+        <Link href="/markets/central-bank-rates" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: 20, padding: '16px 18px', border: '1px solid var(--clr-border, #E5E7EB)', borderRadius: 10, textDecoration: 'none', color: 'inherit' }}>
+          <span>
+            <strong style={{ display: 'block', fontSize: '1.05rem' }}>APAC Central Bank Rates Tracker</strong>
+            <span style={{ fontSize: '0.88rem', color: 'var(--clr-text-secondary, #6B7280)' }}>BI, BoJ, PBoC, RBA, BOK, RBI and more: current rates, latest decisions and next meetings.</span>
+          </span>
+          <span style={{ color: '#D97706', fontWeight: 800, whiteSpace: 'nowrap' }}>Open →</span>
+        </Link>
       </div>
 
       <div className="markets-container">
