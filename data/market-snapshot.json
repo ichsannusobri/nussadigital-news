@@ -3,14 +3,63 @@
   "session": "Asia close",
   "note": "Updated each trading day by the NDNews desk as part of the Asia Market Wrap SOP (docs/SOP-ASIA-MARKET-WRAP.md). Closing levels unless 'intraday' is set.",
   "items": [
-    { "name": "IHSG", "value": null, "changePct": null, "pending": true },
-    { "name": "USD/IDR", "value": 17978, "decimals": 0, "changePct": 0.42 },
-    { "name": "BI-Rate", "value": 5.75, "decimals": 2, "suffix": "%", "static": true, "href": "/markets/central-bank-rates" },
-    { "name": "Nikkei 225", "value": 65877.62, "decimals": 2, "changePct": -0.73 },
-    { "name": "Hang Seng", "value": 24654.86, "decimals": 2, "changePct": 0.6 },
-    { "name": "Shanghai", "value": 3823.62, "decimals": 2, "changePct": -1.7 },
-    { "name": "KOSPI", "value": 6889.74, "decimals": 2, "changePct": -2.7 },
-    { "name": "ASX 200", "value": 8679.7, "decimals": 2, "changePct": 0.2 },
-    { "name": "Brent", "value": 106.93, "decimals": 2, "prefix": "$", "changePct": 2.5, "intraday": true }
+    {
+      "name": "IHSG",
+      "value": 6147.86,
+      "decimals": 2,
+      "changePct": -1.51
+    },
+    {
+      "name": "USD/IDR",
+      "value": 17978,
+      "decimals": 0,
+      "changePct": 0.42
+    },
+    {
+      "name": "BI-Rate",
+      "value": 5.75,
+      "decimals": 2,
+      "suffix": "%",
+      "static": true,
+      "href": "/markets/central-bank-rates"
+    },
+    {
+      "name": "Nikkei 225",
+      "value": 65877.62,
+      "decimals": 2,
+      "changePct": -0.73
+    },
+    {
+      "name": "Hang Seng",
+      "value": 24654.86,
+      "decimals": 2,
+      "changePct": 0.6
+    },
+    {
+      "name": "Shanghai",
+      "value": 3823.62,
+      "decimals": 2,
+      "changePct": -1.7
+    },
+    {
+      "name": "KOSPI",
+      "value": 6889.74,
+      "decimals": 2,
+      "changePct": -2.7
+    },
+    {
+      "name": "ASX 200",
+      "value": 8679.7,
+      "decimals": 2,
+      "changePct": 0.2
+    },
+    {
+      "name": "Brent",
+      "value": 106.93,
+      "decimals": 2,
+      "prefix": "$",
+      "changePct": 2.5,
+      "intraday": true
+    }
   ]
 }
