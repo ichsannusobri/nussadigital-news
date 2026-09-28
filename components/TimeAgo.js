@@ -3,7 +3,14 @@
 import { useState, useEffect } from 'react';
 
 export default function TimeAgo({ date }) {
-  const [timeStr, setTimeStr] = useState('');
+  const absolute = (() => {
+    const d = date ? new Date(date) : null;
+    return d && !Number.isNaN(d.getTime())
+      ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      : '';
+  })();
+  // Server-rendered absolute date; switches to relative time on the client for recent items.
+  const [timeStr, setTimeStr] = useState(absolute);
 
   useEffect(() => {
     if (!date) return;
@@ -24,7 +31,7 @@ export default function TimeAgo({ date }) {
           setTimeStr(`${diffHours}h ago`);
         } else {
           const diffDays = Math.floor(diffHours / 24);
-          setTimeStr(`${diffDays}d ago`);
+          setTimeStr(diffDays < 7 ? `${diffDays}d ago` : absolute);
         }
       }
     }
@@ -32,7 +39,7 @@ export default function TimeAgo({ date }) {
     updateTime();
     const interval = setInterval(updateTime, 60000);
     return () => clearInterval(interval);
-  }, [date]);
+  }, [date, absolute]);
 
-  return <span className="alj-time">{timeStr ? timeStr + ':' : ''}</span>;
+  return <time className="alj-time" dateTime={date || undefined} suppressHydrationWarning>{timeStr}</time>;
 }

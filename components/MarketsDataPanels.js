@@ -5,7 +5,7 @@ import TradingViewWidget from './TradingViewWidget';
 const OVERVIEW = {
   dateRange: '1M',
   showChart: true,
-  showSymbolLogo: true,
+  showSymbolLogo: false,
   showFloatingTooltip: true,
   tabs: [
     {

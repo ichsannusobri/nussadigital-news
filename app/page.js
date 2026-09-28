@@ -96,8 +96,12 @@ export default async function HomePage() {
   );
   const mainArticle = recentFeatured || articles[0];
   
-  // Pool of articles excluding main lead
-  const poolAfterMain = articles.filter(a => a.id !== mainArticle.id);
+  // Two newest stories after the lead fill the right-hand hero slots.
+  const heroSide = articles.filter(a => a.id !== mainArticle.id).slice(0, 2);
+  const heroIds = new Set([mainArticle.id, ...heroSide.map(a => a.id)]);
+
+  // Pool of articles excluding the three hero stories
+  const poolAfterMain = articles.filter(a => !heroIds.has(a.id));
   
   // Latest News (first 8 for main column)
   const latestNews = poolAfterMain.slice(0, 8);
@@ -116,44 +120,13 @@ export default async function HomePage() {
   // Explainer articles
   const explainers = articles.filter(a => a.category?.toLowerCase() === 'explainer').slice(0, 3);
 
-  const websiteSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "NDNews",
-    "url": "https://nussadigital.co.id",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://nussadigital.co.id/search?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  };
-
-  const orgSchema = {
-    "@context": "https://schema.org",
-    "@type": "NewsMediaOrganization",
-    "name": "NDNews",
-    "url": "https://nussadigital.co.id",
-    "logo": "https://nussadigital.co.id/favicon.png",
-    "sameAs": [
-      "https://www.linkedin.com/company/ndnews"
-    ]
-  };
-
   return (
     <main className="home-page cnn-layout-page">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
-      />
       <h1 className="sr-only">Latest APAC Economy, Finance & Sports Breaking News</h1>
 
       {/* 1. CNN-STYLE TOPIC HERO BANNER WITH INTEGRATED TRENDING STRIP */}
       <MarketTickerStrip />
-      <HeroTopicBanner mainArticle={mainArticle} trendingTopics={dynamicTrending} />
+      <HeroTopicBanner mainArticle={mainArticle} sideArticles={heroSide} trendingTopics={dynamicTrending} />
 
       {/* 2. MAIN 2-COLUMN HOMEPAGE GRID (MAIN 66% + STICKY SIDEBAR 33%) */}
       <div className="cnn-main-container">
