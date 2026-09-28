@@ -32,3 +32,6 @@ CLoudflare.txt
 
 # Internal docs (repo is public: plans, audit & security notes stay local)
 docs/
+
+# Local AI output folder
+Claude outputs/
