@@ -6,6 +6,7 @@ import { FALLBACK_TOPICS, getAuthorAvatar } from '../lib/data';
 import TimeAgo from '../components/TimeAgo';
 import Pagination from '../components/Pagination';
 import HeroTopicBanner from '../components/HeroTopicBanner';
+import MarketTickerStrip from '../components/MarketTickerStrip';
 import SectionHeader from '../components/SectionHeader';
 import ArticleCardCompact from '../components/ArticleCardCompact';
 
@@ -151,6 +152,7 @@ export default async function HomePage() {
       <h1 className="sr-only">Latest APAC Economy, Finance & Sports Breaking News</h1>
 
       {/* 1. CNN-STYLE TOPIC HERO BANNER WITH INTEGRATED TRENDING STRIP */}
+      <MarketTickerStrip />
       <HeroTopicBanner mainArticle={mainArticle} trendingTopics={dynamicTrending} />
 
       {/* 2. MAIN 2-COLUMN HOMEPAGE GRID (MAIN 66% + STICKY SIDEBAR 33%) */}

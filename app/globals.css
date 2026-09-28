@@ -4442,3 +4442,24 @@ ul, ol {
 /* Keep wide dropdowns (right-hand menu items) inside the viewport */
 .nav-mega-item:nth-last-of-type(-n+3) .mega-menu-dropdown { left: auto; right: 0; }
 .main-nav .mega-menu-dropdown a.mega-view-all-link { font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
+
+/* ===== Market ticker strip (home) ===== */
+.mts { max-width: 1400px; margin: 12px auto 10px; padding: 0 16px; }
+.mts-link { display: flex; align-items: center; gap: 14px; border: 1px solid var(--clr-border, #E5E7EB); border-radius: 12px; background: var(--clr-bg, #fff); padding: 10px 14px; text-decoration: none; color: inherit; overflow: hidden; }
+.mts-link:hover { border-color: #D97706; }
+.mts-meta { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+.mts-badge { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.6px; color: #D97706; }
+.mts-stamp { font-size: 0.72rem; color: var(--clr-text-secondary, #6B7280); white-space: nowrap; }
+.mts-viewport { flex: 1; min-width: 0; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+.mts-track { display: inline-flex; align-items: center; gap: 28px; white-space: nowrap; animation: mts-scroll 45s linear infinite; }
+.mts-link:hover .mts-track, .mts-link:focus-visible .mts-track { animation-play-state: paused; }
+.mts-item { display: inline-flex; align-items: baseline; gap: 8px; font-size: 0.86rem; }
+.mts-name { font-weight: 700; }
+.mts-value { font-variant-numeric: tabular-nums; }
+.mts-chg { font-size: 0.78rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mts-sep { width: 1px; height: 18px; background: var(--clr-border, #E5E7EB); }
+.mts-cta { flex-shrink: 0; font-size: 0.8rem; font-weight: 800; color: #D97706; white-space: nowrap; }
+.mts-foot { margin: 4px 2px 0; font-size: 0.68rem; color: var(--clr-text-secondary, #6B7280); }
+@keyframes mts-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .mts-track { animation: none; } .mts-viewport { overflow-x: auto; } }
+@media (max-width: 640px) { .mts-meta { display: none; } .mts-link { padding: 8px 10px; gap: 10px; } }
