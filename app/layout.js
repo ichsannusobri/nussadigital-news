@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Script from 'next/script';
 import Header from '../components/Header';
 import CookieConsent from '../components/CookieConsent';
+import { getNavMenuData } from '../lib/articles';
 
 export const metadata = {
   metadataBase: new URL('https://nussadigital.co.id'),
@@ -72,7 +73,8 @@ const SITE_JSONLD = [
   },
 ];
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const menu = await getNavMenuData();
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -124,7 +126,7 @@ export default function RootLayout({ children }) {
           `}
         </Script>
         
-        <Header />
+        <Header menu={menu} />
 
         {children}
 

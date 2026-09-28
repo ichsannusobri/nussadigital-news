@@ -5,154 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
 
-const MEGA_MENU_DATA = {
-  apac: {
-    title: 'APAC',
-    subcategories: [
-      { name: 'Southeast Asia', url: '/category/apac?sub=southeast-asia' },
-      { name: 'East Asia', url: '/category/apac?sub=east-asia' },
-      { name: 'Geopolitics', url: '/category/apac?sub=geopolitics' },
-      { name: 'Trade & Supply Chain', url: '/category/apac?sub=trade' }
-    ],
-    articles: [
-      {
-        id: 'art-1',
-        title: 'ASEAN Summit 2026: Leaders Forge Historic Agreement on Digital Economy',
-        date: 'Jun 17, 2026',
-        image: 'https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?auto=format&fit=crop&w=120&q=80'
-      },
-      {
-        id: 'art-2',
-        title: 'South China Sea Tensions Rise as Maritime Patrols Intensify',
-        date: 'Jun 16, 2026',
-        image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=120&q=80'
-      },
-      {
-        id: 'art-3',
-        title: 'India-Pacific Security Dialogue Opens in New Delhi with Focus on Tech',
-        date: 'Jun 15, 2026',
-        image: 'https://images.unsplash.com/photo-1532375810709-75b1da00537c?auto=format&fit=crop&w=120&q=80'
-      }
-    ]
-  },
-  economy: {
-    title: 'Economy',
-    subcategories: [
-      { name: 'Macro Economy', url: '/category/economy?sub=macro' },
-      { name: 'Trade Deals', url: '/category/economy?sub=trade' },
-      { name: 'Inflation & Rates', url: '/category/economy?sub=inflation' },
-      { name: 'Real Estate', url: '/category/economy?sub=property' }
-    ],
-    articles: [
-      {
-        id: 'art-7',
-        title: "China's GDP Growth Surges to 5.8% as Stimulus Measures Fuel Spending",
-        date: 'Jun 17, 2026',
-        image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&q=80'
-      },
-      {
-        id: 'art-8',
-        title: 'Bank of Indonesia Holds Benchmark Rate at 6.00% to Defend Rupiah',
-        date: 'Jun 16, 2026',
-        image: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=120&q=80'
-      },
-      {
-        id: 'art-9',
-        title: 'Southeast Asia Semiconductor Boom Accelerates with Multi-Billion Inflows',
-        date: 'Jun 15, 2026',
-        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=120&q=80'
-      }
-    ]
-  },
-  finance: {
-    title: 'Finance',
-    subcategories: [
-      { name: 'Markets & Stocks', url: '/markets' },
-      { name: 'Banking & Fintech', url: '/category/finance?sub=fintech' },
-      { name: 'Forex & Currencies', url: '/category/finance?sub=forex' },
-      { name: 'Digital Assets', url: '/category/finance?sub=crypto' }
-    ],
-    articles: [
-      {
-        id: 'art-12',
-        title: 'Nikkei 225 Smashes All-Time Record, Closes Above 45,000',
-        date: 'Jun 17, 2026',
-        image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=120&q=80'
-      },
-      {
-        id: 'art-13',
-        title: 'Singapore Monetary Authority Unveils Comprehensive Green Finance Rulebook',
-        date: 'Jun 16, 2026',
-        image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=120&q=80'
-      },
-      {
-        id: 'art-14',
-        title: 'Asian Central Banks Step Up Exploration of Cross-Border Wholesale CBDCs',
-        date: 'Jun 15, 2026',
-        image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=120&q=80'
-      }
-    ]
-  },
-  sport: {
-    title: 'Sport',
-    subcategories: [
-      { name: 'World Cup 2026', url: '/category/sport?sub=world-cup' },
-      { name: 'Football', url: '/category/sport?sub=football' },
-      { name: 'Badminton', url: '/category/sport?sub=badminton' },
-      { name: 'Motorsport & F1', url: '/category/sport?sub=f1' }
-    ],
-    articles: [
-      {
-        id: 'art-16',
-        title: 'FIFA World Cup 2026: Japan and Australia Draw Powerhouse Groups',
-        date: 'Jun 17, 2026',
-        image: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=120&q=80'
-      },
-      {
-        id: 'art-17',
-        title: 'Indonesia Open 2026: Ginting Advances to Quarter-Finals in Thrilling Match',
-        date: 'Jun 16, 2026',
-        image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=120&q=80'
-      },
-      {
-        id: 'art-18',
-        title: 'Formula 1 Singapore GP 2026 Sells Out in Record Time for Night Race',
-        date: 'Jun 15, 2026',
-        image: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=120&q=80'
-      }
-    ]
-  },
-  opinion: {
-    title: 'Opinion',
-    subcategories: [
-      { name: 'Editorials', url: '/category/opinion?sub=editorials' },
-      { name: 'Expert Columns', url: '/category/opinion?sub=columns' },
-      { name: 'Economic Analysis', url: '/category/opinion?sub=analysis' }
-    ],
-    articles: [
-      {
-        id: 'art-20',
-        title: "The Geopolitics of Semiconductors: Why Southeast Asia is Winning the Fab Race",
-        date: 'Jun 17, 2026',
-        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=120&q=80'
-      },
-      {
-        id: 'art-21',
-        title: "Navigating the Dollar's New Era: What Asian Central Banks Must Do Next",
-        date: 'Jun 16, 2026',
-        image: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=120&q=80'
-      },
-      {
-        id: 'art-22',
-        title: "RCEP's Fifth Anniversary: A Quiet Transformation of Asian Commerce",
-        date: 'Jun 15, 2026',
-        image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&q=80'
-      }
-    ]
-  }
-};
+import { getOptimizedImageUrl } from '../lib/data';
 
-export default function Header() {
+export default function Header({ menu = { categories: [], popularTopics: [] } }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [expandedMobileCat, setExpandedMobileCat] = useState(null);
@@ -223,8 +78,8 @@ export default function Header() {
             <Link href="/" onClick={closeMenu} className="nav-item-link">Home</Link>
             
             {/* MEGA MENU CATEGORIES */}
-            {Object.keys(MEGA_MENU_DATA).map((catKey) => {
-              const catData = MEGA_MENU_DATA[catKey];
+            {menu.categories.map((catData) => {
+              const catKey = catData.key;
               const isHovered = activeDropdown === catKey;
               const isMobileExpanded = expandedMobileCat === catKey;
 
@@ -255,14 +110,14 @@ export default function Header() {
                   {/* DESKTOP MEGA MENU DROPDOWN */}
                   <div className={`mega-menu-dropdown ${isHovered ? 'visible' : ''}`}>
                     <div className="mega-menu-container">
-                      {/* Left: Sub-categories */}
+                      {/* Left: topics derived from real article tags */}
                       <div className="mega-subcats-col">
-                        <span className="mega-col-title">Subcategories</span>
+                        <span className="mega-col-title">Topics</span>
                         <ul className="mega-subcats-list">
-                          {catData.subcategories.map(sub => (
-                            <li key={sub.name}>
-                              <Link href={sub.url} onClick={closeMenu} className="mega-subcat-link">
-                                {sub.name}
+                          {catData.topics.map(t => (
+                            <li key={t}>
+                              <Link href={`/search?q=${encodeURIComponent(t)}`} onClick={closeMenu} className="mega-subcat-link">
+                                {t}
                               </Link>
                             </li>
                           ))}
@@ -276,6 +131,9 @@ export default function Header() {
                       <div className="mega-latest-col">
                         <span className="mega-col-title">LATEST {catData.title.toUpperCase()}</span>
                         <div className="mega-latest-grid">
+                          {catData.articles.length === 0 && (
+                            <p className="mega-empty">New stories coming soon.</p>
+                          )}
                           {catData.articles.map(art => (
                             <Link 
                               key={art.id} 
@@ -283,7 +141,7 @@ export default function Header() {
                               onClick={closeMenu}
                               className="mega-latest-card"
                             >
-                              <img src={art.image} alt={art.title} className="mega-card-thumb" />
+                              <img src={getOptimizedImageUrl(art.image, 120)} alt="" aria-hidden="true" className="mega-card-thumb" loading="lazy" width={60} height={45} />
                               <div className="mega-card-info">
                                 <h4 className="mega-card-title">{art.title}</h4>
                                 <span className="mega-card-date">{art.date}</span>
@@ -298,11 +156,14 @@ export default function Header() {
                   {/* MOBILE ACCORDION DRAWER */}
                   {isMobileExpanded && (
                     <div className="mobile-subnav-drawer">
-                      {catData.subcategories.map(sub => (
-                        <Link key={sub.name} href={sub.url} onClick={closeMenu} className="mobile-subcat-link">
-                          • {sub.name}
+                      {catData.articles.map(art => (
+                        <Link key={art.id} href={`/article/${art.id}`} onClick={closeMenu} className="mobile-subcat-link">
+                          • {art.title}
                         </Link>
                       ))}
+                      <Link href={`/category/${catKey}`} onClick={closeMenu} className="mobile-subcat-link">
+                        All {catData.title} News →
+                      </Link>
                     </div>
                   )}
                 </div>
@@ -361,12 +222,10 @@ export default function Header() {
             </form>
 
             <div className="cnn-search-quick-tags">
-              <span className="quick-tags-label">Popular searches:</span>
-              <button type="button" onClick={() => { setSearchQuery('World Cup'); }} className="tag-pill">World Cup 2026</button>
-              <button type="button" onClick={() => { setSearchQuery('ASEAN'); }} className="tag-pill">ASEAN Summit</button>
-              <button type="button" onClick={() => { setSearchQuery('Nikkei'); }} className="tag-pill">Nikkei 225</button>
-              <button type="button" onClick={() => { setSearchQuery('China GDP'); }} className="tag-pill">China GDP</button>
-              <button type="button" onClick={() => { setSearchQuery('Semiconductor'); }} className="tag-pill">Semiconductor</button>
+              <span className="quick-tags-label">Popular topics:</span>
+              {menu.popularTopics.map(t => (
+                <button key={t} type="button" onClick={() => { setSearchQuery(t); }} className="tag-pill">{t}</button>
+              ))}
             </div>
           </div>
         </div>

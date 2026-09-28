@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { getAllArticles } from '../../lib/articles';
 import TimeAgo from '../../components/TimeAgo';
 import { getOptimizedImageUrl } from '../../lib/data';
-import MarketsHeaderPanel from '../../components/MarketsHeaderPanel';
-import MarketMovers from '../../components/MarketMovers';
+import { MarketsOverviewPanel, EconomicCalendarPanel } from '../../components/MarketsDataPanels';
 
 function getInitials(name) {
   if (!name) return '??';
@@ -33,7 +32,6 @@ export const metadata = {
 
 export default async function MarketsPage() {
   let allArticles = await getAllArticles();
-  allArticles = allArticles.slice(0, 25);
 
   // Filter only Finance and Economy articles for this page
   const financeArticles = allArticles.filter(a => 
@@ -42,11 +40,18 @@ export default async function MarketsPage() {
 
   return (
     <div className="markets-page">
-      <h1 className="sr-only">Markets & Finance News</h1>
       
-      {/* 1. CNN-Style Header Panel */}
-      <MarketsHeaderPanel latestNews={financeArticles} />
-      
+      <div className="markets-container" style={{ paddingTop: '24px' }}>
+        <header style={{ marginBottom: '16px' }}>
+          <p className="markets-kicker" style={{ color: '#D97706', fontWeight: 800, fontSize: '0.75rem', letterSpacing: '0.5px', margin: 0 }}>MARKETS</p>
+          <h1 className="markets-latest-header" style={{ margin: '4px 0 6px' }}>Asia-Pacific markets at a glance</h1>
+          <p style={{ margin: 0, color: 'var(--clr-text-secondary, #6B7280)', fontSize: '0.9rem' }}>
+            Indices, currencies and commodities that matter for the region, plus the week's key economic releases. Market data is provided by TradingView and may be delayed.
+          </p>
+        </header>
+        <MarketsOverviewPanel />
+      </div>
+
       <div className="markets-container">
 
         {/* Hero Section (70-30 Split) */}
@@ -65,9 +70,10 @@ export default async function MarketsPage() {
               </Link>
             </div>
 
-            {/* Right: Market Movers Widget */}
+            {/* Right: economic calendar (real data) */}
             <div className="markets-hero-right">
-              <MarketMovers />
+              <h3 className="markets-latest-header" style={{ marginBottom: '12px' }}>Economic calendar</h3>
+              <EconomicCalendarPanel />
             </div>
 
           </div>
@@ -78,11 +84,11 @@ export default async function MarketsPage() {
         )}
 
         {/* Secondary Section: "What to watch" */}
-        {financeArticles.length > 6 && (
+        {financeArticles.length > 1 && (
           <div style={{ marginTop: '40px' }}>
-            <h3 className="markets-latest-header">What to watch</h3>
+            <h3 className="markets-latest-header">Latest markets &amp; economy analysis</h3>
             <div className="markets-secondary-grid">
-              {financeArticles.slice(6, 10).map((article) => (
+              {financeArticles.slice(1, 9).map((article) => (
                 <Link href={`/article/${article.id}`} className="markets-card-small" key={article.id}>
                   <img src={getOptimizedImageUrl(article.image, 300)} alt={article.title} className="markets-card-img" loading="lazy" decoding="async" width={300} height={188} />
                   <h4>{article.title}</h4>

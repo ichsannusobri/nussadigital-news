@@ -4421,3 +4421,24 @@ ul, ol {
   }
 }
 
+
+/* Mega menu: undo the white, nowrap nav-link styling inside the light dropdown */
+.main-nav .mega-menu-dropdown a {
+  color: var(--clr-text, #1F2937);
+  white-space: normal;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+.main-nav .mega-menu-dropdown a:hover { background: none; }
+.main-nav .mega-menu-dropdown a.mega-latest-card { padding: 6px; border-radius: 8px; }
+.main-nav .mega-menu-dropdown a.mega-latest-card:hover { background: var(--clr-bg-tertiary, #F3F4F6); }
+.main-nav .mega-menu-dropdown a.mega-subcat-link { font-size: 0.85rem; font-weight: 600; }
+.main-nav .mega-menu-dropdown a.mega-subcat-link:hover,
+.main-nav .mega-menu-dropdown a.mega-view-all-link { color: #D97706; }
+.mega-latest-col, .mega-card-info { min-width: 0; }
+.mega-card-title { overflow-wrap: anywhere; }
+.mega-empty { font-size: 0.8rem; color: var(--clr-text-secondary, #6B7280); margin: 0; }
+/* Keep wide dropdowns (right-hand menu items) inside the viewport */
+.nav-mega-item:nth-last-of-type(-n+3) .mega-menu-dropdown { left: auto; right: 0; }
+.main-nav .mega-menu-dropdown a.mega-view-all-link { font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
