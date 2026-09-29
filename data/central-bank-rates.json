@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-28",
+  "updatedAt": "2026-09-29",
   "note": "Maintained manually by the NDNews desk after each official decision. Update the entry, the updatedAt date and push; the site rebuilds automatically.",
   "banks": [
     {
@@ -36,13 +36,13 @@
     },
     {
       "slug": "reserve-bank-of-australia", "bank": "Reserve Bank of Australia", "short": "RBA", "country": "Australia", "flag": "🇦🇺",
-      "rateName": "Cash rate target", "rate": 4.35,
-      "lastDecisionDate": "2026-08-11", "lastDecision": "Hold",
-      "lastChangeDate": "2026-05-05", "lastChange": "+25 bps (4.10% → 4.35%)",
-      "nextMeeting": "2026-09-29",
+      "rateName": "Cash rate target", "rate": 4.60,
+      "lastDecisionDate": "2026-09-29", "lastDecision": "+25 bps",
+      "lastChangeDate": "2026-09-29", "lastChange": "+25 bps (4.35% → 4.60%)",
+      "nextMeeting": "2026-11-03",
       "trend2026": "tightening",
-      "context": "Next decision is due on 29 September 2026 at 2:30 pm AEST; this entry will be updated after the announcement.",
-      "sources": ["https://www.rba.gov.au/media-releases/2026/mr-26-19.html", "https://www.rba.gov.au/media-releases/2026/mr-26-12.html"]
+      "context": "The Monetary Policy Board raised the cash rate target by 25 bps to 4.60% on 29 September 2026, in a unanimous decision. It said recent inflation outcomes were higher than expected and that the broadening Middle East conflict had pushed global energy prices above its August forecasts. ABC News described it as the fourth rate rise of 2026.",
+      "sources": ["https://www.rba.gov.au/media-releases/2026/mr-26-27.html", "https://www.rba.gov.au/media-releases/2026/mr-26-19.html", "https://www.rba.gov.au/schedules-events/board-meeting-schedules.html"]
     },
     {
       "slug": "bank-of-korea", "bank": "Bank of Korea", "short": "BOK", "country": "South Korea", "flag": "🇰🇷",
