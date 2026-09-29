@@ -2,7 +2,8 @@ import Link from 'next/link';
 import snapshot from '../data/market-snapshot.json';
 
 // Server-rendered market summary strip (no third-party scripts).
-// Data comes from data/market-snapshot.json, updated daily with the Asia Market Wrap.
+// Data comes from data/market-snapshot.json, updated each trading day after the Asia close.
+// Item flags: static (policy rate), closed (market holiday: last close shown), pending, intraday.
 
 function fmt(item) {
   if (item.value === null || item.value === undefined) return '—';
@@ -23,6 +24,8 @@ function Item({ item }) {
       <span className="mts-value">{fmt(item)}</span>
       {item.static ? (
         <span className="mts-chg" style={{ color: 'var(--clr-text-secondary, #6B7280)' }}>policy</span>
+      ) : item.closed ? (
+        <span className="mts-chg" style={{ color: 'var(--clr-text-secondary, #6B7280)' }}>closed</span>
       ) : item.pending ? (
         <span className="mts-chg" style={{ color: 'var(--clr-text-secondary, #6B7280)' }}>updating</span>
       ) : (
