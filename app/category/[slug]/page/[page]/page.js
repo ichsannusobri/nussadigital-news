@@ -20,6 +20,13 @@ export async function generateStaticParams() {
     const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
     for (let i = 2; i <= totalPages; i++) paths.push({ slug, page: String(i) });
   }
+  // Next.js static export fails when generateStaticParams returns an empty
+  // array. When no category needs a second page, emit one placeholder page;
+  // generateMetadata marks it noindex because it has no articles.
+  if (paths.length === 0) {
+    const firstSlug = Object.keys(stats)[0] || 'apac';
+    paths.push({ slug: firstSlug, page: '2' });
+  }
   return paths;
 }
 
