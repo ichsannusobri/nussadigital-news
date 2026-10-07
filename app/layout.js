@@ -157,7 +157,6 @@ export default async function RootLayout({ children }) {
                 <Link href="/category/economy">Economy & Growth</Link>
                 <Link href="/category/finance">Finance & Markets</Link>
                 <Link href="/category/sport">APAC Sport</Link>
-                <Link href="/category/opinion">Opinion & Analysis</Link>
                 <Link href="/category/explainer">Deep Explainers</Link>
               </div>
 
@@ -172,6 +171,8 @@ export default async function RootLayout({ children }) {
                 <h3>Company</h3>
                 <Link href="/about">About NDNews</Link>
                 <Link href="/contact">Contact Editorial</Link>
+                <Link href="/editorial-policy">Editorial Policy</Link>
+                <Link href="/corrections">Corrections</Link>
                 <Link href="/privacy">Privacy Policy</Link>
                 <Link href="/terms">Terms of Use</Link>
               </div>
