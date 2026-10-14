@@ -121,6 +121,7 @@ export default async function ArticlePage({ params }) {
         "name": article.author,
         "url": `${SITE_URL}/author/${authorSlug}`
       }],
+      "editor": { "@type": "Person", "name": "Ichsan N", "url": `${SITE_URL}/about#editor` },
       "publisher": {
         "@type": "NewsMediaOrganization",
         "name": "NDNews",
@@ -175,6 +176,9 @@ export default async function ArticlePage({ params }) {
                       <span className="article-read-time">{article.readTime || `${Math.max(1, Math.round(wordCount / 220))} min read`}</span>
                     </div>
                   </div>
+                  <p className="article-reviewed-by" style={{ fontSize: '13px', color: '#6b7280', margin: '8px 0 16px' }}>
+                    Reviewed by <Link href="/about#editor">Ichsan N</Link>, Editor-in-Chief &middot; <Link href="/editorial-policy">How we work</Link>
+                  </p>
                   <img className="article-hero-img" src={getOptimizedImageUrl(article.image, 800)} alt={article.imageAlt || article.title} fetchPriority="high" loading="eager" decoding="async" width={800} height={500} referrerPolicy="no-referrer" />
                   {article.imageCredit && <p className="article-image-credit" style={{ fontSize: '12px', color: '#6b7280', marginTop: '6px' }}>{article.imageCredit}</p>}
 

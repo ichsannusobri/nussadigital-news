@@ -40,7 +40,7 @@ export async function generateMetadata({ params }) {
 
   return {
     title: `Latest News - Page ${params.page}`,
-    description: `Browse the latest breaking news, economy, finance, and sports articles on NDNews - Page ${params.page}.`,
+    description: `Browse the latest economy, markets, policy and sport articles on NDNews - Page ${params.page}.`,
     alternates: {
       canonical: `https://nussadigital.co.id/page/${params.page}`,
     },

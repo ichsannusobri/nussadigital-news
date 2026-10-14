@@ -24,7 +24,7 @@ function getInitials(name) {
 }
 
 export const metadata = {
-  title: { absolute: 'NDNews - Breaking News, APAC Economy, Finance & Sports' },
+  title: { absolute: 'NDNews - APAC Economy, Markets, Policy & Sport News' },
   description: 'Your trusted source for the latest news in business, economy, and sports across the Asia-Pacific region.',
   alternates: {
     canonical: 'https://nussadigital.co.id',
@@ -122,7 +122,7 @@ export default async function HomePage() {
 
   return (
     <main className="home-page cnn-layout-page">
-      <h1 className="sr-only">Latest APAC Economy, Finance & Sports Breaking News</h1>
+      <h1 className="sr-only">Latest APAC Economy, Markets, Policy and Sport News</h1>
 
       {/* 1. CNN-STYLE TOPIC HERO BANNER WITH INTEGRATED TRENDING STRIP */}
       <MarketTickerStrip />

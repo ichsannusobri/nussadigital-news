@@ -11,7 +11,7 @@ export const metadata = {
     default: 'NDNews - APAC Economy, Finance & Sports News',
     template: '%s | NDNews',
   },
-  description: 'NDNews delivers breaking news, in-depth analysis and coverage of economy, finance and sports across Asia-Pacific. Your trusted APAC news source.',
+  description: 'NDNews publishes sourced news, explainers and data on the economy, markets, policy and sport across Southeast Asia and the Asia-Pacific.',
   icons: {
     icon: '/favicon.png',
     apple: '/favicon.png',
@@ -28,7 +28,7 @@ export const metadata = {
   },
   openGraph: {
     title: 'NDNews - APAC Economy, Finance & Sports News',
-    description: 'NDNews delivers breaking news, in-depth analysis and coverage of economy, finance and sports across Asia-Pacific. Your trusted APAC news source.',
+    description: 'NDNews publishes sourced news, explainers and data on the economy, markets, policy and sport across Southeast Asia and the Asia-Pacific.',
     url: 'https://nussadigital.co.id',
     siteName: 'NDNews',
     images: [
@@ -45,7 +45,7 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'NDNews - APAC Economy, Finance & Sports News',
-    description: 'NDNews delivers breaking news, in-depth analysis and coverage of economy, finance and sports across Asia-Pacific. Your trusted APAC news source.',
+    description: 'NDNews publishes sourced news, explainers and data on the economy, markets, policy and sport across Southeast Asia and the Asia-Pacific.',
     images: ['/og-home.png'],
   },
 };
@@ -142,7 +142,7 @@ export default async function RootLayout({ children }) {
                   ND<span>News</span>
                 </Link>
                 <p className="footer-desc">
-                  Your trusted digital news portal for breaking news, business, macroeconomic analysis, and sports across the Asia-Pacific region.
+                  Sourced news, explainers and data on the economy, markets, policy and sport across Southeast Asia and the Asia-Pacific.
                 </p>
                 <div className="footer-social-row">
                   <a href="/feed.xml" target="_blank" rel="noopener noreferrer" className="footer-social-icon" aria-label="RSS Feed">
@@ -157,7 +157,6 @@ export default async function RootLayout({ children }) {
                 <Link href="/category/economy">Economy & Growth</Link>
                 <Link href="/category/finance">Finance & Markets</Link>
                 <Link href="/category/sport">APAC Sport</Link>
-                <Link href="/category/explainer">Deep Explainers</Link>
               </div>
 
               <div className="footer-col">

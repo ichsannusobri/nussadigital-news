@@ -20,8 +20,8 @@ export default async function sitemap() {
     { url: `${SITE_URL}/contact`, lastModified: new Date('2026-10-07') },
     { url: `${SITE_URL}/editorial-policy`, lastModified: new Date('2026-10-07') },
     { url: `${SITE_URL}/corrections`, lastModified: new Date('2026-10-07') },
-    { url: `${SITE_URL}/privacy`, lastModified: new Date('2026-07-01') },
-    { url: `${SITE_URL}/terms`, lastModified: new Date('2026-07-01') },
+    { url: `${SITE_URL}/privacy`, lastModified: new Date('2026-10-14') },
+    { url: `${SITE_URL}/terms`, lastModified: new Date('2026-10-14') },
   ];
 
   const categories = Object.entries(stats).map(([cat, s]) => ({

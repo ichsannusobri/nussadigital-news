@@ -58,3 +58,12 @@
 /article/art-mrkv6koq-oywyc /article/bank-of-japan-yen-impact-southeast-asia-2026 301
 /article/art-mrrwtx6y-1auyx /article/indonesia-us-china-tech-rivalry-imf-fragmentation-2026 301
 /article/art-mru7qwb0-im5zh /archive 301
+
+# 2026-10-14 low-value cleanup (archived to articles_archive)
+/article/asia-market-wrap-2026-09-28 /markets 301
+/article/mexico-1-1-peru-friendly-rafael-marquez-2026 /category/sport 301
+/article/janice-tjen-china-open-2026-kalinina-first-round /category/sport 301
+/article/china-may-let-alibaba-bytedance-buy-nvidia-rtx-pro-5500 /article/indonesia-us-china-tech-rivalry-imf-fragmentation-2026 301
+# Explainer category retired (articles moved to Economy)
+/category/explainer /category/economy 301
+/category/explainer/* /category/economy 301

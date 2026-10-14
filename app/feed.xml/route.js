@@ -12,7 +12,7 @@ export async function GET() {
   <channel>
     <title>NDNews - APAC Economy, Finance &amp; Sports News</title>
     <link>${baseUrl}</link>
-    <description>Latest breaking news, in-depth analysis and coverage of economy, finance and sports across the Asia-Pacific region.</description>
+    <description>Sourced news, explainers and data on the economy, markets, policy and sport across Southeast Asia and the Asia-Pacific.</description>
     <language>en</language>
     <atom:link href="${baseUrl}/feed.xml" rel="self" type="application/rss+xml" />
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>

@@ -30,7 +30,7 @@ export async function generateMetadata({ params }) {
 
   return {
     title: `${catName} News - Latest Updates & Analysis`,
-    description: `Browse the latest breaking news, in-depth analysis, and expert insights on ${catName} across the Asia-Pacific region.`,
+    description: `Browse the latest ${catName} news, explainers and analysis from Southeast Asia and the wider Asia-Pacific, with sources linked in every article.`,
     alternates: {
       canonical: canonicalUrl,
     },
@@ -64,7 +64,7 @@ export default async function CategoryPage({ params }) {
     <main>
       <div className="category-header-banner" style={{backgroundColor: '#003366', color: '#fff', padding: '60px 20px', textAlign: 'center'}}>
         <h1 style={{fontSize: '40px', margin: '0 0 10px 0'}}>{catName} News</h1>
-        <p style={{fontSize: '18px', margin: '0', opacity: 0.9}}>Latest breaking news and analysis from the Asia-Pacific</p>
+        <p style={{fontSize: '18px', margin: '0', opacity: 0.9}}>Latest news and analysis from the Asia-Pacific</p>
       </div>
 
       <section className="category-results container" style={{padding: '40px 20px', maxWidth: '1400px', margin: '0 auto'}}>
