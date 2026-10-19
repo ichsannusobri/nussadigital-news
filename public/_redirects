@@ -67,3 +67,6 @@
 # Explainer category retired (articles moved to Economy)
 /category/explainer /category/economy 301
 /category/explainer/* /category/economy 301
+# 2026-10-19 content review: archived (articles_archive)
+/article/indonesia-vs-thailand-fifa-asean-cup-final-2026-preview /article/indonesia-thailand-football-rivalry-head-to-head-history 301
+/article/oil-prices-brent-hormuz-asia-indonesia-2026-09-29 /article/iran-war-asia-economy-impact-government-strategies-2026 301
