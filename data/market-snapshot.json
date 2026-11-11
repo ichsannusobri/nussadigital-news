@@ -1,19 +1,19 @@
 {
-  "updatedAt": "2026-11-09T17:00:00+07:00",
+  "updatedAt": "2026-11-11T17:00:00+07:00",
   "session": "Asia close",
   "note": "Updated each trading day by the NDNews desk as part of the Asia Market Wrap SOP (docs/SOP-ASIA-MARKET-WRAP.md). Closing levels unless 'intraday' is set.",
   "items": [
     {
       "name": "IHSG",
-      "value": 5073.77,
+      "value": 5115.03,
       "decimals": 2,
-      "changePct": 0.46
+      "changePct": -0.21
     },
     {
       "name": "USD/IDR",
-      "value": 18085,
+      "value": 18149,
       "decimals": 0,
-      "changePct": -0.02
+      "changePct": 0.48
     },
     {
       "name": "BI-Rate",
@@ -25,40 +25,41 @@
     },
     {
       "name": "Nikkei 225",
-      "value": 58775.5,
+      "value": 61248.59,
       "decimals": 2,
-      "changePct": 2.33
+      "changePct": 1.31
     },
     {
       "name": "Hang Seng",
-      "value": 24448.95,
+      "value": 24315.92,
       "decimals": 2,
-      "changePct": -0.13
+      "changePct": -0.98
     },
     {
       "name": "Shanghai",
-      "value": 3660.79,
+      "value": 3680.64,
       "decimals": 2,
-      "changePct": 0.32
+      "changePct": 0.46
     },
     {
       "name": "KOSPI",
-      "value": 5018.85,
+      "value": 5375.36,
       "decimals": 2,
-      "changePct": -0.81
+      "changePct": 2.6
     },
     {
       "name": "ASX 200",
       "value": 9029.7,
       "decimals": 2,
-      "changePct": 0.1
+      "changePct": 0.1,
+      "pending": true
     },
     {
       "name": "Brent",
-      "value": 96.45,
+      "value": 92.43,
       "decimals": 2,
       "prefix": "$",
-      "changePct": -1.9,
+      "changePct": 1.03,
       "intraday": true
     }
   ]
